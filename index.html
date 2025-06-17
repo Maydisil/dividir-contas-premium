@@ -532,7 +532,7 @@ function mostrarFormulario() {
   document.getElementById("detalhes").style.display = "none";
 
   // Carregar opções da planilha
-fetch("https://script.google.com/macros/s/SEU_ID_DO_WEB_APP/exec?funcao=listarOpcoesStreaming")
+fetch("https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-YbnmugdXbhXDtTxPSE_OOCvs34ivYxlD8VJhEXjg/exec?funcao=listarOpcoesStreaming")
   .then(res => res.json())
   .then(opcoes => {
     const select = document.getElementById("selectStreaming");
@@ -573,7 +573,7 @@ const selecionados = Array.from(document.querySelectorAll('input[name="extra"]:c
                           .map(input => input.value);
 dados.extra = selecionados.join(", ");
 
-fetch("https://script.google.com/macros/s/SEU_ID_DO_WEB_APP/exec", {
+fetch("https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-YbnmugdXbhXDtTxPSE_OOCvs34ivYxlD8VJhEXjg/exec", {
   method: "POST",
   body: JSON.stringify(dados),
   headers: { "Content-Type": "application/json" }
@@ -641,7 +641,9 @@ function formatarWhatsapp(input) {
     }
 
     function registrarLike(nome, id) {
-fetch(`https://script.google.com/macros/s/SEU_ID_DO_WEB_APP/exec?funcao=registrarLike&nome=${encodeURIComponent(nome)}&id=${encodeURIComponent(id)}`)
+fetch(`https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-YbnmugdXbhXDtTxPSE_OOCvs34ivYxlD8VJhEXjg/exec?funcao=registrarLike&nome=${encodeURIComponent(nome)}&id=
+
+${encodeURIComponent(id)}`)
   .then(res => res.text())
   .then(msg => alert(msg))
   .catch(err => alert("Erro ao registrar like."));
