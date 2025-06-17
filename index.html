@@ -584,6 +584,18 @@ fetch(`https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-Ybnm
   .catch(err => alert("Erro ao enviar o formulário."));
 }
 
+function formatarUsuario(input) {
+  // Remove espaços no início e fim
+  let valor = input.value.trim();
+
+  // Se não começa com @, adiciona
+  if (valor && !valor.startsWith('@')) {
+    valor = '@' + valor.replace(/^@+/, '');
+  }
+
+  input.value = valor;
+}
+
 function formatarWhatsapp(input) {
   // Remove tudo que não for número
   let valor = input.value.replace(/\D/g, '');
@@ -638,7 +650,9 @@ function formatarWhatsapp(input) {
     }
 
     function registrarLike(nome, id) {
-fetch(`https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-YbnmugdXbhXDtTxPSE_OOCvs34ivYxlD8VJhEXjg/exec?funcao=registrarLike&nome=${encodeURIComponent(nome)}&id=${encodeURIComponent(id)}`)
+fetch(`https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-YbnmugdXbhXDtTxPSE_OOCvs34ivYxlD8VJhEXjg/exec?funcao=registrarLike&nome=${encodeURIComponent(nome)}&id=
+
+${encodeURIComponent(id)}`)
   .then(res => res.text())
   .then(msg => alert(msg))
   .catch(err => alert("Erro ao registrar like."));
@@ -703,7 +717,9 @@ fetch(`https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-Ybnm
 <div id="formulario" style="display:none; padding: 1rem;">
   <h3>CRIAR ANÚNCIO</h3>
   <form id="formAnuncio" onsubmit="enviarFormulario(event)">
-    <label>Nome de Usuário: <input type="text" placeholder="Ex: @Nome" name="usuario" required></label><br>
+    <label>Nome de Usuário: 
+  <input type="text" placeholder="Ex: @Nome" name="usuario" required oninput="formatarUsuario(this)">
+</label><br>
 
     <label>Qual o Streaming:
       <select name="streaming" id="selectStreaming" required></select>
