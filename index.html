@@ -573,11 +573,8 @@ const selecionados = Array.from(document.querySelectorAll('input[name="extra"]:c
                           .map(input => input.value);
 dados.extra = selecionados.join(", ");
 
-fetch("https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-YbnmugdXbhXDtTxPSE_OOCvs34ivYxlD8VJhEXjg/exec", {
-  method: "POST",
-  body: JSON.stringify(dados),
-  headers: { "Content-Type": "application/json" }
-})
+const params = new URLSearchParams(dados).toString();
+fetch(`https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-YbnmugdXbhXDtTxPSE_OOCvs34ivYxlD8VJhEXjg/exec?${params}`)
   .then(res => res.text())
   .then(msg => {
     alert(msg);
@@ -641,9 +638,7 @@ function formatarWhatsapp(input) {
     }
 
     function registrarLike(nome, id) {
-fetch(`https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-YbnmugdXbhXDtTxPSE_OOCvs34ivYxlD8VJhEXjg/exec?funcao=registrarLike&nome=${encodeURIComponent(nome)}&id=
-
-${encodeURIComponent(id)}`)
+fetch(`https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-YbnmugdXbhXDtTxPSE_OOCvs34ivYxlD8VJhEXjg/exec?funcao=registrarLike&nome=${encodeURIComponent(nome)}&id=${encodeURIComponent(id)}`)
   .then(res => res.text())
   .then(msg => alert(msg))
   .catch(err => alert("Erro ao registrar like."));
