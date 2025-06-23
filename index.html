@@ -566,23 +566,41 @@ opcoesExtra.forEach(opcao => {
 
 function enviarFormulario(event) {
   event.preventDefault();
+
   const form = document.getElementById("formAnuncio");
+  const btnEnviar = form.querySelector('button[type="submit"]');
+  const btnCancelar = form.querySelector('button[type="button"]');
+
+  // Desativa os botões para evitar múltiplos cliques
+  btnEnviar.disabled = true;
+  btnEnviar.textContent = "Enviando...";
+  btnCancelar.disabled = true;
+
   const dados = Object.fromEntries(new FormData(form).entries());
 
-  // 👇 Concatena múltiplas assinaturas extras
-const selecionados = Array.from(document.querySelectorAll('input[name="extra"]:checked'))
-                          .map(input => input.value);
-dados.extra = selecionados.join(", ");
+  // Concatena múltiplas assinaturas extras
+  const selecionados = Array.from(document.querySelectorAll('input[name="extra"]:checked'))
+                            .map(input => input.value);
+  dados.extra = selecionados.join(", ");
 
-const params = new URLSearchParams(dados).toString();
-fetch(`https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-YbnmugdXbhXDtTxPSE_OOCvs34ivYxlD8VJhEXjg/exec?${params}`)
-  .then(res => res.text())
-  .then(msg => {
-    alert(msg);
-    form.reset();
-    voltarParaLista();
-  })
-  .catch(err => alert("Erro ao enviar o formulário."));
+  const params = new URLSearchParams(dados).toString();
+
+  fetch(`https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-YbnmugdXbhXDtTxPSE_OOCvs34ivYxlD8VJhEXjg/exec?${params}`)
+    .then(res => res.text())
+    .then(msg => {
+      alert(msg);
+      form.reset();
+      voltarParaLista();
+    })
+    .catch(err => {
+      alert("Erro ao enviar o formulário.");
+    })
+    .finally(() => {
+      // Reativa os botões
+      btnEnviar.disabled = false;
+      btnEnviar.textContent = "Enviar";
+      btnCancelar.disabled = false;
+    });
 }
 
 function formatarUsuario(input) {
