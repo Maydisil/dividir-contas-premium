@@ -3,9 +3,7 @@
 <head>
   <base target="_top">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-
-
-icons.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
   <link rel="icon" href="https://i.imgur.com/NHZnler.png" type="image/png">
   <style>
     :root {
@@ -509,12 +507,8 @@ icons.css">
   </style>
   <script>
     async function carregarAnuncios() {
-      document.getElementById("anuncios").innerHTML = '<div class="loading">Carregando 
-
-Anúncios...</div>';
-      fetch("https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-
-
-YbnmugdXbhXDtTxPSE_OOCvs34ivYxlD8VJhEXjg/exec?funcao=listarAnuncios")
+      document.getElementById("anuncios").innerHTML = '<div class="loading">Carregando Anúncios...</div>';
+      fetch("https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-YbnmugdXbhXDtTxPSE_OOCvs34ivYxlD8VJhEXjg/exec?funcao=listarAnuncios")
   .then(res => res.json())
   .then(renderizarAnuncios)
   .catch(err => console.error("Erro ao carregar anúncios:", err));
@@ -539,9 +533,7 @@ function mostrarFormulario() {
   document.getElementById("detalhes").style.display = "none";
 
   // Carregar opções da planilha
-fetch("https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-
-
-YbnmugdXbhXDtTxPSE_OOCvs34ivYxlD8VJhEXjg/exec?funcao=listarOpcoesStreaming")
+fetch("https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-YbnmugdXbhXDtTxPSE_OOCvs34ivYxlD8VJhEXjg/exec?funcao=listarOpcoesStreaming")
   .then(res => res.json())
   .then(opcoes => {
     const select = document.getElementById("selectStreaming");
@@ -592,9 +584,7 @@ function enviarFormulario(event) {
 
   const params = new URLSearchParams(dados).toString();
 
-  fetch(`https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-
-
-YbnmugdXbhXDtTxPSE_OOCvs34ivYxlD8VJhEXjg/exec?${params}`)
+  fetch(`https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-YbnmugdXbhXDtTxPSE_OOCvs34ivYxlD8VJhEXjg/exec?${params}`)
     .then(res => res.text())
     .then(msg => {
       alert(msg);
@@ -678,11 +668,9 @@ function formatarWhatsapp(input) {
     }
 
     function registrarLike(nome, id) {
-fetch(`https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-
+fetch(`https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-YbnmugdXbhXDtTxPSE_OOCvs34ivYxlD8VJhEXjg/exec?funcao=registrarLike&nome=${encodeURIComponent(nome)}&id=
 
-YbnmugdXbhXDtTxPSE_OOCvs34ivYxlD8VJhEXjg/exec?funcao=registrarLike&nome=
-
-${encodeURIComponent(nome)}&id=${encodeURIComponent(id)}`)
+${encodeURIComponent(id)}`)
   .then(res => res.text())
   .then(msg => alert(msg))
   .catch(err => alert("Erro ao registrar like."));
@@ -693,9 +681,7 @@ ${encodeURIComponent(nome)}&id=${encodeURIComponent(id)}`)
       document.getElementById("detalhes").style.display = "block";
 
       document.getElementById("detalhes").innerHTML = `
-        <div class="detalhes-box" style="margin-top: 16px; flex-direction: column; align-items: flex-
-
-start;">
+        <div class="detalhes-box" style="margin-top: 16px; flex-direction: column; align-items: flex-start;">
           <a href="${item.linkStreaming}" target="_blank">
             <img src="https://drive.google.com/thumbnail?id=${item.logo2}&sz=w1000" alt="Logo2">
           </a>
@@ -736,9 +722,7 @@ start;">
 </head>
 <body>
   <div class="top-bar">
-    <img src="https://drive.google.com/thumbnail?id=1eVqeCg4y-
-
-NUEMc80LpF41smGc9pmHPKt&sz=w500" class="logo-site" alt="Logo do site">
+    <img src="https://drive.google.com/thumbnail?id=1eVqeCg4y-NUEMc80LpF41smGc9pmHPKt&sz=w500" class="logo-site" alt="Logo do site">
     <div class="search-container">
       <span class="icon"><i class="bi bi-search"></i></span>
       <input type="text" id="pesquisa" placeholder="Pesquisar...">
@@ -752,9 +736,7 @@ NUEMc80LpF41smGc9pmHPKt&sz=w500" class="logo-site" alt="Logo do site">
   <h3>CRIAR ANÚNCIO</h3>
   <form id="formAnuncio" onsubmit="enviarFormulario(event)">
     <label>Nome de Usuário: 
-  <input type="text" placeholder="Ex: @Nome" name="usuario" required oninput="formatarUsuario
-
-(this)">
+  <input type="text" placeholder="Ex: @Nome" name="usuario" required oninput="formatarUsuario(this)">
 </label><br>
 
     <label>Qual o Streaming:
@@ -764,9 +746,7 @@ NUEMc80LpF41smGc9pmHPKt&sz=w500" class="logo-site" alt="Logo do site">
 <label>Assinatura Extra (opcional):</label>
 <div id="containerExtras" class="checkbox-list"></div><br>
 
-    <label>Qual o Valor: <input type="number" min="0" step="0.25" name="valor" 
-
-required></label><br>
+    <label>Qual o Valor: <input type="number" min="0" step="0.25" name="valor" required></label><br>
 
     <label>Forma de Pagamento:
       <select name="pagamento" required>
@@ -780,9 +760,7 @@ required></label><br>
     </label><br>
 
 <label>Código do Grupo Kotas (opcional): 
-  <input type="number" name="kotas" id="campoKotas" min="0" step="1" pattern="\d*" 
-
-oninput="limitarKotas(this)">
+  <input type="number" name="kotas" id="campoKotas" min="0" step="1" pattern="\d*" oninput="limitarKotas(this)">
 </label><br>
 
     <label>Status da Conta:
@@ -812,9 +790,7 @@ oninput="limitarKotas(this)">
     </label><br>
 
     <label>Número do WhatsApp (opcional): 
-  <input type="tel" name="whatsapp" id="whatsappInput" placeholder="Ex: 55XXXXXXXXXXX" 
-
-pattern="\d{13}" maxlength="13" oninput="formatarWhatsapp(this)">
+  <input type="tel" name="whatsapp" id="whatsappInput" placeholder="Ex: 55XXXXXXXXXXX" pattern="\d{13}" maxlength="13" oninput="formatarWhatsapp(this)">
 </label><br><br>
 
     <button type="submit">Enviar</button>
@@ -837,39 +813,25 @@ pattern="\d{13}" maxlength="13" oninput="formatarWhatsapp(this)">
 
   <div id="painel-menu" class="painel-menu">
     <div class="painel-item">
-      <i class="bi bi-question-circle"></i> <a href="https://telegra.ph/GUIA-DE-PERGUNTAS-COMUNS-
-
-12-01" target="_blank">Perguntas Frequentes</a>
+      <i class="bi bi-question-circle"></i> <a href="https://telegra.ph/GUIA-DE-PERGUNTAS-COMUNS-12-01" target="_blank">Perguntas Frequentes</a>
     </div>
     <div class="painel-item">
-      <i class="bi bi-tools"></i> <a href="https://t.me/+EFx8SakIL5dkZTlh" target="_blank">Assistência 
-
-Tecnica</a>
+      <i class="bi bi-tools"></i> <a href="https://t.me/+EFx8SakIL5dkZTlh" target="_blank">Assistência Tecnica</a>
     </div>
     <div class="painel-item">
-      <i class="bi bi-people"></i> <a href="https://t.me/dividir_contas_premium" target="_blank">Visitar 
-
-o Grupo</a>
+      <i class="bi bi-people"></i> <a href="https://t.me/dividir_contas_premium" target="_blank">Visitar o Grupo</a>
     </div>
     <div class="painel-item">
-      <i class="bi bi-check-square"></i> <a href="https://t.me/dividir_contas_premium/9304" 
-
-target="_blank">Regras do Grupo</a>
+      <i class="bi bi-check-square"></i> <a href="https://t.me/dividir_contas_premium/9304" target="_blank">Regras do Grupo</a>
     </div>
     <div class="painel-item">
-      <i class="bi bi-person-add"></i> <a href="https://t.me/dividir_contas_premium/23511" 
-
-target="_blank">Fazer Cadastro</a>
+      <i class="bi bi-person-add"></i> <a href="https://t.me/dividir_contas_premium/23511" target="_blank">Fazer Cadastro</a>
     </div>
     <div class="painel-item">
-      <i class="bi bi-share"></i> <a href="https://api.whatsapp.com/send?
-
-text=https://t.me/dividir_contas_premium" target="_blank">Compartilhar Grupo</a>
+      <i class="bi bi-share"></i> <a href="https://api.whatsapp.com/send?text=https://t.me/dividir_contas_premium" target="_blank">Compartilhar Grupo</a>
     </div>
     <div class="painel-item">
-      <i class="bi bi-shield-exclamation"></i> <a href="https://telegra.ph/LISTA-DE-GOLPISTAS-10-06" 
-
-target="_blank">Lista de Golpistas</a>
+      <i class="bi bi-shield-exclamation"></i> <a href="https://telegra.ph/LISTA-DE-GOLPISTAS-10-06" target="_blank">Lista de Golpistas</a>
     </div>
   </div>
 
