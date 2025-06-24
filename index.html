@@ -668,15 +668,17 @@ function formatarWhatsapp(input) {
     }
 
     function registrarLike(nome, id) {
-fetch(`https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-YbnmugdXbhXDtTxPSE_OOCvs34ivYxlD8VJhEXjg/exec?funcao=registrarLike&nome=${encodeURIComponent(nome)}&id=
-
-${encodeURIComponent(id)}`)
+fetch(`https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-YbnmugdXbhXDtTxPSE_OOCvs34ivYxlD8VJhEXjg/exec?funcao=registrarLike&nome=${encodeURIComponent(nome)}&id=${encodeURIComponent(id)}`)
   .then(res => res.text())
   .then(msg => alert(msg))
   .catch(err => alert("Erro ao registrar like."));
     }
 
     function mostrarDetalhes(item) {
+      // Registrar visualização
+      fetch(`https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-YbnmugdXbhXDtTxPSE_OOCvs34ivYxlD8VJhEXjg/exec?funcao=registrarVisualizacao&nome=${encodeURIComponent(item.anunciante)}&id=${encodeURIComponent(item.postagem || item.streaming)}`)
+        .catch(err => console.warn("Erro ao registrar visualização", err));
+
       document.getElementById("anuncios").style.display = "none";
       document.getElementById("detalhes").style.display = "block";
 
