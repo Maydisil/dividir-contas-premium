@@ -1,43 +1,44 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <base target="_top">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="icon" href="https://i.imgur.com/NHZnler.png" type="image/png">
   <style>
-    :root {
-      --padding: clamp(1rem, 4vw, 1.5rem);
-      --font-base: clamp(1rem, 4vw, 1.25rem);
-      --font-small: clamp(0.875rem, 3vw, 1rem);
-    }
+	:root {
+  	--padding: clamp(1rem, 4vw, 1.5rem);
+  	--font-base: clamp(1rem, 4vw, 1.25rem);
+  	--font-small: clamp(0.875rem, 3vw, 1rem);
+	}
 
-    html, body {
-      overflow-x: hidden;
-    }
+	html, body {
+  	overflow-x: hidden;
+	}
 
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      background-color: #f2f2f2;
-      font-size: var(--font-base);
-    }
+	body {
+  	font-family: Arial, sans-serif;
+  	margin: 0;
+  	background-color: #f2f2f2;
+  	font-size: var(--font-base);
+	}
 
-    .top-bar {
-      background-color: #fff;
-      padding: 0.5rem var(--padding);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
+	.top-bar {
+  	background-color: #fff;
+  	padding: 0.5rem var(--padding);
+  	display: flex;
+  	align-items: center;
+  	justify-content: space-between;
+  	box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
+  	position: sticky;
+  	top: 0;
+  	z-index: 100;
+	}
 
-    .logo-site {
-      height: 2.5rem;
-    }
+	.logo-site {
+  	height: 2.5rem;
+	}
 
 #containerExtras {
   display: flex;
@@ -140,270 +141,274 @@
   background-color: #999;
 }
 
-    .search-container {
-      flex: 1;
-      margin: 0 var(--padding);
-      position: relative;
-    }
+	.search-container {
+  	flex: 1;
+  	margin: 0 var(--padding);
+  	position: relative;
+	}
 
-    .search-container input {
-      width: 100%;
-      padding: 0.625rem 0.75rem 0.625rem 2.5rem;
-      border-radius: 1.5rem;
-      border: 1px solid #ccc;
-      font-size: var(--font-base);
-    }
+	.search-container input {
+  	width: 100%;
+  	padding: 0.625rem 0.75rem 0.625rem 2.5rem;
+  	border-radius: 1.5rem;
+  	border: 1px solid #ccc;
+  	font-size: var(--font-base);
+	}
 
-    .search-container .icon {
-      position: absolute;
-      left: 0.75rem;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #888;
-      font-size: 1.25rem;
-    }
+	.search-container .icon {
+  	position: absolute;
+  	left: 0.75rem;
+  	top: 50%;
+  	transform: translateY(-50%);
+  	color: #888;
+  	font-size: 1.25rem;
+	}
 
-    .menu-icon {
-      font-size: 1.5rem;
-      cursor: pointer;
-      padding: 0.5rem 0.5rem 0.5rem 2rem;
-    }
+	.menu-icon {
+  	font-size: 1.5rem;
+  	cursor: pointer;
+  	padding: 0.5rem 0.5rem 0.5rem 2rem;
+	}
 
-    .botao-flutuante {
-      position: fixed;
-      right: 20px;
-      background-color: #007bff;
-      color: #fff;
-      border: none;
-      border-radius: 50%;
-      width: 60px;
-      height: 60px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 32px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-      z-index: 300;
-      transition: background-color 0.3s;
-    }
+	.botao-flutuante {
+  	position: fixed;
+  	right: 20px;
+  	background-color: #007bff;
+  	color: #fff;
+  	border: none;
+  	border-radius: 50%;
+  	width: 60px;
+  	height: 60px;
+  	display: flex;
+  	justify-content: center;
+  	align-items: center;
+  	font-size: 32px;
+  	box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  	z-index: 300;
+  	transition: background-color 0.3s;
+	}
 
-    .botao-flutuante.like {
-      bottom: 230px;
-    }
+	.botao-flutuante.like {
+  	bottom: 230px;
+	}
 
-    .botao-flutuante.postagem {
-      bottom: 160px;
-    }
+	.botao-flutuante.postagem {
+  	bottom: 160px;
+	}
 
-    .botao-flutuante.compartilhar {
-      bottom: 90px;
-    }
+	.botao-flutuante.compartilhar {
+  	bottom: 90px;
+	}
 
-    .botao-flutuante:hover {
-      background-color: #0056b3;
-    }
+	.botao-flutuante:hover {
+  	background-color: #0056b3;
+	}
 
-    .lista-anuncios {
-      padding: var(--padding);
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
+	.lista-anuncios {
+  	padding: var(--padding);
+  	display: flex;
+  	flex-direction: column;
+  	gap: 0.75rem;
+	}
 
-    .anuncio, .detalhes-box {
-      background-color: #fff;
-      border-radius: 0.75rem;
-      padding: var(--padding);
-      box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      transition: background-color 0.2s;
-    }
+	.anuncio, .detalhes-box {
+  	background-color: #fff;
+  	border-radius: 0.75rem;
+  	padding: var(--padding);
+  	box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
+  	display: flex;
+  	align-items: center;
+  	gap: 1rem;
+  	transition: background-color 0.2s;
+	}
 
-    .anuncio:hover {
-      background-color: #eaeaea;
-      cursor: pointer;
-    }
+	.anuncio:hover {
+  	background-color: #eaeaea;
+  	cursor: pointer;
+	}
 
-    .logo {
-      width: 3.75rem;
-      height: 3.75rem;
-      object-fit: contain;
-      border-radius: 50%;
-      background-color: #eee;
-    }
+	.logo {
+  	width: 3.75rem;
+  	height: 3.75rem;
+  	object-fit: contain;
+  	border-radius: 50%;
+  	background-color: #eee;
+	}
 
-    .info {
-      display: flex;
-      flex-direction: column;
-    }
+	.info {
+  	display: flex;
+  	flex-direction: column;
+	}
 
-    .info .titulo {
-      font-weight: bold;
-      font-size: var(--font-base);
-      color: #000;
-    }
+	.info .titulo {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+  	font-weight: bold;
+  	font-size: var(--font-base);
+  	color: #000;
+	}
 
-    .info .valor {
-      color: #666;
-      margin-top: 0.25rem;
-      font-size: var(--font-small);
-    }
+	.info .valor {
+            color: #666;
+  	margin-top: 0.25rem;
+  	font-size: var(--font-small);
+	}
 
-    .bottom-bar {
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-      background-color: #fff;
-      padding: 0.5rem 0;
-      display: flex;
-      justify-content: center;
-      box-shadow: 0 -0.125rem 0.25rem rgba(0, 0, 0, 0.1);
-    }
+	.bottom-bar {
+  	position: fixed;
+  	bottom: 0;
+  	width: 100%;
+  	background-color: #fff;
+  	padding: 0.5rem 0;
+  	display: flex;
+  	justify-content: center;
+  	box-shadow: 0 -0.125rem 0.25rem rgba(0, 0, 0, 0.1);
+	}
 
-    .bottom-bar button {
-      background: none;
-      border: none;
-      display: flex;
-      flex-direction: column;
-      padding: 0 1.5rem;
-      align-items: center;
-      font-size: var(--font-small);
-      color: #333;
-      position: relative;
-      cursor: pointer;
-    }
+	.bottom-bar button {
+  	background: none;
+  	border: none;
+  	display: flex;
+  	flex-direction: column;
+  	padding: 0 1.5rem;
+  	align-items: center;
+  	font-size: var(--font-small);
+  	color: #333;
+  	position: relative;
+  	cursor: pointer;
+	}
 
-    .bottom-bar i {
-      font-size: 2.5vw;
-      margin-bottom: 0.25rem;
-    }
+	.bottom-bar i {
+  	font-size: 2.5vw;
+  	margin-bottom: 0.25rem;
+	}
 
-    .bottom-bar button::after {
-      content: "";
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 0%;
-      height: 2px;
-      background-color: #333;
-      transition: width 0.3s;
-    }
+	.bottom-bar button::after {
+  	content: "";
+  	position: absolute;
+  	bottom: 0;
+  	left: 0;
+  	width: 0%;
+  	height: 2px;
+  	background-color: #333;
+  	transition: width 0.3s;
+	}
 
-    .bottom-bar button:hover::after {
-      width: 100%;
-    }
+	.bottom-bar button:hover::after {
+  	width: 100%;
+	}
 
-    .bottom-area {
-      height: 6rem;
-    }
+	.bottom-area {
+  	height: 6rem;
+	}
 
-    .painel-menu {
-      position: fixed;
-      top: 0;
-      right: 0;
-      transform: translateX(100%);
-      width: 40vw;
-      height: 100%;
-      background-color: #fff;
-      box-shadow: -0.125rem 0 0.375rem rgba(0, 0, 0, 0.1);
-      transition: transform 0.3s ease;
-      z-index: 200;
-      padding: 5rem 1.5rem 0 3rem;
-      display: flex;
-      flex-direction: column;
-      gap: 2rem;
-    }
+	.painel-menu {
+  	position: fixed;
+  	top: 0;
+  	right: 0;
+  	transform: translateX(100%);
+  	width: 40vw;
+  	height: 100%;
+  	background-color: #fff;
+  	box-shadow: -0.125rem 0 0.375rem rgba(0, 0, 0, 0.1);
+  	transition: transform 0.3s ease;
+  	z-index: 200;
+  	padding: 5rem 1.5rem 0 3rem;
+  	display: flex;
+  	flex-direction: column;
+  	gap: 2rem;
+	}
 
-    .painel-menu.ativo {
-      transform: translateX(0%);
-    }
+	.painel-menu.ativo {
+  	transform: translateX(0%);
+	}
 
-    .painel-item {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      font-size: var(--font-base);
-      color: #000;
-      cursor: pointer;
-      transition: color 0.2s;
-    }
+	.painel-item {
+  	display: flex;
+  	align-items: center;
+  	gap: 0.75rem;
+  	font-size: var(--font-base);
+  	color: #000;
+  	cursor: pointer;
+  	transition: color 0.2s;
+	}
 
-    .painel-item:hover {
-      color: #888;
-    }
+	.painel-item:hover {
+  	color: #888;
+	}
 
-    .painel-item a {
-      text-decoration: none;
-      color: #000;
-      transition: color 0.2s;
-    }
+	.painel-item a {
+  	text-decoration: none;
+  	color: #000;
+  	transition: color 0.2s;
+	}
 
-    .painel-item a:hover {
-      color: #888;
-    }
+	.painel-item a:hover {
+  	color: #888;
+	}
 
-    .painel-item i {
-      font-size: 1.5rem;
-    }
+	.painel-item i {
+  	font-size: 1.5rem;
+	}
 
-    .loading {
-      text-align: center;
-      padding: 2rem;
-      color: #888;
-      font-size: var(--font-base);
-    }
+	.loading {
+  	text-align: center;
+  	padding: 2rem;
+  	color: #888;
+  	font-size: var(--font-base);
+	}
 
-    #menu-overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background-color: rgba(0, 0, 0, 0.4);
-      z-index: 150;
-    }
+	#menu-overlay {
+  	display: none;
+  	position: fixed;
+  	top: 0;
+  	left: 0;
+  	width: 100vw;
+  	height: 100vh;
+  	background-color: rgba(0, 0, 0, 0.4);
+  	z-index: 150;
+	}
 
-    .detalhes-box p {
-      margin: 0;
-      line-height: 1.3;
-      font-size: 2vw;
-    }
+	.detalhes-box p {
+            color: #333;
+  	margin: 0;
+  	line-height: 0.5;
+  	font-size: 2vw;
+	}
 
-    .detalhes-box hr {
-      width: 100%;
-      border: none;
-      border-top: 1px solid #ccc;
-      margin: 0.25rem 0;
-    }
+	.detalhes-box hr {
+  	width: 100%;
+  	border: none;
+  	border-top: 1px solid #ccc;
+  	margin: 0.15rem 0;
+	}
 
-    .detalhes-box img {
-      width: 40vw;
-      height: auto;
-      border-radius: 0.75rem;
-      display: block;
-      margin: 0 auto;
-    }
+	.detalhes-box img {
+  	width: 40vw;
+  	height: auto;
+  	border-radius: 0.75rem;
+  	display: block;
+  	margin: 0 auto;
+	}
 
-    @media (orientation: portrait) {
-      :root {
-        --font-base: 4.5vw;
-        --font-small: 4vw;
-        --padding: 6vw;
-      }
+	@media (orientation: portrait) {
+  	:root {
+    	--font-base: 4.5vw;
+    	--font-small: 4vw;
+    	--padding: 6vw;
+  	}
 
   #formulario {
-    margin: 1rem auto;
-    padding: var(--padding);
-    width: 100%;
-    max-width: 90vw;
-    box-sizing: border-box;
+	margin: 1rem auto;
+	padding: var(--padding);
+	width: 100%;
+	max-width: 90vw;
+	box-sizing: border-box;
   }
 
   #formulario h3 {
-    font-size: 6vw;
+	font-size: 6vw;
   }
 
 #formulario button[type="submit"],
@@ -421,98 +426,98 @@
   min-height: 20px;
 }
 
-      .top-bar, .bottom-bar {
-        height: 20vw;
-        align-items: center;
-      }
+  	.top-bar, .bottom-bar {
+    	height: 20vw;
+    	align-items: center;
+  	}
 
-      .botao-flutuante {
-        width: 15vw;
-        height: 15vw;
-        font-size: 8vw;
-        right: 5vw;
-      }
+  	.botao-flutuante {
+    	width: 15vw;
+    	height: 15vw;
+    	font-size: 8vw;
+    	right: 5vw;
+  	}
 
-     .botao-flutuante.like {
-       bottom: 70vw;
-     }
+ 	.botao-flutuante.like {
+   	bottom: 70vw;
+ 	}
 
-    .botao-flutuante.postagem {
-      bottom: 50vw;
-    }
+	.botao-flutuante.postagem {
+  	bottom: 50vw;
+	}
 
-    .botao-flutuante.compartilhar {
-      bottom: 30vw;
-    }
+	.botao-flutuante.compartilhar {
+  	bottom: 30vw;
+	}
 
-      .bottom-area {
-        height: 25vw;
-      }
+  	.bottom-area {
+    	height: 25vw;
+  	}
 
-      .logo-site {
-        height: 8vw;
-      }
+  	.logo-site {
+    	height: 8vw;
+  	}
 
-      .menu-icon {
-        font-size: 8vw;
-        padding: 0 0 0 5vw;
-      }
+  	.menu-icon {
+    	font-size: 8vw;
+    	padding: 0 0 0 5vw;
+  	}
 
-      .logo {
-        width: 18vw;
-        height: 18vw;
-      }
+  	.logo {
+    	width: 18vw;
+    	height: 18vw;
+  	}
 
-      .info .titulo,
-      .info .valor {
-        font-size: 4.5vw;
-      }
+  	.info .titulo,
+  	.info .valor {
+    	font-size: 4.5vw;
+  	}
 
-      .detalhes-box p {
-        font-size: 4.5vw;
-      }
+  	.detalhes-box p {
+    	font-size: 4.5vw;
+  	}
 
-      .search-container input {
-        font-size: 5vw;
-        height: 6vw;
-        padding-left: 10vw;
-      }
+  	.search-container input {
+    	font-size: 5vw;
+    	height: 6vw;
+    	padding-left: 10vw;
+  	}
 
-      .search-container .icon {
-        font-size: 5vw;
-      }
+  	.search-container .icon {
+    	font-size: 5vw;
+  	}
 
-      .bottom-bar button {
-        font-size: 4.5vw;
-        padding: 0 10vw;
-      }
+  	.bottom-bar button {
+    	font-size: 4.5vw;
+    	padding: 0 10vw;
+  	}
 
-      .bottom-bar i {
-        font-size: 7vw;
-      }
+  	.bottom-bar i {
+    	font-size: 7vw;
+  	}
 
-      .painel-menu {
-        width: 70vw;
-        gap: 10vw;
-      }
+  	.painel-menu {
+    	width: 70vw;
+    	gap: 10vw;
+  	}
 
-      .painel-item i {
-        font-size: 6vw;
-      }
+  	.painel-item i {
+    	font-size: 6vw;
+  	}
 
-      .detalhes-box img {
-        width: 100%;
-      }
-    }
+  	.detalhes-box img {
+    	width: 100%;
+  	}
+	}
   </style>
   <script>
-    async function carregarAnuncios() {
-      document.getElementById("anuncios").innerHTML = '<div class="loading">Carregando Anúncios...</div>';
-      fetch("https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-YbnmugdXbhXDtTxPSE_OOCvs34ivYxlD8VJhEXjg/exec?funcao=listarAnuncios")
+	async function carregarAnuncios() {
+  	document.getElementById("anuncios").innerHTML = '<div class="loading">Carregando Anúncios...</div>';
+  	fetch("https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-YbnmugdXbhXDtTxPSE_OOCvs34ivYxlD8VJhEXjg/exec?funcao=listarAnuncios")
   .then(res => res.json())
   .then(renderizarAnuncios)
   .catch(err => console.error("Erro ao carregar anúncios:", err));
-    }
+	}
 
 const opcoesExtra = [
   "Adrenalina Pura", "AppleTV+", "Canais Globo", "Cindie", "Combate",
@@ -523,7 +528,7 @@ const opcoesExtra = [
 
 function limitarKotas(input) {
   if (input.value.length > 6) {
-    input.value = input.value.slice(0, 6);
+	input.value = input.value.slice(0, 6);
   }
 }
 
@@ -536,14 +541,14 @@ function mostrarFormulario() {
 fetch("https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-YbnmugdXbhXDtTxPSE_OOCvs34ivYxlD8VJhEXjg/exec?funcao=listarOpcoesStreaming")
   .then(res => res.json())
   .then(opcoes => {
-    const select = document.getElementById("selectStreaming");
-    select.innerHTML = "";
-    opcoes.forEach(op => {
-      const opt = document.createElement("option");
-      opt.text = op;
-      opt.value = op;
-      select.add(opt);
-    });
+	const select = document.getElementById("selectStreaming");
+	select.innerHTML = "";
+	opcoes.forEach(op => {
+  	const opt = document.createElement("option");
+  	opt.text = op;
+  	opt.value = op;
+  	select.add(opt);
+	});
   })
   .catch(err => console.error("Erro ao carregar opções:", err));
 
@@ -579,27 +584,27 @@ function enviarFormulario(event) {
 
   // Concatena múltiplas assinaturas extras
   const selecionados = Array.from(document.querySelectorAll('input[name="extra"]:checked'))
-                            .map(input => input.value);
+                        	.map(input => input.value);
   dados.extra = selecionados.join(", ");
 
   const params = new URLSearchParams(dados).toString();
 
   fetch(`https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-YbnmugdXbhXDtTxPSE_OOCvs34ivYxlD8VJhEXjg/exec?${params}`)
-    .then(res => res.text())
-    .then(msg => {
-      alert(msg);
-      form.reset();
-      voltarParaLista();
-    })
-    .catch(err => {
-      alert("Erro ao enviar o formulário.");
-    })
-    .finally(() => {
-      // Reativa os botões
-      btnEnviar.disabled = false;
-      btnEnviar.textContent = "Enviar";
-      btnCancelar.disabled = false;
-    });
+	.then(res => res.text())
+	.then(msg => {
+  	alert(msg);
+  	form.reset();
+  	voltarParaLista();
+	})
+	.catch(err => {
+  	alert("Erro ao enviar o formulário.");
+	})
+	.finally(() => {
+  	// Reativa os botões
+  	btnEnviar.disabled = false;
+  	btnEnviar.textContent = "Enviar";
+  	btnCancelar.disabled = false;
+	});
 }
 
 function formatarUsuario(input) {
@@ -608,7 +613,7 @@ function formatarUsuario(input) {
 
   // Se não começa com @, adiciona
   if (valor && !valor.startsWith('@')) {
-    valor = '@' + valor.replace(/^@+/, '');
+	valor = '@' + valor.replace(/^@+/, '');
   }
 
   input.value = valor;
@@ -620,116 +625,116 @@ function formatarWhatsapp(input) {
 
   // Se só tiver 11 dígitos, assume que é número brasileiro e adiciona "55"
   if (valor.length === 11 && !valor.startsWith('55')) {
-    valor = '55' + valor;
+	valor = '55' + valor;
   }
 
   // Limita a 13 dígitos (55 + 11 números)
   if (valor.length > 13) {
-    valor = valor.slice(0, 13);
+	valor = valor.slice(0, 13);
   }
 
   input.value = valor;
 }
 
-    function renderizarAnuncios(lista) {
-      const container = document.getElementById("anuncios");
-      container.innerHTML = "";
-      lista.forEach(item => {
-        const div = document.createElement("div");
-        div.className = "anuncio";
-        div.innerHTML = `
-          <img class="logo" src="${item.logo}" alt="Logo">
-          <div class="info">
-            <div class="titulo">${item.streaming}</div>
-            <div class="valor">${item.valor}</div>
-          </div>
-        `;
-        div.onclick = () => mostrarDetalhes(item);
-        container.appendChild(div);
-      });
-    }
+	function renderizarAnuncios(lista) {
+  	const container = document.getElementById("anuncios");
+  	container.innerHTML = "";
+  	lista.forEach(item => {
+    	const div = document.createElement("div");
+    	div.className = "anuncio";
+    	div.innerHTML = `
+      	<img class="logo" src="${item.logo}" alt="Logo">
+      	<div class="info">
+        	<div class="titulo">${item.streaming}</div>
+        	<div class="valor">${item.valor}</div>
+      	</div>
+    	`;
+    	div.onclick = () => mostrarDetalhes(item);
+    	container.appendChild(div);
+  	});
+	}
 
-    function filtrarAnuncios() {
-      const termo = document.getElementById("pesquisa").value.toLowerCase();
-      const anuncios = document.querySelectorAll(".anuncio");
-      anuncios.forEach(el => {
-        const titulo = el.querySelector(".titulo").textContent.toLowerCase();
-        const valor = el.querySelector(".valor").textContent.toLowerCase();
-        el.style.display = titulo.includes(termo) || valor.includes(termo) ? "flex" : "none";
-      });
-    }
+	function filtrarAnuncios() {
+  	const termo = document.getElementById("pesquisa").value.toLowerCase();
+  	const anuncios = document.querySelectorAll(".anuncio");
+  	anuncios.forEach(el => {
+    	const titulo = el.querySelector(".titulo").textContent.toLowerCase();
+    	const valor = el.querySelector(".valor").textContent.toLowerCase();
+    	el.style.display = titulo.includes(termo) || valor.includes(termo) ? "flex" : "none";
+  	});
+	}
 
-    function toggleMenu() {
-      const painel = document.getElementById("painel-menu");
-      const overlay = document.getElementById("menu-overlay");
-      const ativo = painel.classList.contains("ativo");
-      painel.classList.toggle("ativo", !ativo);
-      overlay.style.display = ativo ? "none" : "block";
-    }
+	function toggleMenu() {
+  	const painel = document.getElementById("painel-menu");
+  	const overlay = document.getElementById("menu-overlay");
+  	const ativo = painel.classList.contains("ativo");
+  	painel.classList.toggle("ativo", !ativo);
+  	overlay.style.display = ativo ? "none" : "block";
+	}
 
-    function registrarLike(nome, id) {
+	function registrarLike(nome, id) {
 fetch(`https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-YbnmugdXbhXDtTxPSE_OOCvs34ivYxlD8VJhEXjg/exec?funcao=registrarLike&nome=${encodeURIComponent(nome)}&id=${encodeURIComponent(id)}`)
   .then(res => res.text())
   .then(msg => alert(msg))
   .catch(err => alert("Erro ao registrar like."));
-    }
+	}
 
-    function mostrarDetalhes(item) {
-      // Registrar visualização
-      fetch(`https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-YbnmugdXbhXDtTxPSE_OOCvs34ivYxlD8VJhEXjg/exec?funcao=registrarVisualizacao&nome=${encodeURIComponent(item.anunciante)}&id=${encodeURIComponent(item.postagem || item.streaming)}`)
-        .catch(err => console.warn("Erro ao registrar visualização", err));
+	function mostrarDetalhes(item) {
+  	// Registrar visualização
+  	fetch(`https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-YbnmugdXbhXDtTxPSE_OOCvs34ivYxlD8VJhEXjg/exec?funcao=registrarVisualizacao&nome=${encodeURIComponent(item.anunciante)}&id=${encodeURIComponent(item.postagem || item.streaming)}`)
+    	.catch(err => console.warn("Erro ao registrar visualização", err));
 
-      document.getElementById("anuncios").style.display = "none";
-      document.getElementById("detalhes").style.display = "block";
+  	document.getElementById("anuncios").style.display = "none";
+  	document.getElementById("detalhes").style.display = "block";
 
-      document.getElementById("detalhes").innerHTML = `
-        <div class="detalhes-box" style="margin-top: 16px; flex-direction: column; align-items: flex-start;">
-          <a href="${item.linkStreaming}" target="_blank">
-            <img src="https://drive.google.com/thumbnail?id=${item.logo2}&sz=w1000" alt="Logo2">
-          </a>
-          <hr>
-          <p><strong>📺 ${item.streaming}</strong></p>
-          ${item.streamingExtra ? `<p><strong>➕ ${item.streamingExtra}</strong></p>` : ""}
-          <p><strong>💵 ${item.valor}</strong></p>
-          <p><strong>📌 ${item.vagas}</strong></p>
-          <p><strong>🔐 ${item.login}</strong></p>
-          <hr>
-          <p><strong>Anunciado em: ${item.data}</strong></p>
-          <hr>
-          <p><strong>👤 ${item.anunciante}</strong></p>
-          <p><strong>${item.pontosAnunciante}</strong></p>
-            ${item.botaoTelegram || ""}
-            ${item.botaoWhatsapp || ""}
-            ${item.botaoKotas || ""}
-        </div>
-        ${item.botaoLike || ""}
-        ${item.botaoPostagem || ""}
-        ${item.botaoCompartilhar || ""}
-      `;
-    }
+  	document.getElementById("detalhes").innerHTML = `
+    	<div class="detalhes-box" style="margin-top: 16px; flex-direction: column; align-items: flex-start;">
+      	<a href="${item.linkStreaming}" target="_blank">
+        	<img src="https://drive.google.com/thumbnail?id=${item.logo2}&sz=w1000" alt="Logo2">
+      	</a>
+      	<hr>
+      	<p><strong>📺 ${item.streaming}</span></strong></p>
+      	${item.streamingExtra ? `<p><strong>➕ ${item.streamingExtra}</strong></p>` : ""}
+      	<p><strong>💵 ${item.valor}</strong></p>
+      	<p><strong>📌 ${item.vagas}</strong></p>
+      	<p><strong>🔐 ${item.login}</strong></p>
+      	<hr>
+      	<p><strong>Postado em: ${item.data}</strong></p>
+      	<hr>
+      	<p><strong>👤 ${item.anunciante}</strong></p>
+      	<p><strong>${item.pontosAnunciante}</strong></p>
+        	${item.botaoTelegram || ""}
+        	${item.botaoWhatsapp || ""}
+        	${item.botaoKotas || ""}
+    	</div>
+    	${item.botaoLike || ""}
+    	${item.botaoPostagem || ""}
+    	${item.botaoCompartilhar || ""}
+  	`;
+	}
 
-    function voltarParaLista() {
-      document.getElementById("detalhes").style.display = "none";
-      document.getElementById("formulario").style.display = "none";
-      document.getElementById("anuncios").style.display = "flex";
-    }
+	function voltarParaLista() {
+  	document.getElementById("detalhes").style.display = "none";
+  	document.getElementById("formulario").style.display = "none";
+  	document.getElementById("anuncios").style.display = "flex";
+	}
 
-    window.addEventListener("load", () => {
-      carregarAnuncios();
-      document.getElementById("pesquisa").addEventListener("input", filtrarAnuncios);
-      document.querySelector(".menu-icon").addEventListener("click", toggleMenu);
-      document.getElementById("menu-overlay").addEventListener("click", toggleMenu);
-    });
+	window.addEventListener("load", () => {
+  	carregarAnuncios();
+  	document.getElementById("pesquisa").addEventListener("input", filtrarAnuncios);
+  	document.querySelector(".menu-icon").addEventListener("click", toggleMenu);
+  	document.getElementById("menu-overlay").addEventListener("click", toggleMenu);
+	});
   </script>
 </head>
 <body>
   <div class="top-bar">
-    <img src="https://drive.google.com/thumbnail?id=1eVqeCg4y-NUEMc80LpF41smGc9pmHPKt&sz=w500" class="logo-site" alt="Logo do site">
-    <div class="search-container">
-      <span class="icon"><i class="bi bi-search"></i></span>
-      <input type="text" id="pesquisa" placeholder="Pesquisar...">
-    </div>
-    <div class="menu-icon"><i class="bi bi-list menu-icon"></i></div>
+	<img src="https://drive.google.com/thumbnail?id=1eVqeCg4y-NUEMc80LpF41smGc9pmHPKt&sz=w500" class="logo-site" alt="Logo do site">
+	<div class="search-container">
+  	<span class="icon"><i class="bi bi-search"></i></span>
+  	<input type="text" id="pesquisa" placeholder="Pesquisar...">
+	</div>
+	<div class="menu-icon"><i class="bi bi-list menu-icon"></i></div>
   </div>
 
   <div class="lista-anuncios" id="anuncios"></div>
@@ -737,76 +742,76 @@ fetch(`https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-Ybnm
 <div id="formulario" style="display:none; padding: 1rem;">
   <h3>CRIAR ANÚNCIO</h3>
   <form id="formAnuncio" onsubmit="enviarFormulario(event)">
-    <label>Nome de Usuário: 
+	<label>Nome de Usuário: 
   <input type="text" placeholder="Ex: @Nome" name="usuario" required oninput="formatarUsuario(this)">
 </label><br>
 
-    <label>Qual o Streaming:
-      <select name="streaming" id="selectStreaming" required></select>
-    </label><br>
+	<label>Qual o Streaming:
+  	<select name="streaming" id="selectStreaming" required></select>
+	</label><br>
 
 <label>Assinatura Extra (opcional):</label>
 <div id="containerExtras" class="checkbox-list"></div><br>
 
-    <label>Qual o Valor: <input type="number" min="0" step="0.25" name="valor" required></label><br>
+	<label>Qual o Valor: <input type="number" min="0" step="0.25" name="valor" required></label><br>
 
-    <label>Forma de Pagamento:
-      <select name="pagamento" required>
-        <option>KOTAS</option>
-        <option>PIX - Mensal</option>
-        <option>PIX - Bimestral</option>
-        <option>PIX - Trimestral</option>
-        <option>PIX - Semestral</option>
-        <option>PIX - Anual</option>
-      </select>
-    </label><br>
+	<label>Forma de Pagamento:
+  	<select name="pagamento" required>
+    	<option>KOTAS</option>
+    	<option>PIX - Mensal</option>
+    	<option>PIX - Bimestral</option>
+    	<option>PIX - Trimestral</option>
+    	<option>PIX - Semestral</option>
+    	<option>PIX - Anual</option>
+  	</select>
+	</label><br>
 
 <label>Código do Grupo Kotas (opcional): 
   <input type="number" name="kotas" id="campoKotas" min="0" step="1" pattern="\d*" oninput="limitarKotas(this)">
 </label><br>
 
-    <label>Status da Conta:
-      <select name="status" required>
-        <option>Assinado</option>
-        <option>Aguardando Membros</option>
-        <option>Fila de Espera</option>
-      </select>
-    </label><br>
+	<label>Status da Conta:
+  	<select name="status" required>
+    	<option>Assinado</option>
+    	<option>Aguardando Membros</option>
+    	<option>Fila de Espera</option>
+  	</select>
+	</label><br>
 
-    <label>Número de Vagas:
-      <select name="vagas" required>
-        <option>1 Vaga</option>
-        <option>2 Vagas</option>
-        <option>3 Vagas</option>
-        <option>4 Vagas</option>
-        <option>5 Vagas</option>
-      </select>
-    </label><br>
+	<label>Número de Vagas:
+  	<select name="vagas" required>
+    	<option>1 Vaga</option>
+    	<option>2 Vagas</option>
+    	<option>3 Vagas</option>
+    	<option>4 Vagas</option>
+    	<option>5 Vagas</option>
+  	</select>
+	</label><br>
 
-    <label>Tipo de Acesso:
-      <select name="acesso" required>
-        <option>Login e Senha</option>
-        <option>Convite por E-mail</option>
-        <option>Ativação por Código</option>
-      </select>
-    </label><br>
+	<label>Tipo de Acesso:
+  	<select name="acesso" required>
+    	<option>Login e Senha</option>
+    	<option>Convite por E-mail</option>
+    	<option>Ativação por Código</option>
+  	</select>
+	</label><br>
 
-    <label>Número do WhatsApp (opcional): 
+	<label>Número do WhatsApp (opcional): 
   <input type="tel" name="whatsapp" id="whatsappInput" placeholder="Ex: 55XXXXXXXXXXX" pattern="\d{13}" maxlength="13" oninput="formatarWhatsapp(this)">
 </label><br><br>
 
-    <button type="submit">Enviar</button>
-    <button type="button" onclick="voltarParaLista()">Cancelar</button>
+	<button type="submit">Enviar</button>
+	<button type="button" onclick="voltarParaLista()">Cancelar</button>
   </form>
 </div>
 
   <div class="bottom-area"></div>
 
   <div class="bottom-bar">
-    <button onclick="voltarParaLista()">
-      <i class="bi bi-house"></i>
-      Home
-    </button>
+	<button onclick="voltarParaLista()">
+  	<i class="bi bi-house"></i>
+  	Home
+	</button>
 <button onclick="mostrarFormulario()">
   <i class="bi bi-megaphone"></i>
   Anunciar
@@ -814,27 +819,27 @@ fetch(`https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-Ybnm
   </div>
 
   <div id="painel-menu" class="painel-menu">
-    <div class="painel-item">
-      <i class="bi bi-question-circle"></i> <a href="https://telegra.ph/GUIA-DE-PERGUNTAS-COMUNS-12-01" target="_blank">Perguntas Frequentes</a>
-    </div>
-    <div class="painel-item">
-      <i class="bi bi-tools"></i> <a href="https://t.me/+EFx8SakIL5dkZTlh" target="_blank">Assistência Tecnica</a>
-    </div>
-    <div class="painel-item">
-      <i class="bi bi-people"></i> <a href="https://t.me/dividir_contas_premium" target="_blank">Visitar o Grupo</a>
-    </div>
-    <div class="painel-item">
-      <i class="bi bi-check-square"></i> <a href="https://t.me/dividir_contas_premium/9304" target="_blank">Regras do Grupo</a>
-    </div>
-    <div class="painel-item">
-      <i class="bi bi-person-add"></i> <a href="https://t.me/dividir_contas_premium/23511" target="_blank">Fazer Cadastro</a>
-    </div>
-    <div class="painel-item">
-      <i class="bi bi-share"></i> <a href="https://api.whatsapp.com/send?text=https://t.me/dividir_contas_premium" target="_blank">Compartilhar Grupo</a>
-    </div>
-    <div class="painel-item">
-      <i class="bi bi-shield-exclamation"></i> <a href="https://telegra.ph/LISTA-DE-GOLPISTAS-10-06" target="_blank">Lista de Golpistas</a>
-    </div>
+	<div class="painel-item">
+  	<i class="bi bi-question-circle"></i> <a href="https://telegra.ph/GUIA-DE-PERGUNTAS-COMUNS-12-01" target="_blank">Perguntas Frequentes</a>
+	</div>
+	<div class="painel-item">
+  	<i class="bi bi-tools"></i> <a href="https://t.me/+EFx8SakIL5dkZTlh" target="_blank">Assistência Tecnica</a>
+	</div>
+	<div class="painel-item">
+  	<i class="bi bi-people"></i> <a href="https://t.me/dividir_contas_premium" target="_blank">Visitar o Grupo</a>
+	</div>
+	<div class="painel-item">
+  	<i class="bi bi-check-square"></i> <a href="https://t.me/dividir_contas_premium/9304" target="_blank">Regras do Grupo</a>
+	</div>
+	<div class="painel-item">
+  	<i class="bi bi-person-add"></i> <a href="https://t.me/dividir_contas_premium/23511" target="_blank">Fazer Cadastro</a>
+	</div>
+	<div class="painel-item">
+  	<i class="bi bi-share"></i> <a href="https://api.whatsapp.com/send?text=https://t.me/dividir_contas_premium" target="_blank">Compartilhar Grupo</a>
+	</div>
+	<div class="painel-item">
+  	<i class="bi bi-shield-exclamation"></i> <a href="https://telegra.ph/LISTA-DE-GOLPISTAS-10-06" target="_blank">Lista de Golpistas</a>
+	</div>
   </div>
 
   <div id="menu-overlay"></div>
