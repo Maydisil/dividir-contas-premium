@@ -720,11 +720,17 @@ fetch(`https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-Ybnm
 	}
 
 	window.addEventListener("load", () => {
-  	carregarAnuncios();
-  	document.getElementById("pesquisa").addEventListener("input", filtrarAnuncios);
-  	document.querySelector(".menu-icon").addEventListener("click", toggleMenu);
-  	document.getElementById("menu-overlay").addEventListener("click", toggleMenu);
-	});
+    carregarAnuncios();
+    document.getElementById("pesquisa").addEventListener("input", filtrarAnuncios);
+    document.querySelector(".menu-icon").addEventListener("click", toggleMenu);
+    document.getElementById("menu-overlay").addEventListener("click", toggleMenu);
+
+    // Verifica se o link tem o parâmetro para abrir o formulário direto
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("abrir") === "form") {
+        mostrarFormulario();
+    }
+});
   </script>
 </head>
 <body>
@@ -845,3 +851,4 @@ fetch(`https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-Ybnm
   <div id="menu-overlay"></div>
 </body>
 </html>
+
