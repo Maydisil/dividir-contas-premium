@@ -727,7 +727,7 @@ fetch(`https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-Ybnm
 
     // Verifica se o link tem o parâmetro para abrir o formulário direto
     const params = new URLSearchParams(window.location.search);
-    if (params.get("abrir") === "form") {
+    if (params.get("abrir") === "formulario") {
         mostrarFormulario();
     }
 });
@@ -851,4 +851,5 @@ fetch(`https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-Ybnm
   <div id="menu-overlay"></div>
 </body>
 </html>
+
 
