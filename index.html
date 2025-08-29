@@ -41,9 +41,6 @@
 	}
 
 #containerExtras {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
   margin-bottom: 1rem;
 }
 
@@ -60,6 +57,68 @@
 
 #containerExtras input[type="checkbox"] {
   appearance: auto;
+  margin: 0;
+}
+
+.extras-container {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.toggle-extras {
+  width: 100%;
+  text-align: left;
+  background-color: #fafafa;
+  border: 1px solid #ccc;
+  border-radius: 0.75rem;
+  padding: 0.6rem 1rem;
+  font-size: var(--font-base);
+  color: #333;
+  cursor: pointer;
+  box-sizing: border-box;
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+}
+
+.toggle-extras:hover {
+  background-color: #fff;
+  border-color: #007bff;
+}
+
+.hidden {
+  display: none;
+}
+
+.checkbox-list {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 0.75rem;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.checkbox-list.hidden { 
+  display: none; 
+}
+
+.checkbox-list label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: var(--font-base);
+  font-weight: normal;
+  color: #333;
+  cursor: pointer;
+}
+
+.checkbox-list input[type="checkbox"] {
+  width: 1.2em;
+  height: 1.2em;
+  min-width: 1rem;
+  min-height: 1rem;
   margin: 0;
 }
 
@@ -426,6 +485,19 @@
   min-height: 20px;
 }
 
+  .toggle-extras {
+    font-size: 5vw;
+    border-radius: 1rem;
+  }
+
+  .checkbox-list input[type="checkbox"] {
+    width: 6vw;
+    height: 6vw;
+    min-width: 20px;
+    min-height: 20px;
+  }
+
+
   	.top-bar, .bottom-bar {
     	height: 20vw;
     	align-items: center;
@@ -522,10 +594,8 @@
 const opcoesExtra = [
   "Adrenalina Pura", "AppleTV+", "Canais Globo", "Cindie", "Combate",
   "Crunchyroll", "Disney+", "ESPN", "GloboPlay", "HBO Max", "Look", "MGM+",
-  "MUBI", "NBA", "Netflix", "Nosso Futebol+", "Paramount+", "Premiere", 
-  "Reserva Imovision",  "Sony One", "Spotify", "Telecine", "UFC Fight Pass", "Universal+", "YouTube"
+  "MUBI", "NBA", "Netflix", "Nosso Futebol+", "Paramount+", "Premiere", "Reserva Imovision",  "Sony One", "Spotify", "Telecine", "UFC Fight Pass", "Universal+", "YouTube"
 ];
-
 
 function limitarKotas(input) {
   if (input.value.length > 6) {
@@ -554,6 +624,7 @@ fetch("https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-Ybnm
   .catch(err => console.error("Erro ao carregar opções:", err));
 
 const container = document.getElementById("containerExtras");
+container.className = "checkbox-list hidden"; 
 container.innerHTML = "";
 
 opcoesExtra.forEach(opcao => {
@@ -720,6 +791,18 @@ fetch(`https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-Ybnm
   	document.getElementById("anuncios").style.display = "flex";
 	}
 
+// Mostra as assinaturas extras
+function toggleExtras() {
+  const extras = document.getElementById("containerExtras");
+  extras.classList.toggle("hidden");
+
+  const btn = document.querySelector(".toggle-extras");
+  btn.textContent = extras.classList.contains("hidden")
+    ? "Mostrar extras ▼"
+    : "Fechar extras ▲";
+}
+
+
 	window.addEventListener("load", () => {
     carregarAnuncios();
     document.getElementById("pesquisa").addEventListener("input", filtrarAnuncios);
@@ -758,7 +841,10 @@ fetch(`https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-Ybnm
 	</label><br>
 
 <label>Assinatura Extra (opcional):</label>
-<div id="containerExtras" class="checkbox-list"></div><br>
+<div class="extras-container">
+  <div class="toggle-extras" onclick="toggleExtras()">Mostrar extras ▼</div>
+  <div id="containerExtras" class="checkbox-list hidden"></div>
+</div>
 
 	<label>Qual o Valor: <input type="number" placeholder="Ex: 12,50" min="0" step="0.25" name="valor" required></label><br>
 
@@ -852,4 +938,3 @@ fetch(`https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-Ybnm
   <div id="menu-overlay"></div>
 </body>
 </html>
-
