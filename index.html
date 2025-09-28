@@ -587,12 +587,31 @@
   </style>
   <script>
 	async function carregarAnuncios() {
-  	document.getElementById("anuncios").innerHTML = '<div class="loading">Carregando Anúncios...</div>';
-  	fetch("https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-YbnmugdXbhXDtTxPSE_OOCvs34ivYxlD8VJhEXjg/exec?funcao=listarAnuncios")
-  .then(res => res.json())
-  .then(renderizarAnuncios)
-  .catch(err => console.error("Erro ao carregar anúncios:", err));
-	}
+  const container = document.getElementById("anuncios");
+  container.innerHTML = '<div class="loading">Carregando Anúncios...</div>';
+
+  try {
+    const resposta = await fetch("https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-YbnmugdX.../exec");
+    const anuncios = await resposta.json();
+
+    exibirAnuncios(anuncios);
+
+    // 🔹 Depois que exibir os anúncios, aplica filtro inicial (se existir)
+    const params = new URLSearchParams(window.location.search);
+    const termoPesquisa = params.get("pesquisar");
+    if (termoPesquisa) {
+      const barraPesquisa = document.getElementById("pesquisa");
+      if (barraPesquisa) {
+        barraPesquisa.value = termoPesquisa;
+        filtrarAnuncios(); // agora sim funciona porque os anúncios já carregaram
+      }
+    }
+
+  } catch (erro) {
+    container.innerHTML = '<div class="erro">Erro ao carregar anúncios.</div>';
+    console.error("Erro:", erro);
+  }
+}
 
 const opcoesExtra = [
   "Adrenalina Pura", "Apple TV+", "Canais Globo", "Cindie", "Combate",
@@ -952,5 +971,6 @@ if (termoPesquisa) {
   <div id="menu-overlay"></div>
 </body>
 </html>
+
 
 
