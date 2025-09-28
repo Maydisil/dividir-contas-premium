@@ -591,10 +591,15 @@
   container.innerHTML = '<div class="loading">Carregando Anúncios...</div>';
 
   try {
-    const resposta = await fetch("https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-YbnmugdX.../exec");
+    // URL correta (com o ?funcao=listarAnuncios)
+    const resposta = await fetch("https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-YbnmugdXbhXDtTxPSE_OOCvs34ivYxlD8VJhEXjg/exec?funcao=listarAnuncios");
+    
+    if (!resposta.ok) throw new Error('Resposta HTTP ' + resposta.status);
+
     const anuncios = await resposta.json();
 
-    exibirAnuncios(anuncios);
+    // usa a função já existente no seu código para renderizar os itens
+    renderizarAnuncios(anuncios);
 
     // 🔹 Depois que exibir os anúncios, aplica filtro inicial (se existir)
     const params = new URLSearchParams(window.location.search);
@@ -603,13 +608,13 @@
       const barraPesquisa = document.getElementById("pesquisa");
       if (barraPesquisa) {
         barraPesquisa.value = termoPesquisa;
-        filtrarAnuncios(); // agora sim funciona porque os anúncios já carregaram
+        filtrarAnuncios(); // agora roda com os anúncios já carregados
       }
     }
 
   } catch (erro) {
     container.innerHTML = '<div class="erro">Erro ao carregar anúncios.</div>';
-    console.error("Erro:", erro);
+    console.error("Erro ao carregar anúncios:", erro);
   }
 }
 
@@ -971,6 +976,7 @@ if (termoPesquisa) {
   <div id="menu-overlay"></div>
 </body>
 </html>
+
 
 
 
