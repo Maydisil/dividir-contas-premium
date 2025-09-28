@@ -805,18 +805,29 @@ function toggleExtras() {
     : "Fechar extras ▲";
 }
 
-
 	window.addEventListener("load", () => {
     carregarAnuncios();
     document.getElementById("pesquisa").addEventListener("input", filtrarAnuncios);
     document.querySelector(".menu-icon").addEventListener("click", toggleMenu);
     document.getElementById("menu-overlay").addEventListener("click", toggleMenu);
 
-    // Verifica se o link tem o parâmetro para abrir o formulário direto
-    const params = new URLSearchParams(window.location.search);
-    if (params.get("abrir") === "formulario") {
-        mostrarFormulario();
+    // Verifica parâmetros da URL
+const params = new URLSearchParams(window.location.search);
+
+// 🔹 Se abrir=formulario → mostra o formulário
+if (params.get("abrir") === "formulario") {
+    mostrarFormulario();
+}
+
+// 🔹 Se pesquisar=alguma-coisa → aplica o filtro de pesquisa
+const termoPesquisa = params.get("pesquisar");
+if (termoPesquisa) {
+    const barraPesquisa = document.getElementById("pesquisa");
+    if (barraPesquisa) {
+        barraPesquisa.value = termoPesquisa; // coloca o termo na barra
+        filtrarAnuncios(); // chama sua função normal de filtro
     }
+}
 });
   </script>
 </head>
@@ -941,4 +952,5 @@ function toggleExtras() {
   <div id="menu-overlay"></div>
 </body>
 </html>
+
 
