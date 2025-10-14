@@ -595,7 +595,6 @@
     const resposta = await fetch("https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-YbnmugdXbhXDtTxPSE_OOCvs34ivYxlD8VJhEXjg/exec?funcao=listarAnuncios");
     
     if (!resposta.ok) throw new Error('Resposta HTTP ' + resposta.status);
-
     const anuncios = await resposta.json();
 
     // usa a função já existente no seu código para renderizar os itens
@@ -735,7 +734,7 @@ function formatarWhatsapp(input) {
   input.value = valor;
 }
 
-function renderizarAnuncios(lista) {
+	function renderizarAnuncios(lista) {
   	const container = document.getElementById("anuncios");
   	container.innerHTML = "";
   	lista.forEach(item => {
@@ -752,7 +751,7 @@ function renderizarAnuncios(lista) {
     	div.onclick = () => mostrarDetalhes(item);
     	container.appendChild(div);
   	});
-}
+	}
 
 	function filtrarAnuncios() {
   const termo = document.getElementById("pesquisa").value.toLowerCase();
@@ -837,6 +836,7 @@ function toggleExtras() {
     : "Fechar extras ▲";
 }
 
+
 	window.addEventListener("load", () => {
     carregarAnuncios();
     document.getElementById("pesquisa").addEventListener("input", filtrarAnuncios);
@@ -905,8 +905,8 @@ if (termoPesquisa) {
   	</select>
 	</label><br>
 
-<label>Código do Grupo Kotas (opcional): 
-  <input type="number" placeholder="Ex: 123456" name="kotas" id="campoKotas" min="0" step="1" pattern="\d*" oninput="limitarKotas(this)">
+<label>Link do Grupo Kotas (opcional): 
+  <input type="number" placeholder="Últimos 6 dígitos do link" name="kotas" id="campoKotas" min="0" step="1" pattern="\d*" oninput="limitarKotas(this)">
 </label><br>
 
 	<label>Status da Conta:
@@ -984,8 +984,4 @@ if (termoPesquisa) {
   <div id="menu-overlay"></div>
 </body>
 </html>
-
-
-
-
 
