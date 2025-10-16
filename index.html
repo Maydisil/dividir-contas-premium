@@ -680,6 +680,13 @@ function enviarFormulario(event) {
 
   const dados = Object.fromEntries(new FormData(form).entries());
 
+//  Remove campos vazios (inclusive a oferta se não selecionado)
+Object.keys(dados).forEach(chave => {
+  if (dados[chave].trim() === "") {
+    delete dados[chave];
+  }
+});
+
   // Concatena múltiplas assinaturas extras
   const selecionados = Array.from(document.querySelectorAll('input[name="extra"]:checked'))
                         	.map(input => input.value);
@@ -937,6 +944,16 @@ if (termoPesquisa) {
 
 	<label>Número do WhatsApp (opcional): 
   <input type="tel" name="whatsapp" id="whatsappInput" placeholder="Ex: 55XXXXXXXXXXX" pattern="\d{13}" maxlength="13" oninput="formatarWhatsapp(this)">
+</label><br>
+
+<label>Tempo da Promoção (opcional):
+  <select name="oferta">
+    <option value="">Selecione</option>
+    <option value="1 Mês">1 Mês</option>
+    <option value="2 Meses">2 Meses</option>
+    <option value="3 Meses">3 Meses</option>
+    <option value="4 Meses">4 Meses</option>
+  </select>
 </label><br><br>
 
 	<button type="submit">Enviar</button>
@@ -984,4 +1001,3 @@ if (termoPesquisa) {
   <div id="menu-overlay"></div>
 </body>
 </html>
-
