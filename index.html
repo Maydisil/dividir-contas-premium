@@ -851,6 +851,25 @@ function toggleExtras() {
     document.querySelector(".menu-icon").addEventListener("click", toggleMenu);
     document.getElementById("menu-overlay").addEventListener("click", toggleMenu);
 
+  // 🔹 Buscar WhatsApp automático ao sair do campo usuário
+  const inputUsuario = document.getElementById("usuario");
+  if (inputUsuario) {
+    inputUsuario.addEventListener("blur", () => {
+      const nome = inputUsuario.value.trim();
+      if (!nome) return;
+     fetch(`https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-YbnmugdXbhXDtTxPSE_OOCvs34ivYxlD8VJhEXjg/exec?funcao=buscarWhatsapp&nome=${encodeURIComponent(nome)}`)
+        .then(res => res.text())
+        .then(telefone => {
+          const inputWhatsapp = document.getElementById("whatsappInput");
+          if (telefone && inputWhatsapp && !inputWhatsapp.value) {
+            inputWhatsapp.value = telefone;
+          }
+        })
+        .catch(err => console.error("Erro ao buscar WhatsApp:", err));
+    });
+  }
+
+
     // Verifica parâmetros da URL
 const params = new URLSearchParams(window.location.search);
 
@@ -887,7 +906,7 @@ if (termoPesquisa) {
   <h3>CRIAR ANÚNCIO</h3>
   <form id="formAnuncio" onsubmit="enviarFormulario(event)">
 	<label>Nome de Usuário: 
-  <input type="text" placeholder="Ex: @Nome" name="usuario" required oninput="formatarUsuario(this)">
+  <input type="text" id="usuario" placeholder="Ex: @Nome" name="usuario" required oninput="formatarUsuario(this)">
 </label><br>
 
 	<label>Qual o Streaming:
@@ -1002,11 +1021,4 @@ if (termoPesquisa) {
   <div id="menu-overlay"></div>
 </body>
 </html>
-
-
-
-
-
-
-
 
