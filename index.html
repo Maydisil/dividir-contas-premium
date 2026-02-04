@@ -771,8 +771,10 @@ function formatarWhatsapp(input) {
 }
 
 function compartilharUsuarioWhatsapp() {
-  const termo = document.getElementById("pesquisa").value.trim();
-  if (!termo.startsWith("@")) return;
+  const btn = document.getElementById("btnCompartilharWhatsapp");
+  const anunciante = btn.dataset.anunciante;
+
+  if (!anunciante) return;
 
   const anuncios = document.querySelectorAll(
     ".anuncio:not([style*='display: none'])"
@@ -780,11 +782,13 @@ function compartilharUsuarioWhatsapp() {
 
   if (anuncios.length === 0) return;
 
-  const usuario = termo.replace("@", "");
   let texto = "";
   let whatsappUsuario = "";
+  const usuarioSemArroba = anunciante.replace("@", "");
 
   anuncios.forEach((anuncio, index) => {
+    if (anuncio.dataset.anunciante !== anunciante) return;
+
     const streaming = anuncio.dataset.streaming;
     const streamingExtra = anuncio.dataset.streamingExtra;
     const valor = anuncio.dataset.valor;
@@ -801,16 +805,15 @@ function compartilharUsuarioWhatsapp() {
       texto += `\n-------------------------------------------\n`;
     }
 
-    // pega o WhatsApp da primeira ocorrência válida
     if (!whatsappUsuario && anuncio.dataset.whatsapp) {
       whatsappUsuario = anuncio.dataset.whatsapp;
     }
   });
 
-  // 🔹 bloco final do usuário
+  // 🔹 bloco final
   texto += `\n-------------------------------------------\n`;
   texto += `👤 MEUS ANÚNCIOS AQUI!\n\n`;
-  texto += `📲 CONTATO POR TELEGRAM\nhttps://t.me/${usuario}`;
+  texto += `📲 CONTATO POR TELEGRAM\nhttps://t.me/${usuarioSemArroba}`;
 
   if (whatsappUsuario) {
     texto += `\n\n📲 CONTATO POR WHATSAPP\nhttps://wa.me/${whatsappUsuario}`;
@@ -820,10 +823,12 @@ function compartilharUsuarioWhatsapp() {
   window.open(url, "_blank");
 }
 
-	function filtrarAnuncios() {
-  const termo = document.getElementById("pesquisa").value.toLowerCase().trim();
+function filtrarAnuncios() {
+  const termoInput = document.getElementById("pesquisa").value.trim().toLowerCase();
   const anuncios = document.querySelectorAll(".anuncio");
-  let visiveis = 0;
+
+  let anunciosVisiveis = 0;
+  let anuncianteValido = "";
 
   anuncios.forEach(el => {
     const titulo = el.querySelector(".titulo").textContent.toLowerCase();
@@ -831,17 +836,32 @@ function compartilharUsuarioWhatsapp() {
     const anunciante = el.dataset.anunciante.toLowerCase();
 
     const mostrar =
-      titulo.includes(termo) ||
-      valor.includes(termo) ||
-      anunciante.includes(termo);
+      titulo.includes(termoInput) ||
+      valor.includes(termoInput) ||
+      anunciante.includes(termoInput);
 
     el.style.display = mostrar ? "flex" : "none";
-    if (mostrar) visiveis++;
+
+    if (mostrar) {
+      anunciosVisiveis++;
+
+      // 🔹 verifica se é um anunciante válido EXATO
+      if (
+        termoInput.startsWith("@") &&
+        anunciante === termoInput
+      ) {
+        anuncianteValido = el.dataset.anunciante; // com @ e caixa original
+      }
+    }
   });
 
-  // 🔹 botão WhatsApp só aparece se for usuário
   const btn = document.getElementById("btnCompartilharWhatsapp");
-  btn.style.display = termo.startsWith("@") && visiveis > 0 ? "flex" : "none";
+
+  // 🔹 só mostra o botão se existir anunciante válido
+  btn.style.display = anuncianteValido ? "flex" : "none";
+
+  // 🔹 guarda o anunciante válido no botão
+  btn.dataset.anunciante = anuncianteValido || "";
 }
 
 	function toggleMenu() {
@@ -1097,3 +1117,4 @@ if (termoPesquisa) {
 
 </body>
 </html>
+
