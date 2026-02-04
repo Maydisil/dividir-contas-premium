@@ -742,39 +742,106 @@ function formatarWhatsapp(input) {
 }
 
 	function renderizarAnuncios(lista) {
-  	const container = document.getElementById("anuncios");
-  	container.innerHTML = "";
-  	lista.forEach(item => {
-    	const div = document.createElement("div");
-    	div.className = "anuncio";
-    	div.innerHTML = `
-  <img class="logo" src="${item.logo}" alt="Logo">
-  <div class="info">
-    <div class="titulo">${item.streaming}</div>
-    <div class="valor">${item.valor}</div>
-    <div class="anunciante" style="display:none;">${item.anunciante}</div>
-  </div>
-`;
-    	div.onclick = () => mostrarDetalhes(item);
-    	container.appendChild(div);
-  	});
-	}
+  const container = document.getElementById("anuncios");
+  container.innerHTML = "";
+
+  lista.forEach(item => {
+    const div = document.createElement("div");
+    div.className = "anuncio";
+
+    // 🔹 Guarda os dados completos no elemento
+    div.dataset.streaming = item.streaming || "";
+    div.dataset.streamingExtra = item.streamingExtra || "";
+    div.dataset.valor = item.valor || "";
+    div.dataset.anunciante = item.anunciante || "";
+    div.dataset.whatsapp = item.whatsapp || "";
+
+    div.innerHTML = `
+      <img class="logo" src="${item.logo}" alt="Logo">
+      <div class="info">
+        <div class="titulo">${item.streaming}</div>
+        <div class="valor">${item.valor}</div>
+        <div class="anunciante" style="display:none;">${item.anunciante}</div>
+      </div>
+    `;
+
+    div.onclick = () => mostrarDetalhes(item);
+    container.appendChild(div);
+  });
+}
+
+function compartilharUsuarioWhatsapp() {
+  const termo = document.getElementById("pesquisa").value.trim();
+  if (!termo.startsWith("@")) return;
+
+  const anuncios = document.querySelectorAll(
+    ".anuncio:not([style*='display: none'])"
+  );
+
+  if (anuncios.length === 0) return;
+
+  const usuario = termo.replace("@", "");
+  let texto = "";
+  let whatsappUsuario = "";
+
+  anuncios.forEach((anuncio, index) => {
+    const streaming = anuncio.dataset.streaming;
+    const streamingExtra = anuncio.dataset.streamingExtra;
+    const valor = anuncio.dataset.valor;
+
+    texto += `🖥 ${streaming}`;
+
+    if (streamingExtra) {
+      texto += `\n➕ ${streamingExtra}`;
+    }
+
+    texto += `\n💵 ${valor}`;
+
+    if (index < anuncios.length - 1) {
+      texto += `\n-------------------------------------------\n`;
+    }
+
+    // pega o WhatsApp da primeira ocorrência válida
+    if (!whatsappUsuario && anuncio.dataset.whatsapp) {
+      whatsappUsuario = anuncio.dataset.whatsapp;
+    }
+  });
+
+  // 🔹 bloco final do usuário
+  texto += `\n-------------------------------------------\n`;
+  texto += `👤 MEUS ANÚNCIOS AQUI!\n\n`;
+  texto += `📲 CONTATO POR TELEGRAM\nhttps://t.me/${usuario}`;
+
+  if (whatsappUsuario) {
+    texto += `\n\n📲 CONTATO POR WHATSAPP\nhttps://wa.me/${whatsappUsuario}`;
+  }
+
+  const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(texto)}`;
+  window.open(url, "_blank");
+}
 
 	function filtrarAnuncios() {
-  const termo = document.getElementById("pesquisa").value.toLowerCase();
+  const termo = document.getElementById("pesquisa").value.toLowerCase().trim();
   const anuncios = document.querySelectorAll(".anuncio");
+  let visiveis = 0;
+
   anuncios.forEach(el => {
     const titulo = el.querySelector(".titulo").textContent.toLowerCase();
     const valor = el.querySelector(".valor").textContent.toLowerCase();
-    const anunciante = el.querySelector(".anunciante").textContent.toLowerCase();
-    
-    el.style.display =
+    const anunciante = el.dataset.anunciante.toLowerCase();
+
+    const mostrar =
       titulo.includes(termo) ||
       valor.includes(termo) ||
-      anunciante.includes(termo)
-        ? "flex"
-        : "none";
+      anunciante.includes(termo);
+
+    el.style.display = mostrar ? "flex" : "none";
+    if (mostrar) visiveis++;
   });
+
+  // 🔹 botão WhatsApp só aparece se for usuário
+  const btn = document.getElementById("btnCompartilharWhatsapp");
+  btn.style.display = termo.startsWith("@") && visiveis > 0 ? "flex" : "none";
 }
 
 	function toggleMenu() {
@@ -1019,7 +1086,14 @@ if (termoPesquisa) {
   </div>
 
   <div id="menu-overlay"></div>
+<button
+  id="btnCompartilharWhatsapp"
+  class="botao-flutuante compartilhar"
+  style="display:none;"
+  onclick="compartilharUsuarioWhatsapp()"
+>
+  <i class="bi bi-whatsapp"></i>
+</button>
+
 </body>
 </html>
-
-
