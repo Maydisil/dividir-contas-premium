@@ -794,7 +794,8 @@ function compartilharUsuarioWhatsapp() {
     const streamingExtra = anuncio.dataset.streamingExtra;
     const valor = anuncio.dataset.valor;
 
-    texto += `🖥 ${streaming}`;
+    // 🔹 nome do streaming em negrito
+    texto += `🖥 *${streaming}*`;
 
     if (streamingExtra) {
       texto += `\n➕ ${streamingExtra}`;
@@ -811,13 +812,13 @@ function compartilharUsuarioWhatsapp() {
     }
   });
 
-  // 🔹 bloco final
+  // 🔹 bloco final (títulos em negrito)
   texto += `\n-------------------------------------------\n`;
-  texto += `👤 MEUS ANÚNCIOS\nhttps://tinyurl.com/divcp01?pesquisar=${usuarioSemArroba}\n\n`;
-  texto += `📲 CONTATO POR TELEGRAM\nhttps://t.me/${usuarioSemArroba}`;
+  texto += `👤 *MEUS ANÚNCIOS*\nhttps://tinyurl.com/divcp01?pesquisar=${usuarioSemArroba}\n\n`;
+  texto += `📲 *CONTATO POR TELEGRAM*\nhttps://t.me/${usuarioSemArroba}`;
 
   if (whatsappUsuario) {
-    texto += `\n\n📲 CONTATO POR WHATSAPP\nhttps://wa.me/${whatsappUsuario}`;
+    texto += `\n\n📲 *CONTATO POR WHATSAPP*\nhttps://wa.me/${whatsappUsuario}`;
   }
 
   const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(texto)}`;
