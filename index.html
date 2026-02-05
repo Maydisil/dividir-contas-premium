@@ -813,7 +813,7 @@ function compartilharUsuarioWhatsapp() {
 
   // 🔹 bloco final
   texto += `\n-------------------------------------------\n`;
-  texto += `👤 MEUS ANÚNCIOS AQUI!\n\n`;
+  texto += `👤 MEUS ANÚNCIOS\nhttps://tinyurl.com/divcp01?pesquisar=${usuarioSemArroba}\n\n`;
   texto += `📲 CONTATO POR TELEGRAM\nhttps://t.me/${usuarioSemArroba}`;
 
   if (whatsappUsuario) {
@@ -846,13 +846,13 @@ function filtrarAnuncios() {
     if (mostrar) {
       anunciosVisiveis++;
 
-      // 🔹 verifica se é um anunciante válido EXATO
+      // 🔹 verifica se é um anunciante válido
       if (
-        termoInput.startsWith("@") &&
-        anunciante === termoInput
-      ) {
-        anuncianteValido = el.dataset.anunciante; // com @ e caixa original
-      }
+  termoInput &&
+  anunciante === termoInput
+) {
+  anuncianteValido = el.dataset.anunciante;
+}
     }
   });
 
@@ -1129,5 +1129,3 @@ if (termoPesquisa) {
 
 </body>
 </html>
-
-
