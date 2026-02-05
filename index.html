@@ -630,6 +630,7 @@ function limitarKotas(input) {
 }
 
 function mostrarFormulario() {
+ocultarBotaoWhatsapp();
   document.getElementById("formulario").style.display = "block";
   document.getElementById("anuncios").style.display = "none";
   document.getElementById("detalhes").style.display = "none";
@@ -855,12 +856,13 @@ function filtrarAnuncios() {
     }
   });
 
-  const btn = document.getElementById("btnCompartilharWhatsapp");
+    const btn = document.getElementById("btnCompartilharWhatsapp");
 
-  // 🔹 só mostra o botão se existir anunciante válido
-  btn.style.display = anuncianteValido ? "flex" : "none";
+  // 🔹 só mostra se estiver na tela da lista
+  const listaVisivel =
+    document.getElementById("anuncios").style.display !== "none";
 
-  // 🔹 guarda o anunciante válido no botão
+  btn.style.display = anuncianteValido && listaVisivel ? "flex" : "none";
   btn.dataset.anunciante = anuncianteValido || "";
 }
 
@@ -879,7 +881,16 @@ fetch(`https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-Ybnm
   .catch(err => alert("Erro ao registrar like."));
 	}
 
+function ocultarBotaoWhatsapp() {
+  const btn = document.getElementById("btnCompartilharWhatsapp");
+  if (btn) {
+    btn.style.display = "none";
+    btn.dataset.anunciante = "";
+  }
+}
+
 	function mostrarDetalhes(item) {
+ocultarBotaoWhatsapp();
   	// Registrar visualização
   	fetch(`https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-YbnmugdXbhXDtTxPSE_OOCvs34ivYxlD8VJhEXjg/exec?funcao=registrarVisualizacao&nome=${encodeURIComponent(item.anunciante)}&id=${encodeURIComponent(item.postagem || item.streaming)}`)
     	.catch(err => console.warn("Erro ao registrar visualização", err));
@@ -918,6 +929,7 @@ fetch(`https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-Ybnm
   	document.getElementById("detalhes").style.display = "none";
   	document.getElementById("formulario").style.display = "none";
   	document.getElementById("anuncios").style.display = "flex";
+          filtrarAnuncios(); // 🔹 reavalia se o botão deve aparecer
 	}
 
 // Mostra as assinaturas extras
