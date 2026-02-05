@@ -795,7 +795,12 @@ function compartilharUsuarioWhatsapp() {
     const valor = anuncio.dataset.valor;
 
     // 🔹 nome do streaming em negrito
-    texto += `🖥 *${streaming} *`;
+    const nomeStreaming =
+  streaming.endsWith("+")
+    ? `${streaming.slice(0, -1)}*+`
+    : `${streaming}*`;
+
+texto += `🖥 *${nomeStreaming}`;
 
     if (streamingExtra) {
       texto += `\n➕ ${streamingExtra}`;
@@ -1131,4 +1136,5 @@ if (termoPesquisa) {
 
 </body>
 </html>
+
 
