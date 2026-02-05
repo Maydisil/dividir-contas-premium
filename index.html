@@ -834,7 +834,9 @@ function filtrarAnuncios() {
   anuncios.forEach(el => {
     const titulo = el.querySelector(".titulo").textContent.toLowerCase();
     const valor = el.querySelector(".valor").textContent.toLowerCase();
-    const anunciante = el.dataset.anunciante.toLowerCase();
+
+    const anuncianteOriginal = el.dataset.anunciante;
+    const anunciante = anuncianteOriginal.replace(/^@/, "").toLowerCase();
 
     const mostrar =
       titulo.includes(termoInput) ||
@@ -846,19 +848,18 @@ function filtrarAnuncios() {
     if (mostrar) {
       anunciosVisiveis++;
 
-      // 🔹 verifica se é um anunciante válido
+      // 🔹 anunciante válido = match EXATO (sem @)
       if (
-  termoInput &&
-  anunciante === termoInput
-) {
-  anuncianteValido = el.dataset.anunciante;
-}
+        termoInput &&
+        anunciante === termoInput
+      ) {
+        anuncianteValido = anuncianteOriginal; // mantém com @
+      }
     }
   });
 
-    const btn = document.getElementById("btnCompartilharWhatsapp");
+  const btn = document.getElementById("btnCompartilharWhatsapp");
 
-  // 🔹 só mostra se estiver na tela da lista
   const listaVisivel =
     document.getElementById("anuncios").style.display !== "none";
 
