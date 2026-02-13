@@ -586,8 +586,6 @@
 	}
   </style>
   <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-YbnmugdXbhXDtTxPSE_OOCvs34ivYxlD8VJhEXjg/exec";
-
 	async function carregarAnuncios() {
   const container = document.getElementById("anuncios");
   container.innerHTML = '<div class="loading">Carregando Anúncios...</div>';
@@ -630,51 +628,6 @@ function limitarKotas(input) {
 	input.value = input.value.slice(0, 6);
   }
 }
-
-function onTelegramAuth(user) {
-
-  fetch(API_URL + "?funcao=validarLoginTelegram", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(user)
-  })
-  .then(res => res.json())
-  .then(resposta => {
-
-    if (!resposta.autorizado) {
-      alert("Login não autorizado.");
-      return;
-    }
-
-    iniciarSessao(resposta);
-
-  })
-  .catch(() => alert("Erro ao validar login."));
-}
-
-function iniciarSessao(dados) {
-
-  // Salva sessão por 7 dias
-  const sessao = {
-    id: dados.id,
-    username: dados.username,
-    expira: Date.now() + (7 * 24 * 60 * 60 * 1000)
-  };
-
-  localStorage.setItem("sessaoTelegram", JSON.stringify(sessao));
-
-  liberarFormulario(dados.username);
-}
-
-function liberarFormulario(username) {
-
-  document.getElementById("usuario").value = username;
-  document.getElementById("usuario").readOnly = true;
-
-  document.getElementById("loginTelegramContainer").style.display = "none";
-  document.getElementById("formAnuncio").style.display = "flex";
-}
-
 
 function mostrarFormulario() {
 ocultarBotaoWhatsapp();
@@ -1037,39 +990,6 @@ if (termoPesquisa) {
     }
 }
 });
-document.addEventListener("DOMContentLoaded", verificarSessao);
-
-function verificarSessao() {
-
-  const sessaoSalva = localStorage.getItem("sessaoTelegram");
-
-  if (!sessaoSalva) return;
-
-  const sessao = JSON.parse(sessaoSalva);
-
-  // Verifica se expirou
-  if (Date.now() > sessao.expira) {
-    localStorage.removeItem("sessaoTelegram");
-    return;
-  }
-
-  // Validação silenciosa no servidor
-  fetch(API_URL + "?funcao=validarSessao", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ id: sessao.id })
-  })
-  .then(res => res.json())
-  .then(resposta => {
-
-    if (resposta.autorizado) {
-      liberarFormulario(sessao.username);
-    } else {
-      localStorage.removeItem("sessaoTelegram");
-    }
-
-  });
-}
   </script>
 </head>
 <body>
@@ -1085,21 +1005,8 @@ function verificarSessao() {
   <div class="lista-anuncios" id="anuncios"></div>
   <div id="detalhes" style="display: none; padding: 20px;"></div>
 <div id="formulario" style="display:none; padding: 1rem;">
-  <div id="loginTelegramContainer" style="text-align:center; margin-bottom:20px;">
-    <p>Para anunciar, faça login com Telegram:</p>
-
-    <script async src="https://telegram.org/js/telegram-widget.js?22"
-      data-telegram-login="DCP2000Bot"
-      data-size="large"
-      data-userpic="false"
-      data-onauth="onTelegramAuth(user)"
-      data-request-access="write">
-    </script>
-  </div>
-
-
   <h3>CRIAR ANÚNCIO</h3>
- <form id="formAnuncio" onsubmit="enviarFormulario(event)" style="display:none;">
+  <form id="formAnuncio" onsubmit="enviarFormulario(event)">
 	<label>Nome de Usuário: 
   <input type="text" id="usuario" placeholder="Ex: @Nome" name="usuario" required oninput="formatarUsuario(this)">
 </label><br>
