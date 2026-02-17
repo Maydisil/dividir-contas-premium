@@ -1001,31 +1001,12 @@ function toggleExtras() {
 window.addEventListener("load", async () => {
   await carregarAnuncios();
 
-  // 🔥 ROTEADOR TELEGRAM
-  if (window.Telegram && 
-      Telegram.WebApp && 
-      Telegram.WebApp.initDataUnsafe) {
+  // 🔎 Verifica parâmetros da URL
+  const params = new URLSearchParams(window.location.search);
 
-    const startParam = Telegram.WebApp.initDataUnsafe.start_param;
-
-    if (startParam) {
-
-      if (startParam === "anunciar") {
-        mostrarFormulario();
-        return;
-      }
-
-      if (startParam.startsWith("buscar_")) {
-        const termo = startParam.replace("buscar_", "");
-
-        const barraPesquisa = document.getElementById("pesquisa");
-        if (barraPesquisa) {
-          barraPesquisa.value = termo;
-          filtrarAnuncios();
-        }
-        return;
-      }
-    }
+  // 🔹 Se for ?anunciar
+  if (params.has("anunciar")) {
+    mostrarFormulario();
   }
 
   // 🔐 Esconde botão anunciar fora do Telegram
@@ -1045,17 +1026,6 @@ window.addEventListener("load", async () => {
   document.getElementById("pesquisa").addEventListener("input", filtrarAnuncios);
   document.querySelector(".menu-icon").addEventListener("click", toggleMenu);
   document.getElementById("menu-overlay").addEventListener("click", toggleMenu);
-
-  // 🔹 Suporte a ?pesquisar=
-  const params = new URLSearchParams(window.location.search);
-  const termoPesquisa = params.get("pesquisar");
-  if (termoPesquisa) {
-      const barraPesquisa = document.getElementById("pesquisa");
-      if (barraPesquisa) {
-          barraPesquisa.value = termoPesquisa;
-          filtrarAnuncios();
-      }
-  }
 });
 </script>
 </head>
