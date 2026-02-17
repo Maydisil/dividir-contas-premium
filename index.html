@@ -998,63 +998,66 @@ function toggleExtras() {
     : "Fechar extras ▲";
 }
 
-	window.addEventListener("load", () => {
-    carregarAnuncios();
-// 🔥 ROTEADOR TELEGRAM
-if (window.Telegram &&
-    Telegram.WebApp &&
-    Telegram.WebApp.initDataUnsafe &&
-    Telegram.WebApp.initDataUnsafe.user) {
+window.addEventListener("load", async () => {
+  await carregarAnuncios();
 
-  const startParam = Telegram.WebApp.initDataUnsafe.start_param;
-  const user = Telegram.WebApp.initDataUnsafe.user;
+  // 🔥 ROTEADOR TELEGRAM
+  if (window.Telegram && 
+      Telegram.WebApp && 
+      Telegram.WebApp.initDataUnsafe) {
 
-  // 🔹 Se for anunciar
-  if (startParam === "anunciar") {
-    mostrarFormulario();
-  }
+    const startParam = Telegram.WebApp.initDataUnsafe.start_param;
 
-  // 🔹 Se for buscar_
-  if (startParam && startParam.startsWith("buscar_")) {
-    const termo = startParam.replace("buscar_", "");
-    const barraPesquisa = document.getElementById("pesquisa");
-    if (barraPesquisa) {
-      barraPesquisa.value = termo;
-      filtrarAnuncios();
+    if (startParam) {
+
+      if (startParam === "anunciar") {
+        mostrarFormulario();
+        return;
+      }
+
+      if (startParam.startsWith("buscar_")) {
+        const termo = startParam.replace("buscar_", "");
+
+        const barraPesquisa = document.getElementById("pesquisa");
+        if (barraPesquisa) {
+          barraPesquisa.value = termo;
+          filtrarAnuncios();
+        }
+        return;
+      }
     }
   }
-}
-// 🔐 Esconde botão anunciar fora do Telegram
-if (!window.Telegram ||
-    !Telegram.WebApp ||
-    !Telegram.WebApp.initDataUnsafe ||
-    !Telegram.WebApp.initDataUnsafe.user) {
 
-  const botoes = document.querySelectorAll(".bottom-bar button");
-  botoes.forEach(btn => {
-    if (btn.textContent.includes("Anunciar")) {
-      btn.style.display = "none";
-    }
-  });
-}
-    document.getElementById("pesquisa").addEventListener("input", filtrarAnuncios);
-    document.querySelector(".menu-icon").addEventListener("click", toggleMenu);
-    document.getElementById("menu-overlay").addEventListener("click", toggleMenu);
+  // 🔐 Esconde botão anunciar fora do Telegram
+  if (!window.Telegram ||
+      !Telegram.WebApp ||
+      !Telegram.WebApp.initDataUnsafe ||
+      !Telegram.WebApp.initDataUnsafe.user) {
 
-    // Verifica parâmetros da URL
-const params = new URLSearchParams(window.location.search);
+    const botoes = document.querySelectorAll(".bottom-bar button");
+    botoes.forEach(btn => {
+      if (btn.textContent.includes("Anunciar")) {
+        btn.style.display = "none";
+      }
+    });
+  }
 
-// 🔹 Se pesquisar=alguma-coisa → aplica o filtro de pesquisa
-const termoPesquisa = params.get("pesquisar");
-if (termoPesquisa) {
-    const barraPesquisa = document.getElementById("pesquisa");
-    if (barraPesquisa) {
-        barraPesquisa.value = termoPesquisa; // coloca o termo na barra
-        filtrarAnuncios(); // chama sua função normal de filtro
-    }
-}
+  document.getElementById("pesquisa").addEventListener("input", filtrarAnuncios);
+  document.querySelector(".menu-icon").addEventListener("click", toggleMenu);
+  document.getElementById("menu-overlay").addEventListener("click", toggleMenu);
+
+  // 🔹 Suporte a ?pesquisar=
+  const params = new URLSearchParams(window.location.search);
+  const termoPesquisa = params.get("pesquisar");
+  if (termoPesquisa) {
+      const barraPesquisa = document.getElementById("pesquisa");
+      if (barraPesquisa) {
+          barraPesquisa.value = termoPesquisa;
+          filtrarAnuncios();
+      }
+  }
 });
-  </script>
+</script>
 </head>
 <body>
   <div class="top-bar">
