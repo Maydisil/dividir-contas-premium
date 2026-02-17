@@ -998,13 +998,12 @@ function toggleExtras() {
     : "Fechar extras ▲";
 }
 
-window.addEventListener("load", async () => {
-  await carregarAnuncios();
-
-  // 🔎 Verifica parâmetros da URL
+window.addEventListener("load", () => {
   const params = new URLSearchParams(window.location.search);
+  // 🔹 Começa carregar anúncios em segundo plano
+  carregarAnuncios();
 
-  // 🔹 Se for ?anunciar
+  // 🔹 Se for ?anunciar abre direto
   if (params.has("anunciar")) {
     mostrarFormulario();
   }
