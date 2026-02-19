@@ -611,6 +611,8 @@
         filtrarAnuncios(); // agora roda com os anúncios já carregados
       }
     }
+// 🔹 Atualiza botão 👤 depois que tudo já foi carregado e filtrado
+atualizarBotaoMeusAnuncios();
 
   } catch (erro) {
     container.innerHTML = '<div class="erro">Erro ao carregar anúncios.</div>';
@@ -913,12 +915,30 @@ function filtrarAnuncios() {
   });
 
   const btn = document.getElementById("btnCompartilharWhatsapp");
-
   const listaVisivel =
     document.getElementById("anuncios").style.display !== "none";
-
   btn.style.display = anuncianteValido && listaVisivel ? "flex" : "none";
   btn.dataset.anunciante = anuncianteValido || "";
+}
+
+function atualizarBotaoMeusAnuncios() {
+  const barraPesquisa = document.getElementById("pesquisa");
+  const btnMeus = document.getElementById("btnMeusAnuncios");
+  const btnWhats = document.getElementById("btnCompartilharWhatsapp");
+  const lista = document.getElementById("anuncios");
+
+  if (!barraPesquisa || !btnMeus || !lista) return;
+  const pesquisaVazia = barraPesquisa.value.trim() === "";
+  const listaVisivel = window.getComputedStyle(lista).display !== "none";
+
+  if (usuarioTelegram && pesquisaVazia && listaVisivel) {
+    btnMeus.style.display = "flex";
+    if (btnWhats) {
+      btnWhats.style.display = "none";
+    }
+  } else {
+    btnMeus.style.display = "none";
+  }
 }
 
 	function toggleMenu() {
@@ -980,12 +1000,13 @@ ocultarBotaoWhatsapp();
   	`;
 	}
 
-	function voltarParaLista() {
-  	document.getElementById("detalhes").style.display = "none";
-  	document.getElementById("formulario").style.display = "none";
-  	document.getElementById("anuncios").style.display = "flex";
-          filtrarAnuncios(); // 🔹 reavalia se o botão deve aparecer
-	}
+function voltarParaLista() {
+  document.getElementById("detalhes").style.display = "none";
+  document.getElementById("formulario").style.display = "none";
+  document.getElementById("anuncios").style.display = "flex";
+  filtrarAnuncios();
+  atualizarBotaoMeusAnuncios();
+}
 
 // Mostra as assinaturas extras
 function toggleExtras() {
@@ -998,14 +1019,27 @@ function toggleExtras() {
     : "Fechar extras ▲";
 }
 
+let usuarioTelegram = null;
+
 window.addEventListener("load", () => {
+
   const params = new URLSearchParams(window.location.search);
-  // 🔹 Começa carregar anúncios em segundo plano
+
+  // 🔹 Começa carregar anúncios
   carregarAnuncios();
 
   // 🔹 Se for ?anunciar abre direto
   if (params.has("anunciar")) {
     mostrarFormulario();
+  }
+
+  // 🔹 Captura usuário do Telegram (sem @)
+  if (window.Telegram &&
+      Telegram.WebApp &&
+      Telegram.WebApp.initDataUnsafe &&
+      Telegram.WebApp.initDataUnsafe.user &&
+      Telegram.WebApp.initDataUnsafe.user.username) {
+    usuarioTelegram = Telegram.WebApp.initDataUnsafe.user.username;
   }
 
   // 🔐 Esconde botão anunciar fora do Telegram
@@ -1022,9 +1056,29 @@ window.addEventListener("load", () => {
     });
   }
 
-  document.getElementById("pesquisa").addEventListener("input", filtrarAnuncios);
-  document.querySelector(".menu-icon").addEventListener("click", toggleMenu);
-  document.getElementById("menu-overlay").addEventListener("click", toggleMenu);
+  // 🔍 Pesquisa
+  document.getElementById("pesquisa")
+    .addEventListener("input", () => {
+      filtrarAnuncios();
+      atualizarBotaoMeusAnuncios();
+    });
+
+  const btnMeus = document.getElementById("btnMeusAnuncios");
+  if (btnMeus) {
+    btnMeus.addEventListener("click", () => {
+      if (!usuarioTelegram) return;
+
+      const barraPesquisa = document.getElementById("pesquisa");
+      barraPesquisa.value = usuarioTelegram; // sem @
+      filtrarAnuncios();
+      atualizarBotaoMeusAnuncios();
+    });
+  }
+
+  document.querySelector(".menu-icon")
+    .addEventListener("click", toggleMenu);
+  document.getElementById("menu-overlay")
+    .addEventListener("click", toggleMenu);
 });
 </script>
 </head>
@@ -1164,6 +1218,13 @@ window.addEventListener("load", () => {
   onclick="compartilharUsuarioWhatsapp()"
 >
   <i class="bi bi-whatsapp"></i>
+</button>
+<button
+  id="btnMeusAnuncios"
+  class="botao-flutuante compartilhar"
+  style="display:none;"
+>
+  <i class="bi bi-person"></i>
 </button>
   </body>
 </html>
