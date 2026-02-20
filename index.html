@@ -949,12 +949,24 @@ function atualizarBotaoMeusAnuncios() {
   	overlay.style.display = ativo ? "none" : "block";
 	}
 
-	function registrarLike(nome, id) {
-fetch(`https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-YbnmugdXbhXDtTxPSE_OOCvs34ivYxlD8VJhEXjg/exec?funcao=registrarLike&nome=${encodeURIComponent(nome)}&id=${encodeURIComponent(id)}`)
-  .then(res => res.text())
-  .then(msg => alert(msg))
-  .catch(err => alert("Erro ao registrar like."));
-	}
+function getUserId() {
+let userId = localStorage.getItem("siteUserId");
+
+if (!userId) {
+userId = crypto.randomUUID();
+localStorage.setItem("siteUserId", userId);
+}
+return userId;
+}
+
+function registrarLike(idMensagem) {
+const userId = getUserId();
+
+fetch(`https://script.google.com/macros/s/AKfycbwkc7674s3_YfXsiv1vQzzOx0QzVjWptbJi10wA4N1_mN5Xu1Rsu5-vP4m5py443iXI/exec?funcao=registrarLike&id=${encodeURIComponent(idMensagem)}&userId=${encodeURIComponent(userId)}`)
+.then(res => res.text())
+.then(msg => alert(msg))
+.catch(err => alert("Erro ao registrar like."));
+}
 
 function ocultarBotaoWhatsapp() {
   const btn = document.getElementById("btnCompartilharWhatsapp");
@@ -964,41 +976,55 @@ function ocultarBotaoWhatsapp() {
   }
 }
 
-	function mostrarDetalhes(item) {
+function registrarCompra(idMensagem) {
+fetch(`https://script.google.com/macros/s/AKfycbwkc7674s3_YfXsiv1vQzzOx0QzVjWptbJi10wA4N1_mN5Xu1Rsu5-vP4m5py443iXI/exec?funcao=registrarCompra&id=${encodeURIComponent(idMensagem)}`)
+.catch(err => console.warn("Erro ao registrar compra", err));
+}
+
+function mostrarDetalhes(item) {
 ocultarBotaoWhatsapp();
-  	// Registrar visualização
-  	fetch(`https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-YbnmugdXbhXDtTxPSE_OOCvs34ivYxlD8VJhEXjg/exec?funcao=registrarVisualizacao&nome=${encodeURIComponent(item.anunciante)}&id=${encodeURIComponent(item.postagem || item.streaming)}`)
-    	.catch(err => console.warn("Erro ao registrar visualização", err));
 
-  	document.getElementById("anuncios").style.display = "none";
-  	document.getElementById("detalhes").style.display = "block";
+document.getElementById("anuncios").style.display = "none";
+document.getElementById("detalhes").style.display = "block";
 
-  	document.getElementById("detalhes").innerHTML = `
-    	<div class="detalhes-box" style="margin-top: 16px; flex-direction: column; align-items: flex-start;">
-      	<a href="${item.linkStreaming}" target="_blank">
-        	<img src="https://drive.google.com/thumbnail?id=${item.logo2}&sz=w1000" alt="Logo2">
-      	</a>
-      	<hr>
-      	<p><strong>📺 ${item.streaming}</span></strong></p>
-      	${item.streamingExtra ? `<p style="line-height: 1.2em;"><strong>➕ ${item.streamingExtra}</strong></p>` : ""}
-      	<p><strong>💵 ${item.valor}</strong></p>
-      	<p><strong>📌 ${item.vagas}</strong></p>
-      	<p><strong>🔐 ${item.login}</strong></p>
-          ${item.oferta ? `<p><strong>⏰ OFERTA - ${item.oferta}</strong></p>` : ""}
-      	<hr>
-      	<p><strong>Postado em: ${item.data}</strong></p>
-      	<hr>
-      	<p><strong>👤 ${item.anunciante}</strong></p>
-      	<p><strong>${item.pontosAnunciante}</strong></p>
-        	${item.botaoTelegram || ""}
-        	${item.botaoWhatsapp || ""}
-        	${item.botaoKotas || ""}
-    	</div>
-    	${item.botaoLike || ""}
-    	${item.botaoPostagem || ""}
-    	${item.botaoCompartilhar || ""}
-  	`;
-	}
+document.getElementById("detalhes").innerHTML = `
+<div class="detalhes-box" style="margin-top: 16px; flex-direction: column; align-items: flex-start;">
+<a href="${item.linkStreaming}" target="_blank">
+<img src="https://drive.google.com/thumbnail?id=${item.logo2}&sz=w1000" alt="Logo2">
+</a>
+<hr>
+<p><strong>📺 ${item.streaming}</strong></p>
+${item.streamingExtra ? `<p style="line-height: 1.2em;"><strong>➕ ${item.streamingExtra}</strong></p>` : ""}
+<p><strong>💵 ${item.valor}</strong></p>
+<p><strong>📌 ${item.vagas}</strong></p>
+<p><strong>🔐 ${item.login}</strong></p>
+${item.oferta ? `<p><strong>⏰ OFERTA - ${item.oferta}</strong></p>` : ""}
+<hr>
+<p><strong>Postado em: ${item.data}</strong></p>
+<hr>
+<p><strong>👤 ${item.anunciante}</strong></p>
+<p><strong>${item.pontosAnunciante}</strong></p>
+${item.botaoTelegram || ""}
+${item.botaoWhatsapp || ""}
+${item.botaoKotas || ""}
+</div>
+${item.botaoLike || ""}
+${item.botaoPostagem || ""}
+${item.botaoCompartilhar || ""}
+`;
+
+// 🔥 REGISTRAR COMPRA AO CLICAR NOS BOTÕES
+const container = document.getElementById("detalhes");
+const links = container.querySelectorAll("a");
+
+links.forEach(link => {
+// Ignora o link do streaming principal
+if (link.href.includes(item.linkStreaming)) return;
+link.addEventListener("click", () => {
+registrarCompra(item.postagem);
+});
+});
+}
 
 function voltarParaLista() {
   document.getElementById("detalhes").style.display = "none";
@@ -1228,3 +1254,4 @@ window.addEventListener("load", () => {
 </button>
   </body>
 </html>
+
