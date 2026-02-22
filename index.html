@@ -12,6 +12,7 @@
   	--padding: clamp(1rem, 4vw, 1.5rem);
   	--font-base: clamp(1rem, 4vw, 1.25rem);
   	--font-small: clamp(0.875rem, 3vw, 1rem);
+            --icon-size: 2rem;
 	}
 
 	html, body {
@@ -228,7 +229,7 @@
 	}
 
 	.menu-icon {
-  	font-size: 1.5rem;
+  	font-size: var(--icon-size);
   	cursor: pointer;
   	padding: 0.5rem 0.5rem 0.5rem 2rem;
 	}
@@ -332,7 +333,8 @@
 #btnVoltar {
   background: none;
   border: none;
-  font-size: var(--font-base);
+  font-size: var(--icon-size);
+  cursor: pointer;
   padding: 0 1rem 0 0;
 }
 
@@ -478,6 +480,7 @@
     	--font-base: 4.5vw;
     	--font-small: 4vw;
     	--padding: 6vw;
+            --icon-size: 8vw;
   	}
 
   #formulario {
@@ -556,8 +559,12 @@
     	height: 8vw;
   	}
 
+.menu-icon,
+#btnVoltar {
+  font-size: var(--icon-size);
+}
+
   	.menu-icon {
-    	font-size: 8vw;
     	padding: 0 0 0 5vw;
   	}
 
@@ -800,7 +807,7 @@ Object.keys(dados).forEach(chave => {
 	.then(msg => {
   	alert(msg);
   	form.reset();
-  	voltarParaLista();
+  	voltarParaLista(true);
 	})
 	.catch(err => {
   	alert("Erro ao enviar o formulário.");
@@ -1111,18 +1118,22 @@ fetch(`https://script.google.com/macros/s/AKfycbwkc7674s3_YfXsiv1vQzzOx0QzVjWptb
     .then(res => res.text())
     .then(msg => {
       alert(msg);
-      voltarParaLista();
+      voltarParaLista(true);
     })
     .catch(err => alert("Erro ao excluir anúncio."));
 }
 
-async function voltarParaLista() {
+async function voltarParaLista(recarregar = false) {
   modoLista();
   document.getElementById("btnExcluirAnuncio").style.display = "none";
   document.getElementById("detalhes").style.display = "none";
   document.getElementById("formulario").style.display = "none";
   document.getElementById("anuncios").style.display = "flex";
-  await carregarAnuncios();
+  if (recarregar) {
+    await carregarAnuncios();
+  }
+  // 🔎 Sempre reaplica o filtro
+  filtrarAnuncios();
 }
 
 // Mostra as assinaturas extras
