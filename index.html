@@ -678,6 +678,7 @@ function modoFormulario() {
 
 function mostrarFormulario() {
 modoFormulario();
+
   // 🔐 Bloqueio: só permite se vier do Telegram WebApp
   if (!window.Telegram ||
       !Telegram.WebApp ||
@@ -689,7 +690,7 @@ modoFormulario();
   }
 
   ocultarBotaoWhatsapp();
-
+  document.getElementById("btnExcluirAnuncio").style.display = "none";
   document.getElementById("formulario").style.display = "block";
   document.getElementById("anuncios").style.display = "none";
   document.getElementById("btnMeusAnuncios").style.display = "none";
@@ -1106,23 +1107,22 @@ if (
 
 function excluirAnuncio(idMensagem, anunciante) {
   if (!confirm("Tem certeza que deseja excluir este anúncio?")) return;
-  fetch(`https://script.google.com/macros/s/AKfycbwkc7674s3_YfXsiv1vQzzOx0QzVjWptbJi10wA4N1_mN5Xu1Rsu5-vP4m5py443iXI/exec?funcao=excluirAnuncio&id=${encodeURIComponent(idMensagem)}&anunciante=${encodeURIComponent(anunciante)}`)
+fetch(`https://script.google.com/macros/s/AKfycbwkc7674s3_YfXsiv1vQzzOx0QzVjWptbJi10wA4N1_mN5Xu1Rsu5-vP4m5py443iXI/exec?funcao=excluirAnuncio&id=${encodeURIComponent(idMensagem)}&nomeUsuario=${encodeURIComponent(anunciante)}`)
     .then(res => res.text())
     .then(msg => {
       alert(msg);
       voltarParaLista();
-      carregarAnuncios();
     })
     .catch(err => alert("Erro ao excluir anúncio."));
 }
 
-function voltarParaLista() {
+async function voltarParaLista() {
   modoLista();
+  document.getElementById("btnExcluirAnuncio").style.display = "none";
   document.getElementById("detalhes").style.display = "none";
   document.getElementById("formulario").style.display = "none";
   document.getElementById("anuncios").style.display = "flex";
-  filtrarAnuncios();
-  atualizarBotaoMeusAnuncios();
+  await carregarAnuncios();
 }
 
 // Mostra as assinaturas extras
