@@ -247,9 +247,13 @@
   	align-items: center;
   	font-size: 32px;
   	box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  	z-index: 300;
+  	z-index: 200;
   	transition: background-color 0.3s;
 	}
+
+           .botao-flutuante.excluir {
+            bottom: 300px;
+            }
 
 	.botao-flutuante.like {
   	bottom: 230px;
@@ -318,6 +322,20 @@
   	font-size: var(--font-small);
 	}
 
+.top-title {
+  flex: 1;
+  text-align: center;
+  font-weight: bold;
+  font-size: var(--font-base);
+}
+
+#btnVoltar {
+  background: none;
+  border: none;
+  font-size: var(--font-base);
+  padding: 0 1rem 0 0;
+}
+
 	.bottom-bar {
   	position: fixed;
   	bottom: 0;
@@ -376,7 +394,7 @@
   	background-color: #fff;
   	box-shadow: -0.125rem 0 0.375rem rgba(0, 0, 0, 0.1);
   	transition: transform 0.3s ease;
-  	z-index: 200;
+  	z-index: 400;
   	padding: 5rem 1.5rem 0 3rem;
   	display: flex;
   	flex-direction: column;
@@ -430,7 +448,7 @@
   	width: 100vw;
   	height: 100vh;
   	background-color: rgba(0, 0, 0, 0.4);
-  	z-index: 150;
+  	z-index: 300;
 	}
 
     .detalhes-box p {
@@ -503,7 +521,7 @@
 
 
   	.top-bar, .bottom-bar {
-    	height: 20vw;
+    	height: 12vw;
     	align-items: center;
   	}
 
@@ -513,6 +531,10 @@
     	font-size: 8vw;
     	right: 5vw;
   	}
+
+           .botao-flutuante.excluir {
+           bottom: 90vw;
+           }
 
  	.botao-flutuante.like {
    	bottom: 70vw;
@@ -587,7 +609,7 @@
 	}
   </style>
   <script>
-	async function carregarAnuncios() {
+  async function carregarAnuncios() {
   const container = document.getElementById("anuncios");
   container.innerHTML = '<div class="loading">Carregando Anúncios...</div>';
 
@@ -632,8 +654,30 @@ function limitarKotas(input) {
   }
 }
 
-function mostrarFormulario() {
+function modoLista() {
+  document.getElementById("btnVoltar").style.display = "none";
+  document.getElementById("searchContainer").style.display = "flex";
+  document.getElementById("topTitle").style.display = "none";
+}
 
+function modoDetalhes() {
+  document.getElementById("btnVoltar").style.display = "block";
+  document.getElementById("searchContainer").style.display = "none";
+  const titulo = document.getElementById("topTitle");
+  titulo.style.display = "block";
+  titulo.innerText = "Detalhes do Anúncio";
+}
+
+function modoFormulario() {
+  document.getElementById("btnVoltar").style.display = "block";
+  document.getElementById("searchContainer").style.display = "none";
+  const titulo = document.getElementById("topTitle");
+  titulo.style.display = "block";
+  titulo.innerText = "Novo Anúncio";
+}
+
+function mostrarFormulario() {
+modoFormulario();
   // 🔐 Bloqueio: só permite se vier do Telegram WebApp
   if (!window.Telegram ||
       !Telegram.WebApp ||
@@ -648,6 +692,7 @@ function mostrarFormulario() {
 
   document.getElementById("formulario").style.display = "block";
   document.getElementById("anuncios").style.display = "none";
+  document.getElementById("btnMeusAnuncios").style.display = "none";
   document.getElementById("detalhes").style.display = "none";
 
   const user = Telegram.WebApp.initDataUnsafe.user;
@@ -950,13 +995,17 @@ function atualizarBotaoMeusAnuncios() {
 	}
 
 function getUserId() {
-let userId = localStorage.getItem("siteUserId");
-
-if (!userId) {
-userId = crypto.randomUUID();
-localStorage.setItem("siteUserId", userId);
-}
-return userId;
+  // 🟢 Se estiver dentro do Telegram WebApp
+  if (window.Telegram?.WebApp?.initDataUnsafe?.user?.id) {
+    return Telegram.WebApp.initDataUnsafe.user.id.toString();
+  }
+  // 🔵 Fallback navegador normal
+  let userId = localStorage.getItem("siteUserId");
+  if (!userId) {
+    userId = crypto.randomUUID();
+    localStorage.setItem("siteUserId", userId);
+  }
+  return userId;
 }
 
 function registrarLike(idMensagem) {
@@ -982,8 +1031,9 @@ fetch(`https://script.google.com/macros/s/AKfycbwkc7674s3_YfXsiv1vQzzOx0QzVjWptb
 }
 
 function mostrarDetalhes(item) {
+modoDetalhes();
 ocultarBotaoWhatsapp();
-
+document.getElementById("btnMeusAnuncios").style.display = "none";
 document.getElementById("anuncios").style.display = "none";
 document.getElementById("detalhes").style.display = "block";
 
@@ -1019,14 +1069,55 @@ const links = container.querySelectorAll("a");
 
 links.forEach(link => {
 // Ignora o link do streaming principal
-if (link.href.includes(item.linkStreaming)) return;
+if (item.linkStreaming && link.href.includes(item.linkStreaming)) return;
 link.addEventListener("click", () => {
 registrarCompra(item.postagem);
 });
 });
+
+const btnExcluir = document.getElementById("btnExcluirAnuncio");
+if (btnExcluir) {
+  btnExcluir.style.display = "none";
+}
+
+// Só mostra se:
+// 1️⃣ Está dentro do Telegram
+// 2️⃣ Existe username
+// 3️⃣ Username é igual ao anunciante do anúncio
+
+if (
+  window.Telegram &&
+  Telegram.WebApp &&
+  Telegram.WebApp.initDataUnsafe &&
+  Telegram.WebApp.initDataUnsafe.user &&
+  Telegram.WebApp.initDataUnsafe.user.username
+) {
+
+  const usernameAtual = "@" + Telegram.WebApp.initDataUnsafe.user.username;
+
+  if (usernameAtual === item.anunciante) {
+    btnExcluir.style.display = "flex";
+    btnExcluir.onclick = () => {
+      excluirAnuncio(item.postagem, item.anunciante);
+    };
+  }
+}
+}
+
+function excluirAnuncio(idMensagem, anunciante) {
+  if (!confirm("Tem certeza que deseja excluir este anúncio?")) return;
+  fetch(`https://script.google.com/macros/s/AKfycbwkc7674s3_YfXsiv1vQzzOx0QzVjWptbJi10wA4N1_mN5Xu1Rsu5-vP4m5py443iXI/exec?funcao=excluirAnuncio&id=${encodeURIComponent(idMensagem)}&anunciante=${encodeURIComponent(anunciante)}`)
+    .then(res => res.text())
+    .then(msg => {
+      alert(msg);
+      voltarParaLista();
+      carregarAnuncios();
+    })
+    .catch(err => alert("Erro ao excluir anúncio."));
 }
 
 function voltarParaLista() {
+  modoLista();
   document.getElementById("detalhes").style.display = "none";
   document.getElementById("formulario").style.display = "none";
   document.getElementById("anuncios").style.display = "flex";
@@ -1106,17 +1197,34 @@ window.addEventListener("load", () => {
   document.getElementById("menu-overlay")
     .addEventListener("click", toggleMenu);
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+  const btnVoltar = document.getElementById("btnVoltar");
+  if (btnVoltar) {
+    btnVoltar.addEventListener("click", () => {
+      voltarParaLista();
+    });
+  }
+});
 </script>
 </head>
 <body>
   <div class="top-bar">
-	<img src="https://drive.google.com/thumbnail?id=1eVqeCg4y-NUEMc80LpF41smGc9pmHPKt&sz=w500" class="logo-site" alt="Logo do site">
-	<div class="search-container">
-  	<span class="icon"><i class="bi bi-search"></i></span>
-  	<input type="text" id="pesquisa" placeholder="Pesquisar...">
-	</div>
-	<div class="menu-icon"><i class="bi bi-list menu-icon"></i></div>
+  <div class="top-left">
+    <button id="btnVoltar" style="display:none;">
+      <i class="bi bi-arrow-left"></i>
+    </button>
   </div>
+  <img src="https://drive.google.com/thumbnail?id=1eVqeCg4y-NUEMc80LpF41smGc9pmHPKt&sz=w500" class="logo-site" alt="Logo do site">
+  <div class="search-container" id="searchContainer">
+    <span class="icon"><i class="bi bi-search"></i></span>
+    <input type="text" id="pesquisa" placeholder="Pesquisar...">
+  </div>
+  <div class="top-title" id="topTitle" style="display:none;"></div>
+  <div class="menu-icon">
+    <i class="bi bi-list"></i>
+  </div>
+</div>
 
   <div class="lista-anuncios" id="anuncios"></div>
   <div id="detalhes" style="display: none; padding: 20px;"></div>
@@ -1231,12 +1339,15 @@ window.addEventListener("load", () => {
 	<div class="painel-item">
   	<i class="bi bi-share"></i> <a href="https://api.whatsapp.com/send?text=%2AANUNCIE%20E%20COMPARTILHE%2A%0A_Seu%20Streaming%2C%20Nosso%20Espa%C3%A7o_%0A%0A%2ADIVIDIR%20CONTAS%20PREMIUM%2A%0Ahttps%3A%2F%2Ft.me%2Fdividir_contas_premium" target="_blank">Compartilhar Grupo</a>
 	</div>
-	<div class="painel-item">
-  	<i class="bi bi-shield-exclamation"></i> <a href="https://telegra.ph/LISTA-DE-GOLPISTAS-10-06" target="_blank">Lista de Golpistas</a>
-	</div>
   </div>
-
   <div id="menu-overlay"></div>
+<button 
+  id="btnExcluirAnuncio"
+  class="botao-flutuante excluir"
+  style="display:none;"
+>
+  <i class="bi bi-trash"></i>
+</button>
 <button
   id="btnCompartilharWhatsapp"
   class="botao-flutuante compartilhar"
