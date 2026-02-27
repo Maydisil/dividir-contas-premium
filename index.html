@@ -1230,7 +1230,9 @@ let usuarioCadastrado = false;
 let anunciantePesquisaValido = null;
 
 window.addEventListener("load", async () => {
+
   const params = new URLSearchParams(window.location.search);
+
   // 🔹 Captura usuário Telegram
   if (
     window.Telegram &&
@@ -1244,8 +1246,12 @@ window.addEventListener("load", async () => {
   }
 
   await carregarAnuncios();
+
+  // 🔥 Se abrir direto no formulário
   if (params.has("anunciar")) {
     mostrarFormulario();
+  } else {
+    renderizarBottomBar("lista");
   }
 
   document.getElementById("pesquisa")
@@ -1259,8 +1265,7 @@ window.addEventListener("load", async () => {
 
   document.getElementById("menu-overlay")
     .addEventListener("click", toggleMenu);
-  renderizarBottomBar("lista");
-    });
+});
 
 document.addEventListener("DOMContentLoaded", function () {
   const btnVoltar = document.getElementById("btnVoltar");
