@@ -23,6 +23,7 @@
      body {
        font-family: Arial, sans-serif;
        margin: 0;
+       padding-bottom: 6rem;
        background-color: #f2f2f2;
        font-size: var(--font-base);
      }
@@ -253,44 +254,6 @@
        background-color: #999;
      }
 
-     .botao-flutuante {
-       position: fixed;
-       right: 20px;
-       background-color: #007bff;
-       color: #fff;
-       border: none;
-       border-radius: 50%;
-       width: 60px;
-       height: 60px;
-       display: flex;
-       justify-content: center;
-       align-items: center;
-       font-size: 32px;
-       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-       z-index: 200;
-       transition: background-color 0.3s;
-     }
-
-     .botao-flutuante.excluir {
-       bottom: 300px;
-     }
-
-     .botao-flutuante.like {
-       bottom: 230px;
-     }
-
-     .botao-flutuante.postagem {
-       bottom: 160px;
-     }
-
-     .botao-flutuante.compartilhar {
-       bottom: 90px;
-     }
-
-     .botao-flutuante:hover {
-       background-color: #0056b3;
-     }
-
      .lista-anuncios {
        padding: var(--padding);
        display: flex;
@@ -298,16 +261,15 @@
        gap: 0.75rem;
      }
 
-     .anuncio,
-     .detalhes-box {
+     .anuncio {
        background-color: #fff;
        border-radius: 0.75rem;
        padding: var(--padding);
        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
+       transition: background-color 0.2s;
        display: flex;
        align-items: center;
        gap: 1rem;
-       transition: background-color 0.2s;
      }
 
      .anuncio:hover {
@@ -343,7 +305,7 @@
        font-size: var(--font-small);
      }
 
-     .bottom-bar {
+     #bottomBar {
        position: fixed;
        bottom: 0;
        width: 100%;
@@ -352,9 +314,10 @@
        display: flex;
        justify-content: center;
        box-shadow: 0 -0.125rem 0.25rem rgba(0, 0, 0, 0.1);
+       z-index: 200;
      }
 
-     .bottom-bar button {
+      #bottomBar button {
        background: none;
        border: none;
        display: flex;
@@ -367,12 +330,12 @@
        cursor: pointer;
      }
 
-     .bottom-bar i {
-       font-size: 2.5vw;
+      #bottomBar i {
+       font-size: 1.4rem;
        margin-bottom: 0.25rem;
      }
 
-     .bottom-bar button::after {
+      #bottomBar button::after {
        content: "";
        position: absolute;
        bottom: 0;
@@ -383,12 +346,8 @@
        transition: width 0.3s;
      }
 
-     .bottom-bar button:hover::after {
+      #bottomBar button:hover::after {
        width: 100%;
-     }
-
-     .bottom-area {
-       height: 6rem;
      }
 
      .painel-menu {
@@ -458,11 +417,23 @@
        z-index: 300;
      }
 
+     .detalhes-box {
+       width: 100%;
+       max-width: 500px;
+       margin: 2rem auto;
+       padding: var(--padding);
+       background-color: #fff;
+       border-radius: 0.75rem;
+       box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
+       box-sizing: border-box;
+     }
+
      .detalhes-box p {
        color: #333;
-       margin: 0;
-       line-height: 0.5;
-       font-size: 2vw;
+       margin: 0.4rem 0;
+       line-height: 1.3;
+       font-size: var(--font-base);
+       text-align: left;
      }
 
      .detalhes-box hr {
@@ -472,13 +443,36 @@
        margin: 0.15rem 0;
      }
 
-     .detalhes-box img {
-       width: 40vw;
-       height: auto;
-       border-radius: 0.75rem;
-       display: block;
-       margin: 0 auto;
-     }
+     .detalhes-box > a img {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto 1rem auto;
+  border-radius: 0.75rem;
+}
+
+.botoes-contato {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.botoes-contato a {
+  width: 100%;
+}
+
+.botoes-contato img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 12px;
+}
+
+.botoes-contato img:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
 
      @media (orientation: portrait) {
        :root {
@@ -486,6 +480,10 @@
          --font-small: 4vw;
          --padding: 6vw;
          --icon-size: 8vw;
+       }
+
+       body {
+         padding-bottom: 25vw;
        }
 
        #formulario {
@@ -528,7 +526,7 @@
        }
 
        .top-bar,
-       .bottom-bar {
+        #bottomBar {
          height: 13vw;
          align-items: center;
        }
@@ -556,33 +554,6 @@
          font-size: 5vw;
        }
 
-       .botao-flutuante {
-         width: 15vw;
-         height: 15vw;
-         font-size: 8vw;
-         right: 5vw;
-       }
-
-       .botao-flutuante.excluir {
-         bottom: 90vw;
-       }
-
-       .botao-flutuante.like {
-         bottom: 70vw;
-       }
-
-       .botao-flutuante.postagem {
-         bottom: 50vw;
-       }
-
-       .botao-flutuante.compartilhar {
-         bottom: 30vw;
-       }
-
-       .bottom-area {
-         height: 25vw;
-       }
-
        .logo {
          width: 18vw;
          height: 18vw;
@@ -597,12 +568,12 @@
          font-size: 4.5vw;
        }
 
-       .bottom-bar button {
+        #bottomBar button {
          font-size: 4.5vw;
          padding: 0 10vw;
        }
 
-       .bottom-bar i {
+        #bottomBar i {
          font-size: 7vw;
        }
 
@@ -615,19 +586,32 @@
          font-size: 6vw;
        }
 
+       .detalhes-box {
+         max-width: 90vw;
+         margin: 1rem auto;
+         padding: var(--padding);
+       }
+
+
        .detalhes-box img {
          width: 100%;
        }
      }
    </style>
   <script>
+// ===============================
+// 🔗 CONFIGURAÇÃO GLOBAL APPS SCRIPT
+// ===============================
+const SCRIPT_SITE = "https://script.google.com/macros/s/AKfycbxLr4fwxB1aSGvoYrM5gFvlshOxmMChW5_aL5e_gkGG_ALEqMLIzRwpBP7YqlfrmTTtpA/exec";
+
+const SCRIPT_BOT = "https://script.google.com/macros/s/AKfycbwkc7674s3_YfXsiv1vQzzOx0QzVjWptbJi10wA4N1_mN5Xu1Rsu5-vP4m5py443iXI/exec";
+
   async function carregarAnuncios() {
   const container = document.getElementById("anuncios");
   container.innerHTML = '<div class="loading">Carregando Anúncios...</div>';
 
   try {
-    // URL correta (com o ?funcao=listarAnuncios)
-    const resposta = await fetch("https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-YbnmugdXbhXDtTxPSE_OOCvs34ivYxlD8VJhEXjg/exec?funcao=listarAnuncios");
+    const resposta = await fetch(`${SCRIPT_SITE}?funcao=listarAnuncios`);
     
     if (!resposta.ok) throw new Error('Resposta HTTP ' + resposta.status);
     const anuncios = await resposta.json();
@@ -645,8 +629,6 @@
         filtrarAnuncios(); // agora roda com os anúncios já carregados
       }
     }
-// 🔹 Atualiza botão 👤 depois que tudo já foi carregado e filtrado
-atualizarBotaoMeusAnuncios();
 
   } catch (erro) {
     container.innerHTML = '<div class="erro">Erro ao carregar anúncios.</div>';
@@ -666,30 +648,7 @@ function limitarKotas(input) {
   }
 }
 
-function modoLista() {
-  document.getElementById("btnVoltar").style.display = "none";
-  document.getElementById("searchContainer").style.display = "flex";
-  document.getElementById("topTitle").style.display = "none";
-}
-
-function modoDetalhes() {
-  document.getElementById("btnVoltar").style.display = "block";
-  document.getElementById("searchContainer").style.display = "none";
-  const titulo = document.getElementById("topTitle");
-  titulo.style.display = "block";
-  titulo.innerText = "Detalhes do Anúncio";
-}
-
-function modoFormulario() {
-  document.getElementById("btnVoltar").style.display = "block";
-  document.getElementById("searchContainer").style.display = "none";
-  const titulo = document.getElementById("topTitle");
-  titulo.style.display = "block";
-  titulo.innerText = "Novo Anúncio";
-}
-
 function mostrarFormulario() {
-modoFormulario();
 
   // 🔐 Bloqueio: só permite se vier do Telegram WebApp
   if (!window.Telegram ||
@@ -700,12 +659,10 @@ modoFormulario();
     alert("⚠️ Este formulário só pode ser acessado via botão ANUNCIAR no grupo DIVIDIR CONTAS PREMIUM.");
     return;
   }
+modoFormulario();
 
-  ocultarBotaoWhatsapp();
-  document.getElementById("btnExcluirAnuncio").style.display = "none";
   document.getElementById("formulario").style.display = "block";
   document.getElementById("anuncios").style.display = "none";
-  document.getElementById("btnMeusAnuncios").style.display = "none";
   document.getElementById("detalhes").style.display = "none";
 
   const user = Telegram.WebApp.initDataUnsafe.user;
@@ -728,7 +685,7 @@ modoFormulario();
     campoUsuario.setAttribute("readonly", true);
 
     // 🔥 Buscar WhatsApp automaticamente
-    fetch(`https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-YbnmugdXbhXDtTxPSE_OOCvs34ivYxlD8VJhEXjg/exec?funcao=buscarWhatsapp&nome=${encodeURIComponent(nomeUsuario)}`)
+    fetch(`${SCRIPT_SITE}?funcao=buscarWhatsapp&nome=${encodeURIComponent(nomeUsuario)}`)
       .then(res => res.text())
       .then(telefone => {
         const inputWhatsapp = document.getElementById("whatsappInput");
@@ -740,7 +697,7 @@ modoFormulario();
   }
 
   // 🔹 Carregar opções de streaming
-  fetch("https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-YbnmugdXbhXDtTxPSE_OOCvs34ivYxlD8VJhEXjg/exec?funcao=listarOpcoesStreaming")
+  fetch(`${SCRIPT_SITE}?funcao=listarOpcoesStreaming`)
     .then(res => res.json())
     .then(opcoes => {
       const select = document.getElementById("selectStreaming");
@@ -778,6 +735,7 @@ modoFormulario();
       });
     }
   }
+  renderizarBottomBar("formulario");
 }
 
 function enviarFormulario(event) {
@@ -807,7 +765,7 @@ Object.keys(dados).forEach(chave => {
 
   const params = new URLSearchParams(dados).toString();
 
-  fetch(`https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-YbnmugdXbhXDtTxPSE_OOCvs34ivYxlD8VJhEXjg/exec?${params}`)
+  fetch(`${SCRIPT_SITE}?${params}`)
 	.then(res => res.text())
 	.then(msg => {
   	alert(msg);
@@ -883,122 +841,6 @@ function formatarWhatsapp(input) {
   });
 }
 
-function compartilharUsuarioWhatsapp() {
-  const btn = document.getElementById("btnCompartilharWhatsapp");
-  const anunciante = btn.dataset.anunciante;
-
-  if (!anunciante) return;
-
-  const anuncios = document.querySelectorAll(
-    ".anuncio:not([style*='display: none'])"
-  );
-
-  if (anuncios.length === 0) return;
-
-  let texto = "";
-  let whatsappUsuario = "";
-  const usuarioSemArroba = anunciante.replace("@", "");
-
-  anuncios.forEach((anuncio, index) => {
-    if (anuncio.dataset.anunciante !== anunciante) return;
-
-    const streaming = anuncio.dataset.streaming;
-    const streamingExtra = anuncio.dataset.streamingExtra;
-    const valor = anuncio.dataset.valor;
-
-    // 🔹 nome do streaming em negrito e limpo
-    const streamingLimpo = streaming.replace(/\+$/, "");
-    texto += `🖥 *${streamingLimpo}*`;
-
-    if (streamingExtra) {
-      texto += `\n➕ ${streamingExtra}`;
-    }
-
-    texto += `\n💵 ${valor}`;
-
-    if (index < anuncios.length - 1) {
-      texto += `\n-------------------------------------------\n`;
-    }
-
-    if (!whatsappUsuario && anuncio.dataset.whatsapp) {
-      whatsappUsuario = anuncio.dataset.whatsapp;
-    }
-  });
-
-  // 🔹 bloco final (títulos em negrito)
-  texto += `\n-------------------------------------------\n`;
-  texto += `👤 *MEUS ANÚNCIOS*\nhttps://tinyurl.com/divcp01?pesquisar=${usuarioSemArroba}\n\n`;
-  texto += `📲 *CONTATO POR TELEGRAM*\nhttps://t.me/${usuarioSemArroba}`;
-
-  if (whatsappUsuario) {
-    texto += `\n\n📲 *CONTATO POR WHATSAPP*\nhttps://wa.me/${whatsappUsuario}`;
-  }
-
-  const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(texto)}`;
-  window.open(url, "_blank");
-}
-
-function filtrarAnuncios() {
-  const termoInput = document.getElementById("pesquisa").value.trim().toLowerCase();
-  const anuncios = document.querySelectorAll(".anuncio");
-
-  let anunciosVisiveis = 0;
-  let anuncianteValido = "";
-
-  anuncios.forEach(el => {
-    const titulo = el.querySelector(".titulo").textContent.toLowerCase();
-    const valor = el.querySelector(".valor").textContent.toLowerCase();
-
-    const anuncianteOriginal = el.dataset.anunciante;
-    const anunciante = anuncianteOriginal.replace(/^@/, "").toLowerCase();
-
-    const mostrar =
-      titulo.includes(termoInput) ||
-      valor.includes(termoInput) ||
-      anunciante.includes(termoInput);
-
-    el.style.display = mostrar ? "flex" : "none";
-
-    if (mostrar) {
-      anunciosVisiveis++;
-
-      // 🔹 anunciante válido = match EXATO (sem @)
-      if (
-        termoInput &&
-        anunciante === termoInput
-      ) {
-        anuncianteValido = anuncianteOriginal; // mantém com @
-      }
-    }
-  });
-
-  const btn = document.getElementById("btnCompartilharWhatsapp");
-  const listaVisivel =
-    document.getElementById("anuncios").style.display !== "none";
-  btn.style.display = anuncianteValido && listaVisivel ? "flex" : "none";
-  btn.dataset.anunciante = anuncianteValido || "";
-}
-
-function atualizarBotaoMeusAnuncios() {
-  const barraPesquisa = document.getElementById("pesquisa");
-  const btnMeus = document.getElementById("btnMeusAnuncios");
-  const btnWhats = document.getElementById("btnCompartilharWhatsapp");
-  const lista = document.getElementById("anuncios");
-
-  if (!barraPesquisa || !btnMeus || !lista) return;
-  const pesquisaVazia = barraPesquisa.value.trim() === "";
-  const listaVisivel = window.getComputedStyle(lista).display !== "none";
-
-  if (usuarioTelegram && pesquisaVazia && listaVisivel) {
-    btnMeus.style.display = "flex";
-    if (btnWhats) {
-      btnWhats.style.display = "none";
-    }
-  } else {
-    btnMeus.style.display = "none";
-  }
-}
-
 	function toggleMenu() {
   	const painel = document.getElementById("painel-menu");
   	const overlay = document.getElementById("menu-overlay");
@@ -1006,6 +848,15 @@ function atualizarBotaoMeusAnuncios() {
   	painel.classList.toggle("ativo", !ativo);
   	overlay.style.display = ativo ? "none" : "block";
 	}
+
+function toggleExtras() {
+  const extras = document.getElementById("containerExtras");
+  extras.classList.toggle("hidden");
+  const btn = document.querySelector(".toggle-extras");
+  btn.textContent = extras.classList.contains("hidden")
+    ? "Mostrar extras ▼"
+    : "Fechar extras ▲";
+}
 
 function getUserId() {
   // 🟢 Se estiver dentro do Telegram WebApp
@@ -1023,103 +874,332 @@ function getUserId() {
 
 function registrarLike(idMensagem) {
 const userId = getUserId();
-
-fetch(`https://script.google.com/macros/s/AKfycbwkc7674s3_YfXsiv1vQzzOx0QzVjWptbJi10wA4N1_mN5Xu1Rsu5-vP4m5py443iXI/exec?funcao=registrarLike&id=${encodeURIComponent(idMensagem)}&userId=${encodeURIComponent(userId)}`)
+fetch(`${SCRIPT_BOT}?funcao=registrarLike&id=${encodeURIComponent(idMensagem)}&userId=${encodeURIComponent(userId)}`)
 .then(res => res.text())
 .then(msg => alert(msg))
 .catch(err => alert("Erro ao registrar like."));
 }
 
-function ocultarBotaoWhatsapp() {
-  const btn = document.getElementById("btnCompartilharWhatsapp");
-  if (btn) {
-    btn.style.display = "none";
-    btn.dataset.anunciante = "";
-  }
-}
-
 function registrarCompra(idMensagem) {
-fetch(`https://script.google.com/macros/s/AKfycbwkc7674s3_YfXsiv1vQzzOx0QzVjWptbJi10wA4N1_mN5Xu1Rsu5-vP4m5py443iXI/exec?funcao=registrarCompra&id=${encodeURIComponent(idMensagem)}`)
+fetch(`${SCRIPT_BOT}?funcao=registrarCompra&id=${encodeURIComponent(idMensagem)}`)
 .catch(err => console.warn("Erro ao registrar compra", err));
 }
 
-function mostrarDetalhes(item) {
-modoDetalhes();
-ocultarBotaoWhatsapp();
-document.getElementById("btnMeusAnuncios").style.display = "none";
-document.getElementById("anuncios").style.display = "none";
-document.getElementById("detalhes").style.display = "block";
-
-document.getElementById("detalhes").innerHTML = `
-<div class="detalhes-box" style="margin-top: 16px; flex-direction: column; align-items: flex-start;">
-<a href="${item.linkStreaming}" target="_blank">
-<img src="https://drive.google.com/thumbnail?id=${item.logo2}&sz=w1000" alt="Logo2">
-</a>
-<hr>
-<p><strong>📺 ${item.streaming}</strong></p>
-${item.streamingExtra ? `<p style="line-height: 1.2em;"><strong>➕ ${item.streamingExtra}</strong></p>` : ""}
-<p><strong>💵 ${item.valor}</strong></p>
-<p><strong>📌 ${item.vagas}</strong></p>
-<p><strong>🔐 ${item.login}</strong></p>
-${item.oferta ? `<p><strong>⏰ OFERTA - ${item.oferta}</strong></p>` : ""}
-<hr>
-<p><strong>Postado em: ${item.data}</strong></p>
-<hr>
-<p><strong>👤 ${item.anunciante}</strong></p>
-<p><strong>${item.pontosAnunciante}</strong></p>
-${item.botaoTelegram || ""}
-${item.botaoWhatsapp || ""}
-${item.botaoKotas || ""}
-</div>
-${item.botaoLike || ""}
-${item.botaoPostagem || ""}
-${item.botaoCompartilhar || ""}
-`;
-
-// 🔥 REGISTRAR COMPRA AO CLICAR NOS BOTÕES
-const container = document.getElementById("detalhes");
-const links = container.querySelectorAll("a");
-
-links.forEach(link => {
-// Ignora o link do streaming principal
-if (item.linkStreaming && link.href.includes(item.linkStreaming)) return;
-link.addEventListener("click", () => {
-registrarCompra(item.postagem);
-});
-});
-
-const btnExcluir = document.getElementById("btnExcluirAnuncio");
-if (btnExcluir) {
-  btnExcluir.style.display = "none";
+function modoLista() {
+  document.getElementById("btnVoltar").style.display = "none";
+  document.getElementById("searchContainer").style.display = "flex";
+  document.getElementById("topTitle").style.display = "none";
 }
 
-// Só mostra se:
-// 1️⃣ Está dentro do Telegram
-// 2️⃣ Existe username
-// 3️⃣ Username é igual ao anunciante do anúncio
+function modoDetalhes() {
+  document.getElementById("btnVoltar").style.display = "block";
+  document.getElementById("searchContainer").style.display = "none";
+  const titulo = document.getElementById("topTitle");
+  titulo.style.display = "block";
+  titulo.innerText = "Detalhes do Anúncio";
+}
 
-if (
-  window.Telegram &&
-  Telegram.WebApp &&
-  Telegram.WebApp.initDataUnsafe &&
-  Telegram.WebApp.initDataUnsafe.user &&
-  Telegram.WebApp.initDataUnsafe.user.username
-) {
+function modoFormulario() {
+  document.getElementById("btnVoltar").style.display = "block";
+  document.getElementById("searchContainer").style.display = "none";
+  const titulo = document.getElementById("topTitle");
+  titulo.style.display = "block";
+  titulo.innerText = "Novo Anúncio";
+}
 
-  const usernameAtual = "@" + Telegram.WebApp.initDataUnsafe.user.username;
+function mostrarDetalhes(item) {
+  modoDetalhes();
+  document.getElementById("anuncios").style.display = "none";
+  document.getElementById("detalhes").style.display = "block";
 
-  if (usernameAtual === item.anunciante) {
-    btnExcluir.style.display = "flex";
-    btnExcluir.onclick = () => {
-      excluirAnuncio(item.postagem, item.anunciante);
-    };
+  // 🔒 Guardar item atual globalmente
+  window.itemAtual = item;
+  window.podeExcluir = false;
+
+  // =========================
+  // Verificar se pode excluir
+  // =========================
+  if (
+    window.Telegram &&
+    Telegram.WebApp &&
+    Telegram.WebApp.initDataUnsafe &&
+    Telegram.WebApp.initDataUnsafe.user &&
+    Telegram.WebApp.initDataUnsafe.user.username
+  ) {
+    const usernameAtual = "@" + Telegram.WebApp.initDataUnsafe.user.username;
+
+    if (usernameAtual === item.anunciante) {
+      window.podeExcluir = true;
+    }
+  }
+
+  // =========================
+  // BOTÕES DE CONTATO (IMAGENS)
+  // =========================
+  let botoesContato = "";
+
+  if (item.anunciante) {
+    const usuarioLimpo = item.anunciante.replace("@", "");
+    botoesContato += `
+      <a href="https://t.me/${usuarioLimpo}"
+         target="_blank"
+         onclick="registrarCompra('${item.postagem}')">
+        <img src="https://drive.google.com/thumbnail?id=1qXoQt7RBq3gXbeEelRQbawl5Ni2oUxdl&sz=w1000">
+      </a>
+    `;
+  }
+
+  if (item.whatsapp) {
+    botoesContato += `
+      <a href="https://wa.me/${item.whatsapp}"
+         target="_blank"
+         onclick="registrarCompra('${item.postagem}')">
+        <img src="https://drive.google.com/thumbnail?id=1zdhXAhIUNrZfurE_7_i56Hj7TZkJhjN_&sz=w1000">
+      </a>
+    `;
+  }
+
+  if (item.kotas) {
+    botoesContato += `
+      <a href="https://app.kotas.com.br/grupo/${item.kotas}"
+         target="_blank"
+         onclick="registrarCompra('${item.postagem}')">
+        <img src="https://drive.google.com/thumbnail?id=1aPf9zlL3M85F5kXxhbvzhq6iKpyK5lXb&sz=w1000">
+      </a>
+    `;
+  }
+
+  // =========================
+  // HTML DETALHES
+  // =========================
+  document.getElementById("detalhes").innerHTML = `
+    <div class="detalhes-box">
+
+      <a href="${item.linkStreaming}" target="_blank">
+        <img src="https://drive.google.com/thumbnail?id=${item.logo2}&sz=w1000">
+      </a>
+
+      <hr>
+
+      <p><strong>📺 ${item.streaming}</strong></p>
+      ${item.streamingExtra ? `<p><strong>➕ ${item.streamingExtra}</strong></p>` : ""}
+      <p><strong>💵 ${item.valor}</strong></p>
+      <p><strong>📌 ${item.vagas}</strong></p>
+      <p><strong>🔐 ${item.login}</strong></p>
+      ${item.oferta ? `<p><strong>⏰ OFERTA - ${item.oferta}</strong></p>` : ""}
+
+      <hr>
+
+      <p><strong>Postado em: ${item.data}</strong></p>
+
+      <hr>
+
+      <p><strong>👤 ${item.anunciante}</strong></p>
+      <p><strong>
+        ${item.pontos?.coracao ?? 0} ❤️
+        ${item.pontos?.balao ?? 0} 💬
+        ${item.pontos?.megafone ?? 0} 📢
+      </strong></p>
+
+      <div class="botoes-contato">
+        ${botoesContato}
+      </div>
+
+    </div>
+  `;
+
+  // 👉 Renderizar barra inferior
+  renderizarBottomBar("detalhes");
+}
+
+function renderizarBottomBar(tipo) {
+  const bar = document.getElementById("bottomBar");
+  bar.innerHTML = "";
+
+  function criarBotao(icone, texto, acao) {
+    const btn = document.createElement("button");
+    btn.innerHTML = `
+      <i class="${icone}"></i>
+      <span>${texto}</span>
+    `;
+    btn.onclick = acao;
+    bar.appendChild(btn);
+  }
+
+  // ===============================
+  // 🏠 LISTA (HOME)
+  // ===============================
+  if (tipo === "lista") {
+
+    // 🏠 Home (reseta filtro)
+    criarBotao("bi bi-house", "Home", () => {
+      document.getElementById("pesquisa").value = "";
+      filtrarAnuncios();
+      renderizarBottomBar("lista");
+    });
+
+    // 📢 Anunciar (apenas se estiver no Telegram)
+    if (usuarioTelegram) {
+      criarBotao("bi bi-megaphone", "Anunciar", mostrarFormulario);
+    }
+
+    // 👤 Meus Anúncios (Telegram + cadastrado)
+    if (usuarioTelegram && usuarioCadastrado) {
+      criarBotao("bi bi-person", "Meus Anúncios", () => {
+        const barra = document.getElementById("pesquisa");
+        barra.value = usuarioTelegram;
+        filtrarAnuncios();
+        renderizarBottomBar("lista");
+      });
+    }
+
+    // 📲 Compartilhar lista de usuário pesquisado
+    if (anunciantePesquisaValido) {
+      criarBotao("bi bi-share", "Enviar", compartilharUsuarioWhatsapp);
+    }
+  }
+
+  // ===============================
+  // 📄 DETALHES
+  // ===============================
+  if (tipo === "detalhes" && window.itemAtual) {
+
+    const item = window.itemAtual;
+
+    // ❤️ Like
+    criarBotao("bi bi-heart", "Like", () => {
+      registrarLike(item.postagem);
+    });
+
+    // 💬 Ver Postagem no Telegram
+    criarBotao("bi bi-chat", "Postagem", () => {
+      window.open(
+        `https://t.me/dividir_contas_premium/${item.postagem}`,
+        "_blank"
+      );
+    });
+
+    // 📲 Compartilhar link da postagem
+    criarBotao("bi bi-share", "Enviar", () => {
+      const link = `https://t.me/dividir_contas_premium/${item.postagem}`;
+      const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(link)}`;
+      window.open(url, "_blank");
+    });
+
+    // 🗑 Excluir (somente dono)
+    if (window.podeExcluir) {
+      criarBotao("bi bi-trash", "Excluir", () => {
+        excluirAnuncio(item.postagem, item.anunciante);
+      });
+    }
+  }
+
+  // ===============================
+  // 📝 FORMULÁRIO
+  // ===============================
+  if (tipo === "formulario") {
+    criarBotao("bi bi-x", "Cancelar", voltarParaLista);
   }
 }
+
+async function verificarUsuarioCadastrado(username) {
+  if (!username) return false;
+
+  try {
+    const res = await fetch(`${SCRIPT_SITE}?funcao=verificarAnunciante&usuario=${encodeURIComponent(username)}`);
+    const txt = await res.text();
+    return txt === "true";
+  } catch (e) {
+    return false;
+  }
+}
+
+function compartilharUsuarioWhatsapp() {
+
+  if (!anunciantePesquisaValido) return;
+
+  const anunciante = anunciantePesquisaValido;
+  const anuncios = document.querySelectorAll(
+    ".anuncio:not([style*='display: none'])"
+  );
+
+  if (anuncios.length === 0) return;
+
+  let texto = "";
+  let whatsappUsuario = "";
+  const usuarioSemArroba = anunciante.replace("@", "");
+
+  anuncios.forEach((anuncio, index) => {
+
+    if (anuncio.dataset.anunciante !== anunciante) return;
+
+    const streaming = anuncio.dataset.streaming;
+    const streamingExtra = anuncio.dataset.streamingExtra;
+    const valor = anuncio.dataset.valor;
+
+    const streamingLimpo = streaming.replace(/\+$/, "");
+
+    texto += `🖥 *${streamingLimpo}*`;
+
+    if (streamingExtra) {
+      texto += `\n➕ ${streamingExtra}`;
+    }
+
+    texto += `\n💵 ${valor}`;
+
+    if (index < anuncios.length - 1) {
+      texto += `\n-------------------------------------------\n`;
+    }
+
+    if (!whatsappUsuario && anuncio.dataset.whatsapp) {
+      whatsappUsuario = anuncio.dataset.whatsapp;
+    }
+  });
+
+  texto += `\n-------------------------------------------\n`;
+  texto += `👤 *MEUS ANÚNCIOS*\nhttps://tinyurl.com/divcp01?pesquisar=${usuarioSemArroba}\n\n`;
+  texto += `📲 *CONTATO POR TELEGRAM*\nhttps://t.me/${usuarioSemArroba}`;
+
+  if (whatsappUsuario) {
+    texto += `\n\n📲 *CONTATO POR WHATSAPP*\nhttps://wa.me/${whatsappUsuario}`;
+  }
+
+  const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(texto)}`;
+
+  window.open(url, "_blank");
+}
+
+function filtrarAnuncios() {
+  const termo = document.getElementById("pesquisa")
+    .value.trim()
+    .toLowerCase();
+
+  const anuncios = document.querySelectorAll(".anuncio");
+  anunciantePesquisaValido = null;
+  anuncios.forEach(el => {
+    const titulo = el.querySelector(".titulo")
+      .textContent.toLowerCase();
+    const valor = el.querySelector(".valor")
+      .textContent.toLowerCase();
+    const anuncianteOriginal = el.dataset.anunciante;
+    const anunciante = anuncianteOriginal
+      .replace(/^@/, "")
+      .toLowerCase();
+    const mostrar =
+      titulo.includes(termo) ||
+      valor.includes(termo) ||
+      anunciante.includes(termo);
+    el.style.display = mostrar ? "flex" : "none";
+
+    if (termo && anunciante === termo) {
+      anunciantePesquisaValido = anuncianteOriginal;
+    }
+  });
 }
 
 function excluirAnuncio(idMensagem, anunciante) {
   if (!confirm("Tem certeza que deseja excluir este anúncio?")) return;
-fetch(`https://script.google.com/macros/s/AKfycbwkc7674s3_YfXsiv1vQzzOx0QzVjWptbJi10wA4N1_mN5Xu1Rsu5-vP4m5py443iXI/exec?funcao=excluirAnuncio&id=${encodeURIComponent(idMensagem)}&nomeUsuario=${encodeURIComponent(anunciante)}`)
+fetch(`${SCRIPT_BOT}?funcao=excluirAnuncio&id=${encodeURIComponent(idMensagem)}&nomeUsuario=${encodeURIComponent(anunciante)}`)
     .then(res => res.text())
     .then(msg => {
       alert(msg);
@@ -1130,89 +1210,57 @@ fetch(`https://script.google.com/macros/s/AKfycbwkc7674s3_YfXsiv1vQzzOx0QzVjWptb
 
 async function voltarParaLista(recarregar = false) {
   modoLista();
-  document.getElementById("btnExcluirAnuncio").style.display = "none";
   document.getElementById("detalhes").style.display = "none";
   document.getElementById("formulario").style.display = "none";
   document.getElementById("anuncios").style.display = "flex";
+
   if (recarregar) {
     await carregarAnuncios();
   }
-  // 🔎 Sempre reaplica o filtro
+
   filtrarAnuncios();
+  renderizarBottomBar("lista");
 }
 
-// Mostra as assinaturas extras
-function toggleExtras() {
-  const extras = document.getElementById("containerExtras");
-  extras.classList.toggle("hidden");
-
-  const btn = document.querySelector(".toggle-extras");
-  btn.textContent = extras.classList.contains("hidden")
-    ? "Mostrar extras ▼"
-    : "Fechar extras ▲";
-}
-
+// ===============================
+// VARIÁVEIS GLOBAIS
+// ===============================
 let usuarioTelegram = null;
+let usuarioCadastrado = false;
+let anunciantePesquisaValido = null;
 
-window.addEventListener("load", () => {
-
+window.addEventListener("load", async () => {
   const params = new URLSearchParams(window.location.search);
+  // 🔹 Captura usuário Telegram
+  if (
+    window.Telegram &&
+    Telegram.WebApp &&
+    Telegram.WebApp.initDataUnsafe &&
+    Telegram.WebApp.initDataUnsafe.user &&
+    Telegram.WebApp.initDataUnsafe.user.username
+  ) {
+    usuarioTelegram = Telegram.WebApp.initDataUnsafe.user.username;
+    usuarioCadastrado = await verificarUsuarioCadastrado(usuarioTelegram);
+  }
 
-  // 🔹 Começa carregar anúncios
-  carregarAnuncios();
-
-  // 🔹 Se for ?anunciar abre direto
+  await carregarAnuncios();
   if (params.has("anunciar")) {
     mostrarFormulario();
   }
 
-  // 🔹 Captura usuário do Telegram (sem @)
-  if (window.Telegram &&
-      Telegram.WebApp &&
-      Telegram.WebApp.initDataUnsafe &&
-      Telegram.WebApp.initDataUnsafe.user &&
-      Telegram.WebApp.initDataUnsafe.user.username) {
-    usuarioTelegram = Telegram.WebApp.initDataUnsafe.user.username;
-  }
-
-  // 🔐 Esconde botão anunciar fora do Telegram
-  if (!window.Telegram ||
-      !Telegram.WebApp ||
-      !Telegram.WebApp.initDataUnsafe ||
-      !Telegram.WebApp.initDataUnsafe.user) {
-
-    const botoes = document.querySelectorAll(".bottom-bar button");
-    botoes.forEach(btn => {
-      if (btn.textContent.includes("Anunciar")) {
-        btn.style.display = "none";
-      }
-    });
-  }
-
-  // 🔍 Pesquisa
   document.getElementById("pesquisa")
     .addEventListener("input", () => {
       filtrarAnuncios();
-      atualizarBotaoMeusAnuncios();
+      renderizarBottomBar("lista");
     });
-
-  const btnMeus = document.getElementById("btnMeusAnuncios");
-  if (btnMeus) {
-    btnMeus.addEventListener("click", () => {
-      if (!usuarioTelegram) return;
-
-      const barraPesquisa = document.getElementById("pesquisa");
-      barraPesquisa.value = usuarioTelegram; // sem @
-      filtrarAnuncios();
-      atualizarBotaoMeusAnuncios();
-    });
-  }
 
   document.querySelector(".menu-icon")
     .addEventListener("click", toggleMenu);
+
   document.getElementById("menu-overlay")
     .addEventListener("click", toggleMenu);
-});
+  renderizarBottomBar("lista");
+    });
 
 document.addEventListener("DOMContentLoaded", function () {
   const btnVoltar = document.getElementById("btnVoltar");
@@ -1323,19 +1371,6 @@ document.addEventListener("DOMContentLoaded", function () {
   </form>
 </div>
 
-  <div class="bottom-area"></div>
-
-  <div class="bottom-bar">
-	<button onclick="voltarParaLista()">
-  	<i class="bi bi-house"></i>
-  	Home
-	</button>
-<button onclick="mostrarFormulario()">
-  <i class="bi bi-megaphone"></i>
-  Anunciar
-</button>
-  </div>
-
   <div id="painel-menu" class="painel-menu">
 	<div class="painel-item">
   	<i class="bi bi-question-circle"></i> <a href="https://telegra.ph/GUIA-DE-PERGUNTAS-COMUNS-12-01" target="_blank">Perguntas Frequentes</a>
@@ -1356,29 +1391,7 @@ document.addEventListener("DOMContentLoaded", function () {
   	<i class="bi bi-share"></i> <a href="https://api.whatsapp.com/send?text=%2AANUNCIE%20E%20COMPARTILHE%2A%0A_Seu%20Streaming%2C%20Nosso%20Espa%C3%A7o_%0A%0A%2ADIVIDIR%20CONTAS%20PREMIUM%2A%0Ahttps%3A%2F%2Ft.me%2Fdividir_contas_premium" target="_blank">Compartilhar Grupo</a>
 	</div>
   </div>
-  <div id="menu-overlay"></div>
-<button 
-  id="btnExcluirAnuncio"
-  class="botao-flutuante excluir"
-  style="display:none;"
->
-  <i class="bi bi-trash"></i>
-</button>
-<button
-  id="btnCompartilharWhatsapp"
-  class="botao-flutuante compartilhar"
-  style="display:none;"
-  onclick="compartilharUsuarioWhatsapp()"
->
-  <i class="bi bi-whatsapp"></i>
-</button>
-<button
-  id="btnMeusAnuncios"
-  class="botao-flutuante compartilhar"
-  style="display:none;"
->
-  <i class="bi bi-person"></i>
-</button>
-  </body>
+<div id="menu-overlay"></div>
+<div id="bottomBar"></div>
+</body>
 </html>
-
