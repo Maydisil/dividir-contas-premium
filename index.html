@@ -1045,7 +1045,7 @@ function renderizarBottomBar(tipo) {
 
     // 👤 Meus Anúncios (Telegram + cadastrado)
     if (usuarioTelegram && usuarioCadastrado) {
-      criarBotao("bi bi-person", "Meus Anúncios", () => {
+      criarBotao("bi bi-person", "Perfil", () => {
         const barra = document.getElementById("pesquisa");
         barra.value = usuarioTelegram;
         filtrarAnuncios();
