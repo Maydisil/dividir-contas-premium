@@ -28,6 +28,26 @@
        font-size: var(--font-base);
      }
 
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button,
+#bottomBar button,
+.btn-principal,
+.btn-secundario,
+#btnVoltar {
+  transition: transform 0.15s ease, background-color 0.2s ease;
+}
+
+button:active,
+#bottomBar button:active,
+.btn-principal:active,
+.btn-secundario:active,
+#btnVoltar:active {
+  transform: scale(0.92);
+}
+
      .top-bar {
        background-color: #fff;
        padding: 0.5rem var(--padding);
@@ -1286,11 +1306,16 @@ function ativarSwipeDetalhes() {
   box.addEventListener("touchmove", function(e) {
     const currentX = e.touches[0].clientX;
     const deslocamento = currentX - startX;
-    box.style.transform = `translateX(${deslocamento}px) scale(0.98)`;
+    const largura = window.innerWidth;
+    // 🔥 resistência progressiva (fica firme no final)
+    const porcentagem = deslocamento / largura;
+    const resistencia = deslocamento * (1 - Math.abs(porcentagem));
+    box.style.transform = `translateX(${resistencia}px) scale(0.985)`;
   });
   box.addEventListener("touchend", function(e) {
     endX = e.changedTouches[0].clientX;
-    box.style.transition = "transform 0.3s ease, opacity 0.3s ease";
+    // volta animação suave
+    box.style.transition = "transform 0.28s cubic-bezier(.4,0,.2,1), opacity 0.2s ease";
     verificarSwipe();
   });
 }
@@ -1298,8 +1323,7 @@ function ativarSwipeDetalhes() {
 function verificarSwipe() {
   const largura = window.innerWidth;
   const diferenca = startX - endX;
-  // limite = 20% da largura da tela
-  const limite = largura * 0.2;
+  const limite = largura * 0.18; // 18% da tela
   if (Math.abs(diferenca) < limite) {
     resetarPosicao();
     return;
