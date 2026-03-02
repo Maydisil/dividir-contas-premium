@@ -91,6 +91,14 @@
        padding: 0 1rem 0 0;
      }
 
+#btnVoltar:hover {
+  color: #007bff;
+}
+
+#btnVoltar:active {
+  transform: scale(0.95);
+}
+
      #containerExtras {
        margin-bottom: 1rem;
      }
@@ -305,50 +313,49 @@
        font-size: var(--font-small);
      }
 
-     #bottomBar {
-       position: fixed;
-       bottom: 0;
-       width: 100%;
-       background-color: #fff;
-       padding: 0.5rem 0;
-       display: flex;
-       justify-content: center;
-       box-shadow: 0 -0.125rem 0.25rem rgba(0, 0, 0, 0.1);
-       z-index: 200;
-     }
+ #bottomBar {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background-color: #fff;
+  padding: 0.4rem 0;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  box-shadow: 0 -0.125rem 0.25rem rgba(0, 0, 0, 0.1);
+  z-index: 200;
+}
 
-      #bottomBar button {
-       background: none;
-       border: none;
-       display: flex;
-       flex-direction: column;
-       padding: 0 1.5rem;
-       align-items: center;
-       font-size: var(--font-small);
-       color: #333;
-       position: relative;
-       cursor: pointer;
-     }
+#bottomBar button {
+  flex: 1;
+  background: none;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: var(--font-small);
+  color: #333;
+  cursor: pointer;
+  padding: 0.3rem 0;
+  transition: color 0.2s ease;
+}
 
-      #bottomBar i {
-       font-size: 1.4rem;
-       margin-bottom: 0.25rem;
-     }
+#bottomBar i {
+  font-size: 1.4rem;
+  margin-bottom: 0.2rem;
+}
 
-      #bottomBar button::after {
-       content: "";
-       position: absolute;
-       bottom: 0;
-       left: 0;
-       width: 0%;
-       height: 2px;
-       background-color: #333;
-       transition: width 0.3s;
-     }
+#bottomBar button:hover {
+  color: #007bff;
+}
 
-      #bottomBar button:hover::after {
-       width: 100%;
-     }
+#bottomBar button:hover i {
+  color: #007bff;
+}
+
+#bottomBar button:active {
+  transform: scale(0.95);
+}
 
      .painel-menu {
        position: fixed;
@@ -423,7 +430,7 @@
        margin: 2rem auto;
        padding: var(--padding);
        background-color: #fff;
-       border-radius: 0.75rem;
+       border-radius: 1rem;
        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
        box-sizing: border-box;
      }
@@ -474,6 +481,113 @@
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
+/* =====TELA LOGIN ===== */
+
+.login-box {
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+  width: 100%;
+  max-width: 500px;
+  margin: 2rem auto;
+  box-sizing: border-box;
+}
+
+.input-group {
+  margin-bottom: 1.5rem;
+}
+
+.login-title {
+  text-align: center;
+  margin-bottom: 1.8rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.login-erro {
+  color: #dc3545;
+  text-align: center;
+  margin-bottom: 1rem;
+  display: none;
+  font-weight: 500;
+}
+
+.btn-principal,
+.btn-secundario {
+  width: 100%;
+  padding: 0.9rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: 0.2s ease;
+  margin-top: 0.8rem;
+}
+
+.btn-principal {
+  background: #007bff;
+  color: white;
+}
+
+.btn-principal:hover {
+  background: #0056b3;
+}
+
+.btn-secundario {
+  background: #6c757d;
+  color: white;
+}
+
+.btn-secundario:hover {
+  background: #545b62;
+}
+
+.login-link {
+  text-align: center;
+  margin-top: 1.5rem;
+}
+
+.login-link a {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 500;
+  transition: 0.2s ease;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
+  color: #0056b3;
+}
+
+.input-icon {
+  display: flex;
+  align-items: center;
+  border: 1px solid #dee2e6;
+  border-radius: 10px;
+  padding: 0.6rem 0.75rem;
+  background: #fff;
+  transition: 0.2s ease;
+}
+
+.input-icon i {
+  margin-right: 10px;
+  color: #6c757d;
+  font-size: 1.1rem;
+}
+
+.input-icon input {
+  border: none;
+  outline: none;
+  flex: 1;
+}
+
+.input-icon:focus-within {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.15rem rgba(0, 123, 255, 0.25);
+}
+
      @media (orientation: portrait) {
        :root {
          --font-base: 4.5vw;
@@ -491,7 +605,6 @@
          padding: var(--padding);
          width: 100%;
          max-width: 90vw;
-         box-sizing: border-box;
        }
 
        #formulario h3 {
@@ -569,13 +682,13 @@
        }
 
         #bottomBar button {
-         font-size: 4.5vw;
-         padding: 0 10vw;
-       }
+   font-size: 4vw;
+   padding: 0.5rem 0;
+}
 
-        #bottomBar i {
-         font-size: 7vw;
-       }
+#bottomBar i {
+   font-size: 6vw;
+}
 
        .painel-menu {
          width: 60vw;
@@ -586,12 +699,17 @@
          font-size: 6vw;
        }
 
+.login-box {
+  max-width: 90vw;
+  margin: 1rem auto;
+  padding: var(--padding);
+}
+
        .detalhes-box {
          max-width: 90vw;
          margin: 1rem auto;
          padding: var(--padding);
        }
-
 
        .detalhes-box img {
          width: 100%;
@@ -602,23 +720,26 @@
 // ===============================
 // 🔗 CONFIGURAÇÃO GLOBAL APPS SCRIPT
 // ===============================
-const SCRIPT_SITE = "https://script.google.com/macros/s/AKfycbxLr4fwxB1aSGvoYrM5gFvlshOxmMChW5_aL5e_gkGG_ALEqMLIzRwpBP7YqlfrmTTtpA/exec";
-
+const SCRIPT_SITE = "https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-YbnmugdXbhXDtTxPSE_OOCvs34ivYxlD8VJhEXjg/exec";
 const SCRIPT_BOT = "https://script.google.com/macros/s/AKfycbwkc7674s3_YfXsiv1vQzzOx0QzVjWptbJi10wA4N1_mN5Xu1Rsu5-vP4m5py443iXI/exec";
+  const DURACAO_SESSAO = 30 * 24 * 60 * 60 * 1000; // 30 dias
+
+// ===============================
+// VARIÁVEIS GLOBAIS
+// ===============================
+let anunciantePesquisaValido = null;
+let tentativasLogin = 0;
+let bloqueioLogin = false;
 
   async function carregarAnuncios() {
   const container = document.getElementById("anuncios");
   container.innerHTML = '<div class="loading">Carregando Anúncios...</div>';
-
   try {
     const resposta = await fetch(`${SCRIPT_SITE}?funcao=listarAnuncios`);
-    
     if (!resposta.ok) throw new Error('Resposta HTTP ' + resposta.status);
     const anuncios = await resposta.json();
-
     // usa a função já existente no seu código para renderizar os itens
     renderizarAnuncios(anuncios);
-
     // 🔹 Depois que exibir os anúncios, aplica filtro inicial (se existir)
     const params = new URLSearchParams(window.location.search);
     const termoPesquisa = params.get("pesquisar");
@@ -629,7 +750,6 @@ const SCRIPT_BOT = "https://script.google.com/macros/s/AKfycbwkc7674s3_YfXsiv1vQ
         filtrarAnuncios(); // agora roda com os anúncios já carregados
       }
     }
-
   } catch (erro) {
     container.innerHTML = '<div class="erro">Erro ao carregar anúncios.</div>';
     console.error("Erro ao carregar anúncios:", erro);
@@ -648,44 +768,203 @@ function limitarKotas(input) {
   }
 }
 
-function mostrarFormulario() {
+function formatarUsuario(input) {
+  let valor = input.value.trim();
+  if (valor && !valor.startsWith('@')) {
+    valor = '@' + valor.replace(/^@+/, '');
+  }
+  input.value = valor;
+}
 
-  // 🔐 Bloqueio: só permite se vier do Telegram WebApp
-  if (!window.Telegram ||
-      !Telegram.WebApp ||
-      !Telegram.WebApp.initDataUnsafe ||
-      !Telegram.WebApp.initDataUnsafe.user) {
+function salvarSessao(nome, id) {
+  const agora = Date.now();
+  localStorage.setItem("usuarioNome", nome);
+  localStorage.setItem("usuarioId", id);
+  localStorage.setItem("sessaoExpira", agora + DURACAO_SESSAO);
+  atualizarMenuUsuario();
+}
 
-    alert("⚠️ Este formulário só pode ser acessado via botão ANUNCIAR no grupo DIVIDIR CONTAS PREMIUM.");
+function obterSessao() {
+  const nome = localStorage.getItem("usuarioNome");
+  const id = localStorage.getItem("usuarioId");
+  const expira = localStorage.getItem("sessaoExpira");
+  if (!nome || !id || !expira) return null;
+  if (Date.now() > Number(expira)) {
+    limparSessao();
+    return null;
+  }
+  return { nome, id };
+}
+
+function limparSessao() {
+  localStorage.removeItem("usuarioNome");
+  localStorage.removeItem("usuarioId");
+  localStorage.removeItem("sessaoExpira");
+  atualizarMenuUsuario();
+}
+
+function sair() {
+  limparSessao();
+  alert("Sessão encerrada.");
+  location.reload();
+}
+
+// Decide se mostra o botão Sair dentro do menu
+function atualizarMenuUsuario() {
+  const nome = localStorage.getItem("usuarioNome");
+  const expira = localStorage.getItem("sessaoExpira");
+  const sessaoValida =
+    nome &&
+    expira &&
+    Date.now() <= Number(expira);
+  const btnSair = document.getElementById("menuSair");
+  if (btnSair) {
+    btnSair.style.display = sessaoValida ? "flex" : "none";
+  }
+}
+
+async function verificarAutenticacao() {
+  const sessao = obterSessao();
+  if (sessao) return sessao;
+  if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
+    const user = Telegram.WebApp.initDataUnsafe.user;
+    const nome = user.username ? "@" + user.username : user.first_name;
+    const res = await fetch(
+`${SCRIPT_SITE}?funcao=loginTelegram&usuario=${encodeURIComponent(nome)}`
+    );
+    const dados = await res.json();
+    if (dados.status === "ok") {
+      salvarSessao(dados.nome, dados.id);
+      return { nome: dados.nome, id: dados.id };
+    }
+    if (dados.status === "bloqueado") {
+      return null;
+    }
+  }
+  return null;
+}
+
+async function fazerLogin() {
+  if (bloqueioLogin) return;
+  const usuario = document.getElementById("loginUsuario").value.trim();
+  const senha = document.getElementById("loginSenha").value.trim();
+  const erro = document.getElementById("loginErro");
+  const btn = document.getElementById("btnEntrar");
+  // 🔒 DESABILITA BOTÃO
+  btn.disabled = true;
+  btn.innerText = "Entrando...";
+  if (!usuario || senha.length !== 4) {
+    erro.innerText = "Preencha corretamente.";
+    erro.style.display = "block";
+    // 🔓 REABILITA SE DER ERRO
+    btn.disabled = false;
+    btn.innerText = "ENTRAR";
     return;
   }
-modoFormulario();
+  const res = await fetch(
+`${SCRIPT_SITE}?funcao=loginManual&usuario=${encodeURIComponent(usuario)}&senha=${senha}`
+  );
+  const dados = await res.json();
+  if (dados.status === "ok") {
+    salvarSessao(dados.nome, dados.id);
+    mostrarFormulario();
+    return; // aqui não precisa reabilitar porque vai trocar de tela
+  }
+  if (dados.status === "bloqueado") {
+    erro.innerText = "⚠️ Usuário bloqueado.";
+    erro.style.display = "block";
+    btn.disabled = false;
+    btn.innerText = "ENTRAR";
+    return;
+  }
+  // ❌ Senha errada
+  tentativasLogin++;
+  erro.innerText = `Senha incorreta (${tentativasLogin}/4)`;
+  erro.style.display = "block";
+  if (tentativasLogin >= 4) {
+    ativarBloqueioLogin();
+  }
+  // 🔓 REABILITA
+  btn.disabled = false;
+  btn.innerText = "ENTRAR";
+}
 
-  document.getElementById("formulario").style.display = "block";
-  document.getElementById("anuncios").style.display = "none";
-  document.getElementById("detalhes").style.display = "none";
-
-  const user = Telegram.WebApp.initDataUnsafe.user;
-  const campoUsuario = document.getElementById("usuario");
-
-  if (campoUsuario) {
-
-    let nomeUsuario;
-
-    // 🔹 Se tiver @username usa ele
-    if (user.username) {
-      nomeUsuario = "@" + user.username;
-    } 
-    // 🔹 Se não tiver username, usa primeiro nome
-    else {
-      nomeUsuario = user.first_name;
+function ativarBloqueioLogin() {
+  bloqueioLogin = true;
+  const erro = document.getElementById("loginErro");
+  const btn = document.getElementById("btnEntrar");
+  const inputUser = document.getElementById("loginUsuario");
+  const inputSenha = document.getElementById("loginSenha");
+  btn.style.display = "none";
+  inputUser.disabled = true;
+  inputSenha.disabled = true;
+  let tempo = 60;
+  erro.style.display = "block";
+  erro.innerHTML = `🔒 BLOQUEADO TEMPORARIAMENTE (${tempo}s)`;
+  const intervalo = setInterval(() => {
+    tempo--;
+    erro.innerHTML = `🔒 BLOQUEADO TEMPORARIAMENTE (${tempo}s)`;
+    if (tempo <= 0) {
+      clearInterval(intervalo);
+      bloqueioLogin = false;
+      tentativasLogin = 0;
+      btn.style.display = "block";
+      inputUser.disabled = false;
+      inputSenha.disabled = false;
+      erro.innerText = "Você pode tentar novamente.";
+      setTimeout(() => {
+      erro.style.display = "none";
+      }, 3000);
+      erro.style.display = "block";
     }
+  }, 1000);
+}
 
-    campoUsuario.value = nomeUsuario;
+function mostrarTelaLogin() {
+  modoLogin();
+  esconderTodasTelas();
+  const login = document.getElementById("loginBox");
+  if (login) login.style.display = "block";
+  renderizarBottomBar("login");
+}
+
+async function mostrarFormulario() {
+  // 🔎 1️⃣ Verificar sessão válida
+  let sessao = obterSessao();
+  // 🔄 2️⃣ Se não tiver sessão, tentar login automático via Telegram
+  if (!sessao && window.Telegram?.WebApp?.initDataUnsafe?.user) {
+    const user = Telegram.WebApp.initDataUnsafe.user;
+    const nome = user.username ? "@" + user.username : user.first_name;
+    // 🔐 Verificar bloqueio no servidor
+    const res = await fetch(
+`${SCRIPT_SITE}?funcao=loginTelegram&usuario=${encodeURIComponent(nome)}`
+    );
+    const dados = await res.json();
+    if (dados.status === "ok") {
+      salvarSessao(dados.nome, dados.id);
+      atualizarMenuUsuario();
+      sessao = { nome: dados.nome, id: dados.id };
+    }
+    if (dados.status === "bloqueado") {
+      alert("⚠️ Seu acesso está bloqueado.");
+      return;
+    }
+  }
+  // 🚫 3️⃣ Se ainda não autenticado → mostrar login
+  if (!sessao) {
+    mostrarTelaLogin();
+    return;
+  }
+  // ✅ 4️⃣ Usuário autenticado → mostrar formulário
+  modoFormulario();
+  esconderTodasTelas();
+  document.getElementById("formulario").style.display = "block";
+  const campoUsuario = document.getElementById("usuario");
+  if (campoUsuario) {
+    campoUsuario.value = sessao.nome;
     campoUsuario.setAttribute("readonly", true);
-
     // 🔥 Buscar WhatsApp automaticamente
-    fetch(`${SCRIPT_SITE}?funcao=buscarWhatsapp&nome=${encodeURIComponent(nomeUsuario)}`)
+fetch(`${SCRIPT_SITE}?funcao=buscarWhatsapp&nome=${encodeURIComponent(sessao.nome)}`)
       .then(res => res.text())
       .then(telefone => {
         const inputWhatsapp = document.getElementById("whatsappInput");
@@ -695,16 +974,13 @@ modoFormulario();
       })
       .catch(err => console.error("Erro ao buscar WhatsApp:", err));
   }
-
   // 🔹 Carregar opções de streaming
   fetch(`${SCRIPT_SITE}?funcao=listarOpcoesStreaming`)
     .then(res => res.json())
     .then(opcoes => {
       const select = document.getElementById("selectStreaming");
       if (!select) return;
-
       select.innerHTML = "";
-
       opcoes.forEach(op => {
         const opt = document.createElement("option");
         opt.text = op;
@@ -713,22 +989,18 @@ modoFormulario();
       });
     })
     .catch(err => console.error("Erro ao carregar opções:", err));
-
   // 🔹 Resetar extras
   const container = document.getElementById("containerExtras");
   if (container) {
     container.className = "checkbox-list hidden";
     container.innerHTML = "";
-
     if (typeof opcoesExtra !== "undefined") {
       opcoesExtra.forEach(opcao => {
         const label = document.createElement("label");
         const input = document.createElement("input");
-
         input.type = "checkbox";
         input.name = "extra";
         input.value = opcao;
-
         label.appendChild(input);
         label.appendChild(document.createTextNode(opcao));
         container.appendChild(label);
@@ -743,28 +1015,22 @@ function enviarFormulario(event) {
   const form = document.getElementById("formAnuncio");
   const btnEnviar = form.querySelector('button[type="submit"]');
   const btnCancelar = form.querySelector('button[type="button"]');
-
   // Desativa os botões para evitar múltiplos cliques
   btnEnviar.disabled = true;
   btnEnviar.textContent = "Enviando...";
   btnCancelar.disabled = true;
-
   const dados = Object.fromEntries(new FormData(form).entries());
-
 //  Remove campos vazios (inclusive a oferta se não selecionado)
 Object.keys(dados).forEach(chave => {
   if (dados[chave].trim() === "") {
     delete dados[chave];
   }
 });
-
   // Concatena múltiplas assinaturas extras
   const selecionados = Array.from(document.querySelectorAll('input[name="extra"]:checked'))
                         	.map(input => input.value);
   dados.extra = selecionados.join(", ");
-
   const params = new URLSearchParams(dados).toString();
-
   fetch(`${SCRIPT_SITE}?${params}`)
 	.then(res => res.text())
 	.then(msg => {
@@ -786,47 +1052,39 @@ Object.keys(dados).forEach(chave => {
 function formatarUsuario(input) {
   // Remove espaços no início e fim
   let valor = input.value.trim();
-
   // Se não começa com @, adiciona
   if (valor && !valor.startsWith('@')) {
 	valor = '@' + valor.replace(/^@+/, '');
   }
-
   input.value = valor;
 }
 
 function formatarWhatsapp(input) {
   // Remove tudo que não for número
   let valor = input.value.replace(/\D/g, '');
-
   // Se só tiver 11 dígitos, assume que é número brasileiro e adiciona "55"
   if (valor.length === 11 && !valor.startsWith('55')) {
 	valor = '55' + valor;
   }
-
   // Limita a 13 dígitos (55 + 11 números)
   if (valor.length > 13) {
 	valor = valor.slice(0, 13);
   }
-
   input.value = valor;
 }
 
 	function renderizarAnuncios(lista) {
   const container = document.getElementById("anuncios");
   container.innerHTML = "";
-
   lista.forEach(item => {
     const div = document.createElement("div");
     div.className = "anuncio";
-
     // 🔹 Guarda os dados completos no elemento
     div.dataset.streaming = item.streaming || "";
     div.dataset.streamingExtra = item.streamingExtra || "";
     div.dataset.valor = item.valor || "";
     div.dataset.anunciante = item.anunciante || "";
     div.dataset.whatsapp = item.whatsapp || "";
-
     div.innerHTML = `
       <img class="logo" src="${item.logo}" alt="Logo">
       <div class="info">
@@ -835,7 +1093,6 @@ function formatarWhatsapp(input) {
         <div class="anunciante" style="display:none;">${item.anunciante}</div>
       </div>
     `;
-
     div.onclick = () => mostrarDetalhes(item);
     container.appendChild(div);
   });
@@ -896,7 +1153,7 @@ function modoDetalhes() {
   document.getElementById("searchContainer").style.display = "none";
   const titulo = document.getElementById("topTitle");
   titulo.style.display = "block";
-  titulo.innerText = "Detalhes do Anúncio";
+  titulo.innerText = "DETALHES";
 }
 
 function modoFormulario() {
@@ -904,40 +1161,35 @@ function modoFormulario() {
   document.getElementById("searchContainer").style.display = "none";
   const titulo = document.getElementById("topTitle");
   titulo.style.display = "block";
-  titulo.innerText = "Novo Anúncio";
+  titulo.innerText = "FAZER ANÚNCIO";
+}
+
+function modoLogin() {
+  document.getElementById("btnVoltar").style.display = "block";
+  document.getElementById("searchContainer").style.display = "none";
+  const titulo = document.getElementById("topTitle");
+  titulo.style.display = "block";
+  titulo.innerText = "LOGIN E SENHA";
 }
 
 function mostrarDetalhes(item) {
   modoDetalhes();
-  document.getElementById("anuncios").style.display = "none";
+  esconderTodasTelas();
   document.getElementById("detalhes").style.display = "block";
-
   // 🔒 Guardar item atual globalmente
   window.itemAtual = item;
   window.podeExcluir = false;
-
   // =========================
   // Verificar se pode excluir
   // =========================
-  if (
-    window.Telegram &&
-    Telegram.WebApp &&
-    Telegram.WebApp.initDataUnsafe &&
-    Telegram.WebApp.initDataUnsafe.user &&
-    Telegram.WebApp.initDataUnsafe.user.username
-  ) {
-    const usernameAtual = "@" + Telegram.WebApp.initDataUnsafe.user.username;
-
-    if (usernameAtual === item.anunciante) {
-      window.podeExcluir = true;
-    }
-  }
-
+  const sessao = obterSessao();
+if (sessao && sessao.nome === item.anunciante) {
+  window.podeExcluir = true;
+}
   // =========================
   // BOTÕES DE CONTATO (IMAGENS)
   // =========================
   let botoesContato = "";
-
   if (item.anunciante) {
     const usuarioLimpo = item.anunciante.replace("@", "");
     botoesContato += `
@@ -948,7 +1200,6 @@ function mostrarDetalhes(item) {
       </a>
     `;
   }
-
   if (item.whatsapp) {
     botoesContato += `
       <a href="https://wa.me/${item.whatsapp}"
@@ -958,7 +1209,6 @@ function mostrarDetalhes(item) {
       </a>
     `;
   }
-
   if (item.kotas) {
     botoesContato += `
       <a href="https://app.kotas.com.br/grupo/${item.kotas}"
@@ -968,46 +1218,35 @@ function mostrarDetalhes(item) {
       </a>
     `;
   }
-
   // =========================
   // HTML DETALHES
   // =========================
   document.getElementById("detalhes").innerHTML = `
     <div class="detalhes-box">
-
       <a href="${item.linkStreaming}" target="_blank">
         <img src="https://drive.google.com/thumbnail?id=${item.logo2}&sz=w1000">
       </a>
-
       <hr>
-
       <p><strong>📺 ${item.streaming}</strong></p>
       ${item.streamingExtra ? `<p><strong>➕ ${item.streamingExtra}</strong></p>` : ""}
       <p><strong>💵 ${item.valor}</strong></p>
       <p><strong>📌 ${item.vagas}</strong></p>
       <p><strong>🔐 ${item.login}</strong></p>
       ${item.oferta ? `<p><strong>⏰ OFERTA - ${item.oferta}</strong></p>` : ""}
-
       <hr>
-
       <p><strong>Postado em: ${item.data}</strong></p>
-
       <hr>
-
       <p><strong>👤 ${item.anunciante}</strong></p>
       <p><strong>
-        ${item.pontos?.coracao ?? 0} ❤️
-        ${item.pontos?.balao ?? 0} 💬
-        ${item.pontos?.megafone ?? 0} 📢
-      </strong></p>
-
+  ❤️ ${item.pontos?.coracao ?? 0}
+  💬 ${item.pontos?.balao ?? 0}
+  📢 ${item.pontos?.megafone ?? 0}
+</strong></p>
       <div class="botoes-contato">
         ${botoesContato}
       </div>
-
     </div>
   `;
-
   // 👉 Renderizar barra inferior
   renderizarBottomBar("detalhes");
 }
@@ -1015,7 +1254,6 @@ function mostrarDetalhes(item) {
 function renderizarBottomBar(tipo) {
   const bar = document.getElementById("bottomBar");
   bar.innerHTML = "";
-
   function criarBotao(icone, texto, acao) {
     const btn = document.createElement("button");
     btn.innerHTML = `
@@ -1025,52 +1263,46 @@ function renderizarBottomBar(tipo) {
     btn.onclick = acao;
     bar.appendChild(btn);
   }
-
   // ===============================
   // 🏠 LISTA (HOME)
   // ===============================
   if (tipo === "lista") {
-
-    // 🏠 Home (reseta filtro)
-    criarBotao("bi bi-house", "Home", () => {
-      document.getElementById("pesquisa").value = "";
+  const sessao = obterSessao();
+  // 🏠 Home
+  criarBotao("bi bi-house", "Home", () => {
+    document.getElementById("pesquisa").value = "";
+    filtrarAnuncios();
+    renderizarBottomBar("lista");
+  });
+  // 🔐 Se NÃO estiver logado → botão LOGIN
+  if (!sessao) {
+    criarBotao("bi bi-box-arrow-in-right", "Login", mostrarTelaLogin);
+  }
+  // 📢 Se estiver logado → botão ANUNCIAR
+  if (sessao) {
+    criarBotao("bi bi-megaphone", "Anunciar", mostrarFormulario);
+    // 👤 Perfil
+    criarBotao("bi bi-person", "Perfil", () => {
+      const barra = document.getElementById("pesquisa");
+      barra.value = sessao.nome;
       filtrarAnuncios();
       renderizarBottomBar("lista");
     });
-
-    // 📢 Anunciar (apenas se estiver no Telegram)
-    if (usuarioTelegram) {
-      criarBotao("bi bi-megaphone", "Anunciar", mostrarFormulario);
-    }
-
-    // 👤 Meus Anúncios (Telegram + cadastrado)
-    if (usuarioTelegram && usuarioCadastrado) {
-      criarBotao("bi bi-person", "Perfil", () => {
-        const barra = document.getElementById("pesquisa");
-        barra.value = usuarioTelegram;
-        filtrarAnuncios();
-        renderizarBottomBar("lista");
-      });
-    }
-
-    // 📲 Compartilhar lista de usuário pesquisado
-    if (anunciantePesquisaValido) {
-      criarBotao("bi bi-share", "Enviar", compartilharUsuarioWhatsapp);
-    }
   }
-
+  // 📲 Compartilhar
+  if (anunciantePesquisaValido) {
+    criarBotao("bi bi-send", "Enviar", compartilharUsuarioWhatsapp);
+  }
+}
   // ===============================
   // 📄 DETALHES
   // ===============================
   if (tipo === "detalhes" && window.itemAtual) {
-
     const item = window.itemAtual;
-
     // ❤️ Like
     criarBotao("bi bi-heart", "Like", () => {
       registrarLike(item.postagem);
     });
-
     // 💬 Ver Postagem no Telegram
     criarBotao("bi bi-chat", "Postagem", () => {
       window.open(
@@ -1078,14 +1310,12 @@ function renderizarBottomBar(tipo) {
         "_blank"
       );
     });
-
     // 📲 Compartilhar link da postagem
-    criarBotao("bi bi-share", "Enviar", () => {
+    criarBotao("bi bi-send", "Enviar", () => {
       const link = `https://t.me/dividir_contas_premium/${item.postagem}`;
       const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(link)}`;
       window.open(url, "_blank");
     });
-
     // 🗑 Excluir (somente dono)
     if (window.podeExcluir) {
       criarBotao("bi bi-trash", "Excluir", () => {
@@ -1093,79 +1323,55 @@ function renderizarBottomBar(tipo) {
       });
     }
   }
-
   // ===============================
   // 📝 FORMULÁRIO
   // ===============================
   if (tipo === "formulario") {
     criarBotao("bi bi-x", "Cancelar", voltarParaLista);
   }
+// ===============================
+// 🔐 LOGIN
+// ===============================
+if (tipo === "login") {
+  criarBotao("bi bi-x", "Cancelar", voltarParaLista);
 }
-
-async function verificarUsuarioCadastrado(username) {
-  if (!username) return false;
-
-  try {
-    const res = await fetch(`${SCRIPT_SITE}?funcao=verificarAnunciante&usuario=${encodeURIComponent(username)}`);
-    const txt = await res.text();
-    return txt === "true";
-  } catch (e) {
-    return false;
-  }
 }
 
 function compartilharUsuarioWhatsapp() {
-
   if (!anunciantePesquisaValido) return;
-
   const anunciante = anunciantePesquisaValido;
   const anuncios = document.querySelectorAll(
     ".anuncio:not([style*='display: none'])"
   );
-
   if (anuncios.length === 0) return;
-
   let texto = "";
   let whatsappUsuario = "";
   const usuarioSemArroba = anunciante.replace("@", "");
-
   anuncios.forEach((anuncio, index) => {
-
     if (anuncio.dataset.anunciante !== anunciante) return;
-
     const streaming = anuncio.dataset.streaming;
     const streamingExtra = anuncio.dataset.streamingExtra;
     const valor = anuncio.dataset.valor;
-
     const streamingLimpo = streaming.replace(/\+$/, "");
-
     texto += `🖥 *${streamingLimpo}*`;
-
     if (streamingExtra) {
       texto += `\n➕ ${streamingExtra}`;
     }
-
     texto += `\n💵 ${valor}`;
-
     if (index < anuncios.length - 1) {
       texto += `\n-------------------------------------------\n`;
     }
-
     if (!whatsappUsuario && anuncio.dataset.whatsapp) {
       whatsappUsuario = anuncio.dataset.whatsapp;
     }
   });
-
   texto += `\n-------------------------------------------\n`;
   texto += `👤 *MEUS ANÚNCIOS*\nhttps://tinyurl.com/divcp01?pesquisar=${usuarioSemArroba}\n\n`;
   texto += `📲 *CONTATO POR TELEGRAM*\nhttps://t.me/${usuarioSemArroba}`;
-
   if (whatsappUsuario) {
     texto += `\n\n📲 *CONTATO POR WHATSAPP*\nhttps://wa.me/${whatsappUsuario}`;
   }
-
   const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(texto)}`;
-
   window.open(url, "_blank");
 }
 
@@ -1173,7 +1379,6 @@ function filtrarAnuncios() {
   const termo = document.getElementById("pesquisa")
     .value.trim()
     .toLowerCase();
-
   const anuncios = document.querySelectorAll(".anuncio");
   anunciantePesquisaValido = null;
   anuncios.forEach(el => {
@@ -1190,8 +1395,7 @@ function filtrarAnuncios() {
       valor.includes(termo) ||
       anunciante.includes(termo);
     el.style.display = mostrar ? "flex" : "none";
-
-    if (termo && anunciante === termo) {
+    if (termo && anunciante === termo.replace(/^@/, "")) {
       anunciantePesquisaValido = anuncianteOriginal;
     }
   });
@@ -1210,59 +1414,55 @@ fetch(`${SCRIPT_BOT}?funcao=excluirAnuncio&id=${encodeURIComponent(idMensagem)}&
 
 async function voltarParaLista(recarregar = false) {
   modoLista();
-  document.getElementById("detalhes").style.display = "none";
-  document.getElementById("formulario").style.display = "none";
+  esconderTodasTelas();
   document.getElementById("anuncios").style.display = "flex";
-
   if (recarregar) {
     await carregarAnuncios();
   }
-
   filtrarAnuncios();
   renderizarBottomBar("lista");
 }
 
-// ===============================
-// VARIÁVEIS GLOBAIS
-// ===============================
-let usuarioTelegram = null;
-let usuarioCadastrado = false;
-let anunciantePesquisaValido = null;
+function esconderTodasTelas() {
+  ["anuncios", "detalhes", "formulario", "loginBox"]
+    .forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = "none";
+    });
+}
 
 window.addEventListener("load", async () => {
-
   const params = new URLSearchParams(window.location.search);
-
-  // 🔹 Captura usuário Telegram
-  if (
-    window.Telegram &&
-    Telegram.WebApp &&
-    Telegram.WebApp.initDataUnsafe &&
-    Telegram.WebApp.initDataUnsafe.user &&
-    Telegram.WebApp.initDataUnsafe.user.username
-  ) {
-    usuarioTelegram = Telegram.WebApp.initDataUnsafe.user.username;
-    usuarioCadastrado = await verificarUsuarioCadastrado(usuarioTelegram);
+  // 🔎 Verifica sessão existente
+  const sessao = obterSessao();
+  // 🔄 Se não tiver sessão, tentar login automático via Telegram
+  if (!sessao && window.Telegram?.WebApp?.initDataUnsafe?.user) {
+    const user = Telegram.WebApp.initDataUnsafe.user;
+    const nome = user.username ? "@" + user.username : user.first_name;
+    const res = await fetch(
+`${SCRIPT_SITE}?funcao=loginTelegram&usuario=${encodeURIComponent(nome)}`
+    );
+    const dados = await res.json();
+    if (dados.status === "ok") {
+      salvarSessao(dados.nome, dados.id);
+    }
   }
-
+  // 🔄 Atualiza botão Sair após possível login automático
+  atualizarMenuUsuario();
   await carregarAnuncios();
-
   // 🔥 Se abrir direto no formulário
   if (params.has("anunciar")) {
     mostrarFormulario();
   } else {
     renderizarBottomBar("lista");
   }
-
   document.getElementById("pesquisa")
     .addEventListener("input", () => {
       filtrarAnuncios();
       renderizarBottomBar("lista");
     });
-
   document.querySelector(".menu-icon")
     .addEventListener("click", toggleMenu);
-
   document.getElementById("menu-overlay")
     .addEventListener("click", toggleMenu);
 });
@@ -1297,25 +1497,59 @@ document.addEventListener("DOMContentLoaded", function () {
 
   <div class="lista-anuncios" id="anuncios"></div>
   <div id="detalhes" style="display: none; padding: 20px;"></div>
+
+<div id="loginBox" class="form-container login-box" style="display:none;">
+  <h2 class="login-title">LOGIN</h2>
+  <div class="input-group">
+    <label>Nome de Usuário</label>
+    <div class="input-icon">
+      <i class="bi bi-person"></i>
+      <input  type="text"  id="loginUsuario" placeholder="@nome"  oninput="formatarUsuario(this)"  required>
+    </div>
+  </div>
+  <div class="input-group">
+    <label>Senha</label>
+    <div class="input-icon">
+      <i class="bi bi-lock"></i>
+      <input type="password"
+             id="loginSenha"
+             maxlength="4"
+             inputmode="numeric"
+             pattern="\d{4}"
+             placeholder="****"
+             required>
+    </div>
+  </div>
+  <p id="loginErro" class="login-erro"></p>
+  <button id="btnEntrar" class="btn-principal" onclick="fazerLogin()">
+    ENTRAR
+  </button>
+  <button class="btn-secundario"
+  onclick="window.open('https://t.me/dividir_contas_premium/23511','_blank')">
+    REGISTRAR
+  </button>
+  <p class="login-link">
+    <a href="https://t.me/dividir_contas_premium/23511" target="_blank">
+      Esqueceu a senha?
+    </a>
+  </p>
+</div>
+
 <div id="formulario" style="display:none; padding: 1rem;">
   <h3>CRIAR ANÚNCIO</h3>
   <form id="formAnuncio" onsubmit="enviarFormulario(event)">
 	<label>Nome de Usuário: 
   <input type="text" id="usuario" name="usuario" required readonly>
 </label><br>
-
 	<label>Qual o Streaming:
   	<select name="streaming" id="selectStreaming" required></select>
 	</label><br>
-
 <label>Assinatura Extra (opcional):</label>
 <div class="extras-container">
   <div class="toggle-extras" onclick="toggleExtras()">Mostrar extras ▼</div>
   <div id="containerExtras" class="checkbox-list hidden"></div>
 </div>
-
 	<label>Qual o Valor: <input type="number" placeholder="Ex: 12,50" min="0" step="0.25" name="valor" required></label><br>
-
 	<label>Forma de Pagamento:
   	<select name="pagamento" required>
     	<option>KOTAS</option>
@@ -1326,11 +1560,9 @@ document.addEventListener("DOMContentLoaded", function () {
     	<option>PIX - Anual</option>
   	</select>
 	</label><br>
-
 <label>Link do Grupo Kotas (opcional): 
   <input type="number" placeholder="Últimos 6 dígitos do link" name="kotas" id="campoKotas" min="0" step="1" pattern="\d*" oninput="limitarKotas(this)">
 </label><br>
-
 	<label>Status da Conta:
   	<select name="status" required>
     	<option>Assinado</option>
@@ -1338,7 +1570,6 @@ document.addEventListener("DOMContentLoaded", function () {
     	<option>Reservando</option>
   	</select>
 	</label><br>
-
 	<label>Número de Vagas:
   	<select name="vagas" required>
     	<option>1 Vaga</option>
@@ -1348,7 +1579,6 @@ document.addEventListener("DOMContentLoaded", function () {
     	<option>5 Vagas</option>
   	</select>
 	</label><br>
-
 	<label>Tipo de Acesso:
   	<select name="acesso" required>
     	<option>Login e Senha</option>
@@ -1356,11 +1586,9 @@ document.addEventListener("DOMContentLoaded", function () {
     	<option>Convite por E-mail</option>
   	</select>
 	</label><br>
-
-	<label>Número do WhatsApp (opcional): 
-  <input type="tel" name="whatsapp" id="whatsappInput" placeholder="Ex: 55XXXXXXXXXXX" pattern="\d{13}" maxlength="13" oninput="formatarWhatsapp(this)">
+	<label>Número do WhatsApp: 
+  <input type="tel" name="whatsapp" id="whatsappInput" placeholder="Ex: 55XXXXXXXXXXX" pattern="\d{13}" maxlength="13" required oninput="formatarWhatsapp(this)">
 </label><br>
-
 <label>Tempo da Promoção (opcional):
   <select name="oferta">
     <option value="">Selecione</option>
@@ -1370,12 +1598,10 @@ document.addEventListener("DOMContentLoaded", function () {
     <option value="4 Meses">4 Meses</option>
   </select>
 </label><br><br>
-
 	<button type="submit">Enviar</button>
 	<button type="button" onclick="voltarParaLista()">Cancelar</button>
   </form>
 </div>
-
   <div id="painel-menu" class="painel-menu">
 	<div class="painel-item">
   	<i class="bi bi-question-circle"></i> <a href="https://telegra.ph/GUIA-DE-PERGUNTAS-COMUNS-12-01" target="_blank">Perguntas Frequentes</a>
@@ -1395,6 +1621,9 @@ document.addEventListener("DOMContentLoaded", function () {
 	<div class="painel-item">
   	<i class="bi bi-share"></i> <a href="https://api.whatsapp.com/send?text=%2AANUNCIE%20E%20COMPARTILHE%2A%0A_Seu%20Streaming%2C%20Nosso%20Espa%C3%A7o_%0A%0A%2ADIVIDIR%20CONTAS%20PREMIUM%2A%0Ahttps%3A%2F%2Ft.me%2Fdividir_contas_premium" target="_blank">Compartilhar Grupo</a>
 	</div>
+<div class="painel-item" id="menuSair" onclick="sair()" style="display:none;">
+  <i class="bi bi-box-arrow-right"></i> Sair
+</div>
   </div>
 <div id="menu-overlay"></div>
 <div id="bottomBar"></div>
