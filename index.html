@@ -433,7 +433,7 @@
        border-radius: 1rem;
        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
        box-sizing: border-box;
-       transition: transform 0.3s ease, opacity 0.3s ease;
+       transition: transform 0.28s cubic-bezier(.4,0,.2,1), opacity 0.2s ease;
      }
 
 .slide-esquerda {
@@ -1281,16 +1281,29 @@ function ativarSwipeDetalhes() {
   box._swipeAtivado = true;
   box.addEventListener("touchstart", function(e) {
     startX = e.touches[0].clientX;
+    box.style.transition = "none";
+  });
+  box.addEventListener("touchmove", function(e) {
+    const currentX = e.touches[0].clientX;
+    const deslocamento = currentX - startX;
+    box.style.transform = `translateX(${deslocamento}px) scale(0.98)`;
   });
   box.addEventListener("touchend", function(e) {
     endX = e.changedTouches[0].clientX;
+    box.style.transition = "transform 0.3s ease, opacity 0.3s ease";
     verificarSwipe();
   });
 }
 
 function verificarSwipe() {
+  const largura = window.innerWidth;
   const diferenca = startX - endX;
-  if (Math.abs(diferenca) < 50) return;
+  // limite = 20% da largura da tela
+  const limite = largura * 0.2;
+  if (Math.abs(diferenca) < limite) {
+    resetarPosicao();
+    return;
+  }
   if (diferenca > 0) {
     irProximo();
   } else {
@@ -1355,6 +1368,12 @@ function animarTroca(direcao) {
       });
     }, 10);
   }, 250);
+}
+
+function resetarPosicao() {
+  const box = document.querySelector(".detalhes-box");
+  if (!box) return;
+  box.style.transform = "translateX(0) scale(1)";
 }
 
 function renderizarBottomBar(tipo) {
