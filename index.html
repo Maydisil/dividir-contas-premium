@@ -433,7 +433,18 @@
        border-radius: 1rem;
        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
        box-sizing: border-box;
+       transition: transform 0.3s ease, opacity 0.3s ease;
      }
+
+.slide-esquerda {
+  transform: translateX(-100%) scale(0.98);
+  opacity: 0;
+}
+
+.slide-direita {
+  transform: translateX(100%) scale(0.98);
+  opacity: 0;
+}
 
      .detalhes-box p {
        color: #333;
@@ -730,6 +741,9 @@ const SCRIPT_BOT = "https://script.google.com/macros/s/AKfycbwkc7674s3_YfXsiv1vQ
 let anunciantePesquisaValido = null;
 let tentativasLogin = 0;
 let bloqueioLogin = false;
+let indiceAtualDetalhes = -1;
+let startX = 0;
+let endX = 0;
 
   async function carregarAnuncios() {
   const container = document.getElementById("anuncios");
@@ -1073,13 +1087,14 @@ function formatarWhatsapp(input) {
   input.value = valor;
 }
 
-	function renderizarAnuncios(lista) {
+function renderizarAnuncios(lista) {
   const container = document.getElementById("anuncios");
   container.innerHTML = "";
-  lista.forEach(item => {
+  lista.forEach((item) => {
     const div = document.createElement("div");
     div.className = "anuncio";
-    // 🔹 Guarda os dados completos no elemento
+    // 🔹 Salva o objeto completo no elemento
+    div._itemCompleto = item;
     div.dataset.streaming = item.streaming || "";
     div.dataset.streamingExtra = item.streamingExtra || "";
     div.dataset.valor = item.valor || "";
@@ -1161,31 +1176,39 @@ function modoFormulario() {
   document.getElementById("searchContainer").style.display = "none";
   const titulo = document.getElementById("topTitle");
   titulo.style.display = "block";
-  titulo.innerText = "FAZER ANÚNCIO";
+  titulo.innerText = "ANUNCIAR";
 }
 
 function modoLogin() {
-  document.getElementById("btnVoltar").style.display = "block";
-  document.getElementById("searchContainer").style.display = "none";
+document.getElementById("btnVoltar").style.display = "block";
+document.getElementById("searchContainer").style.display = "none";
   const titulo = document.getElementById("topTitle");
   titulo.style.display = "block";
-  titulo.innerText = "LOGIN E SENHA";
+  titulo.innerText = "LOGIN";
 }
 
 function mostrarDetalhes(item) {
+
+  const anunciosVisiveis = Array.from(document.querySelectorAll(".anuncio"))
+    .filter(el => el.style.display !== "none");
+
+  indiceAtualDetalhes = anunciosVisiveis.findIndex(el =>
+    el._itemCompleto.postagem === item.postagem
+  );
+
+  window.listaVisivelDetalhes = anunciosVisiveis;
+
   modoDetalhes();
   esconderTodasTelas();
   document.getElementById("detalhes").style.display = "block";
-  // 🔒 Guardar item atual globalmente
+
   window.itemAtual = item;
   window.podeExcluir = false;
-  // =========================
-  // Verificar se pode excluir
-  // =========================
+
   const sessao = obterSessao();
-if (sessao && sessao.nome === item.anunciante) {
-  window.podeExcluir = true;
-}
+  if (sessao && sessao.nome === item.anunciante) {
+    window.podeExcluir = true;
+  }
   // =========================
   // BOTÕES DE CONTATO (IMAGENS)
   // =========================
@@ -1249,6 +1272,89 @@ if (sessao && sessao.nome === item.anunciante) {
   `;
   // 👉 Renderizar barra inferior
   renderizarBottomBar("detalhes");
+ativarSwipeDetalhes();
+}
+
+function ativarSwipeDetalhes() {
+  const box = document.querySelector(".detalhes-box");
+  if (!box || box._swipeAtivado) return;
+  box._swipeAtivado = true;
+  box.addEventListener("touchstart", function(e) {
+    startX = e.touches[0].clientX;
+  });
+  box.addEventListener("touchend", function(e) {
+    endX = e.changedTouches[0].clientX;
+    verificarSwipe();
+  });
+}
+
+function verificarSwipe() {
+  const diferenca = startX - endX;
+  if (Math.abs(diferenca) < 50) return;
+  if (diferenca > 0) {
+    irProximo();
+  } else {
+    irAnterior();
+  }
+}
+
+function irProximo() {
+  if (!window.listaVisivelDetalhes) return;
+  // 🔁 LOOP INFINITO
+  indiceAtualDetalhes++;
+  if (indiceAtualDetalhes >= window.listaVisivelDetalhes.length) {
+    indiceAtualDetalhes = 0;
+  }
+  animarTroca("esquerda");
+}
+
+function irAnterior() {
+  if (!window.listaVisivelDetalhes) return;
+  // 🔁 LOOP INFINITO
+  indiceAtualDetalhes--;
+  if (indiceAtualDetalhes < 0) {
+    indiceAtualDetalhes = window.listaVisivelDetalhes.length - 1;
+  }
+  animarTroca("direita");
+}
+
+function mostrarDetalhesCompleto(el) {
+  const item = {
+    streaming: el.dataset.streaming,
+    streamingExtra: el.dataset.streamingExtra,
+    valor: el.dataset.valor,
+    anunciante: el.dataset.anunciante,
+    whatsapp: el.dataset.whatsapp,
+    postagem: el.dataset.postagem,
+    logo: el.querySelector(".logo")?.src
+  };
+  mostrarDetalhes(item);
+}
+
+function animarTroca(direcao) {
+  const box = document.querySelector(".detalhes-box");
+  if (!box) return;
+  // aplica animação de saída
+  box.classList.add(direcao === "esquerda" ? "slide-esquerda" : "slide-direita");
+  setTimeout(() => {
+    const el = window.listaVisivelDetalhes[indiceAtualDetalhes];
+    mostrarDetalhes(el._itemCompleto);
+    // espera renderizar novo conteúdo
+    setTimeout(() => {
+      const novaBox = document.querySelector(".detalhes-box");
+      if (!novaBox) return;
+      novaBox.style.transition = "none";
+      novaBox.style.transform = direcao === "esquerda"
+        ? "translateX(40px)"
+        : "translateX(-40px)";
+      novaBox.style.opacity = "0";
+      requestAnimationFrame(() => {
+        novaBox.style.transition = "transform 0.3s ease, opacity 0.3s ease";
+        novaBox.style.transform = "translateX(0)";
+        novaBox.style.opacity = "1";
+      });
+    }, 10);
+  }, 250);
 }
 
 function renderizarBottomBar(tipo) {
@@ -1499,7 +1605,7 @@ document.addEventListener("DOMContentLoaded", function () {
   <div id="detalhes" style="display: none; padding: 20px;"></div>
 
 <div id="loginBox" class="form-container login-box" style="display:none;">
-  <h2 class="login-title">LOGIN</h2>
+  <h2 class="login-title">FAZER LOGIN</h2>
   <div class="input-group">
     <label>Nome de Usuário</label>
     <div class="input-icon">
