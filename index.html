@@ -1432,11 +1432,11 @@ function renderizarBottomBar(tipo) {
     criarBotao("bi bi-megaphone", "Anunciar", mostrarFormulario);
     // 👤 Perfil
     criarBotao("bi bi-person", "Perfil", () => {
-      const barra = document.getElementById("pesquisa");
-      barra.value = sessao.nome;
-      filtrarAnuncios();
-      renderizarBottomBar("lista");
-    });
+  const barra = document.getElementById("pesquisa");
+  barra.value = sessao.nome.replace(/^@/, "");
+  filtrarAnuncios();
+  renderizarBottomBar("lista");
+});
   }
   // 📲 Compartilhar
   if (anunciantePesquisaValido) {
