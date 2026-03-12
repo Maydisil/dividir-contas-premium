@@ -765,20 +765,11 @@ let indiceAtualDetalhes = -1;
 let startX = 0;
 let endX = 0;
 
-if (window.Telegram?.WebApp) {
-  Telegram.WebApp.ready();
-  Telegram.WebApp.onEvent('viewportChanged', function () {
-    if (document.visibilityState === "visible") {
-      location.reload();
-    }
-  });
-}
-
   async function carregarAnuncios() {
   const container = document.getElementById("anuncios");
   container.innerHTML = '<div class="loading">Carregando Anúncios...</div>';
   try {
-    const resposta = await fetchSeguro(`${SCRIPT_SITE}?funcao=listarAnuncios`);
+    const resposta = await fetch(`${SCRIPT_SITE}?funcao=listarAnuncios`);
     if (!resposta.ok) throw new Error('Resposta HTTP ' + resposta.status);
     const anuncios = await resposta.json();
     // usa a função já existente no seu código para renderizar os itens
@@ -872,7 +863,7 @@ async function verificarAutenticacao() {
   if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
     const user = Telegram.WebApp.initDataUnsafe.user;
     const nome = user.username ? "@" + user.username : user.first_name;
-    const res = await fetchSeguro(
+    const res = await fetch(
 `${SCRIPT_SITE}?funcao=loginTelegram&usuario=${encodeURIComponent(nome)}`
     );
     const dados = await res.json();
@@ -904,7 +895,7 @@ async function fazerLogin() {
     btn.innerText = "ENTRAR";
     return;
   }
-  const res = await fetchSeguro(
+  const res = await fetch(
 `${SCRIPT_SITE}?funcao=loginManual&usuario=${encodeURIComponent(usuario)}&senha=${senha}`
   );
   const dados = await res.json();
@@ -979,18 +970,18 @@ async function mostrarFormulario() {
     const user = Telegram.WebApp.initDataUnsafe.user;
     const nome = user.username ? "@" + user.username : user.first_name;
     // 🔐 Verificar bloqueio no servidor
-    const res = await fetchSeguro(
+    const res = await fetch(
 `${SCRIPT_SITE}?funcao=loginTelegram&usuario=${encodeURIComponent(nome)}`
     );
     const dados = await res.json();
-    if (dados.status === "bloqueado") {
-      alert("⚠️ Seu acesso está bloqueado.");
-      return;
-    }
     if (dados.status === "ok") {
       salvarSessao(dados.nome, dados.id);
       atualizarMenuUsuario();
       sessao = { nome: dados.nome, id: dados.id };
+    }
+    if (dados.status === "bloqueado") {
+      alert("⚠️ Seu acesso está bloqueado.");
+      return;
     }
   }
   // 🚫 3️⃣ Se ainda não autenticado → mostrar login
@@ -1007,7 +998,7 @@ async function mostrarFormulario() {
     campoUsuario.value = sessao.nome;
     campoUsuario.setAttribute("readonly", true);
     // 🔥 Buscar WhatsApp automaticamente
-fetchSeguro(`${SCRIPT_SITE}?funcao=buscarWhatsapp&nome=${encodeURIComponent(sessao.nome)}`)
+fetch(`${SCRIPT_SITE}?funcao=buscarWhatsapp&nome=${encodeURIComponent(sessao.nome)}`)
       .then(res => res.text())
       .then(telefone => {
         const inputWhatsapp = document.getElementById("whatsappInput");
@@ -1018,7 +1009,7 @@ fetchSeguro(`${SCRIPT_SITE}?funcao=buscarWhatsapp&nome=${encodeURIComponent(sess
       .catch(err => console.error("Erro ao buscar WhatsApp:", err));
   }
   // 🔹 Carregar opções de streaming
-  fetchSeguro(`${SCRIPT_SITE}?funcao=listarOpcoesStreaming`)
+  fetch(`${SCRIPT_SITE}?funcao=listarOpcoesStreaming`)
     .then(res => res.json())
     .then(opcoes => {
       const select = document.getElementById("selectStreaming");
@@ -1074,7 +1065,7 @@ Object.keys(dados).forEach(chave => {
                         	.map(input => input.value);
   dados.extra = selecionados.join(", ");
   const params = new URLSearchParams(dados).toString();
-  fetchSeguro(`${SCRIPT_SITE}?${params}`)
+  fetch(`${SCRIPT_SITE}?${params}`)
 	.then(res => res.text())
 	.then(msg => {
   	alert(msg);
@@ -1175,14 +1166,14 @@ function getUserId() {
 
 function registrarLike(idMensagem) {
 const userId = getUserId();
-fetchSeguro(`${SCRIPT_BOT}?funcao=registrarLike&id=${encodeURIComponent(idMensagem)}&userId=${encodeURIComponent(userId)}`)
+fetch(`${SCRIPT_BOT}?funcao=registrarLike&id=${encodeURIComponent(idMensagem)}&userId=${encodeURIComponent(userId)}`)
 .then(res => res.text())
 .then(msg => alert(msg))
 .catch(err => alert("Erro ao registrar like."));
 }
 
 function registrarCompra(idMensagem) {
-fetchSeguro(`${SCRIPT_BOT}?funcao=registrarCompra&id=${encodeURIComponent(idMensagem)}`)
+fetch(`${SCRIPT_BOT}?funcao=registrarCompra&id=${encodeURIComponent(idMensagem)}`)
 .catch(err => console.warn("Erro ao registrar compra", err));
 }
 
@@ -1561,7 +1552,7 @@ function filtrarAnuncios() {
 
 function excluirAnuncio(idMensagem, anunciante) {
   if (!confirm("Tem certeza que deseja excluir este anúncio?")) return;
-fetchSeguro(`${SCRIPT_BOT}?funcao=excluirAnuncio&id=${encodeURIComponent(idMensagem)}&nomeUsuario=${encodeURIComponent(anunciante)}`)
+fetch(`${SCRIPT_BOT}?funcao=excluirAnuncio&id=${encodeURIComponent(idMensagem)}&nomeUsuario=${encodeURIComponent(anunciante)}`)
     .then(res => res.text())
     .then(msg => {
       alert(msg);
@@ -1589,67 +1580,36 @@ function esconderTodasTelas() {
     });
 }
 
-async function fetchSeguro(url, tempo = 15000) {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), tempo);
-  try {
-    const urlFinal = url + (url.includes("?") ? "&" : "?") + "_=" + Date.now();
-    const response = await fetchSeguro(urlFinal, {
-      signal: controller.signal,
-      cache: "no-store"
-    });
-    clearTimeout(timeout);
-    if (!response.ok) {
-      throw new Error("HTTP " + response.status);
-    }
-    return response;
-  } catch (err) {
-    clearTimeout(timeout);
-    if (err.name === "AbortError") {
-      throw new Error("Tempo de resposta excedido");
-    }
-    throw err;
-  }
-}
-
 window.addEventListener("load", async () => {
   const params = new URLSearchParams(window.location.search);
+  // 🔎 Verifica sessão existente
   const sessao = obterSessao();
-  if (!sessao && window.Telegram?.WebApp) {
-    const tgUser = Telegram.WebApp.initDataUnsafe?.user;
-    if (tgUser) {
-      const nome = tgUser.username ? "@" + tgUser.username : tgUser.first_name;
-      try {
-        const res = await fetchSeguro(          `${SCRIPT_SITE}?funcao=loginTelegram&usuario=${encodeURIComponent(nome)}`
-        );
-        const dados = await res.json();
-        if (dados.status === "ok") {
-          salvarSessao(dados.nome, dados.id);
-        }
-      } catch (err) {
-        console.error("Erro login Telegram:", err);
-      }
+  // 🔄 Se não tiver sessão, tentar login automático via Telegram
+  if (!sessao && window.Telegram?.WebApp?.initDataUnsafe?.user) {
+    const user = Telegram.WebApp.initDataUnsafe.user;
+    const nome = user.username ? "@" + user.username : user.first_name;
+    const res = await fetch(
+`${SCRIPT_SITE}?funcao=loginTelegram&usuario=${encodeURIComponent(nome)}`
+    );
+    const dados = await res.json();
+    if (dados.status === "ok") {
+      salvarSessao(dados.nome, dados.id);
     }
   }
+  // 🔄 Atualiza botão Sair após possível login automático
   atualizarMenuUsuario();
-  try {
-    await carregarAnuncios();
-  } catch (e) {
-    console.error("Erro ao carregar anúncios:", e);
-  }
+  await carregarAnuncios();
+  // 🔥 Se abrir direto no formulário
   if (params.has("anunciar")) {
     mostrarFormulario();
   } else {
     renderizarBottomBar("lista");
   }
-});
-
   document.getElementById("pesquisa")
     .addEventListener("input", () => {
       filtrarAnuncios();
       renderizarBottomBar("lista");
     });
-
   document.querySelector(".menu-icon")
     .addEventListener("click", toggleMenu);
   document.getElementById("menu-overlay")
@@ -1662,13 +1622,6 @@ document.addEventListener("DOMContentLoaded", function () {
     btnVoltar.addEventListener("click", () => {
       voltarParaLista();
     });
-  }
-});
-
-document.addEventListener("visibilitychange", () => {
-  if (!document.hidden) {
-    console.log("App voltou ao foco");
-    location.reload();
   }
 });
 </script>
