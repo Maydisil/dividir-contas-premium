@@ -765,6 +765,15 @@ let indiceAtualDetalhes = -1;
 let startX = 0;
 let endX = 0;
 
+if (window.Telegram?.WebApp) {
+  Telegram.WebApp.ready();
+  Telegram.WebApp.onEvent('viewportChanged', function () {
+    if (document.visibilityState === "visible") {
+      location.reload();
+    }
+  });
+}
+
   async function carregarAnuncios() {
   const container = document.getElementById("anuncios");
   container.innerHTML = '<div class="loading">Carregando Anúncios...</div>';
@@ -974,14 +983,14 @@ async function mostrarFormulario() {
 `${SCRIPT_SITE}?funcao=loginTelegram&usuario=${encodeURIComponent(nome)}`
     );
     const dados = await res.json();
+    if (dados.status === "bloqueado") {
+      alert("⚠️ Seu acesso está bloqueado.");
+      return;
+    }
     if (dados.status === "ok") {
       salvarSessao(dados.nome, dados.id);
       atualizarMenuUsuario();
       sessao = { nome: dados.nome, id: dados.id };
-    }
-    if (dados.status === "bloqueado") {
-      alert("⚠️ Seu acesso está bloqueado.");
-      return;
     }
   }
   // 🚫 3️⃣ Se ainda não autenticado → mostrar login
@@ -1582,34 +1591,41 @@ function esconderTodasTelas() {
 
 window.addEventListener("load", async () => {
   const params = new URLSearchParams(window.location.search);
-  // 🔎 Verifica sessão existente
   const sessao = obterSessao();
-  // 🔄 Se não tiver sessão, tentar login automático via Telegram
-  if (!sessao && window.Telegram?.WebApp?.initDataUnsafe?.user) {
-    const user = Telegram.WebApp.initDataUnsafe.user;
-    const nome = user.username ? "@" + user.username : user.first_name;
-    const res = await fetch(
-`${SCRIPT_SITE}?funcao=loginTelegram&usuario=${encodeURIComponent(nome)}`
-    );
-    const dados = await res.json();
-    if (dados.status === "ok") {
-      salvarSessao(dados.nome, dados.id);
+  if (!sessao && window.Telegram?.WebApp) {
+    const tgUser = Telegram.WebApp.initDataUnsafe?.user;
+    if (tgUser) {
+      const nome = tgUser.username ? "@" + tgUser.username : tgUser.first_name;
+      try {
+        const res = await fetch(          `${SCRIPT_SITE}?funcao=loginTelegram&usuario=${encodeURIComponent(nome)}`
+        );
+        const dados = await res.json();
+        if (dados.status === "ok") {
+          salvarSessao(dados.nome, dados.id);
+        }
+      } catch (err) {
+        console.error("Erro login Telegram:", err);
+      }
     }
   }
-  // 🔄 Atualiza botão Sair após possível login automático
   atualizarMenuUsuario();
-  await carregarAnuncios();
-  // 🔥 Se abrir direto no formulário
+  try {
+    await carregarAnuncios();
+  } catch (e) {
+    console.error("Erro ao carregar anúncios:", e);
+  }
   if (params.has("anunciar")) {
     mostrarFormulario();
   } else {
     renderizarBottomBar("lista");
   }
+
   document.getElementById("pesquisa")
     .addEventListener("input", () => {
       filtrarAnuncios();
       renderizarBottomBar("lista");
     });
+
   document.querySelector(".menu-icon")
     .addEventListener("click", toggleMenu);
   document.getElementById("menu-overlay")
@@ -1622,6 +1638,17 @@ document.addEventListener("DOMContentLoaded", function () {
     btnVoltar.addEventListener("click", () => {
       voltarParaLista();
     });
+  }
+});
+
+document.addEventListener("visibilitychange", async () => {
+  if (!document.hidden) {
+    console.log("App voltou ao foco");
+    try {
+      await carregarAnuncios();
+    } catch(e) {
+      console.warn("Falha ao atualizar anúncios:", e);
+    }
   }
 });
 </script>
