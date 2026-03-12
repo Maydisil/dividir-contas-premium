@@ -767,18 +767,14 @@ let endX = 0;
 
 if (window.Telegram?.WebApp) {
   Telegram.WebApp.ready();
-  Telegram.WebApp.onEvent('viewportChanged', function () {
-    if (document.visibilityState === "visible") {
-      location.reload();
-    }
-  });
+  Telegram.WebApp.expand();
 }
 
   async function carregarAnuncios() {
   const container = document.getElementById("anuncios");
   container.innerHTML = '<div class="loading">Carregando Anúncios...</div>';
   try {
-    const resposta = await fetch(`${SCRIPT_SITE}?funcao=listarAnuncios`);
+    const resposta = await fetchSeguro(`${SCRIPT_SITE}?funcao=listarAnuncios`);
     if (!resposta.ok) throw new Error('Resposta HTTP ' + resposta.status);
     const anuncios = await resposta.json();
     // usa a função já existente no seu código para renderizar os itens
@@ -872,7 +868,7 @@ async function verificarAutenticacao() {
   if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
     const user = Telegram.WebApp.initDataUnsafe.user;
     const nome = user.username ? "@" + user.username : user.first_name;
-    const res = await fetch(
+    const res = await fetchSeguro(
 `${SCRIPT_SITE}?funcao=loginTelegram&usuario=${encodeURIComponent(nome)}`
     );
     const dados = await res.json();
@@ -904,7 +900,7 @@ async function fazerLogin() {
     btn.innerText = "ENTRAR";
     return;
   }
-  const res = await fetch(
+  const res = await fetchSeguro(
 `${SCRIPT_SITE}?funcao=loginManual&usuario=${encodeURIComponent(usuario)}&senha=${senha}`
   );
   const dados = await res.json();
@@ -979,7 +975,7 @@ async function mostrarFormulario() {
     const user = Telegram.WebApp.initDataUnsafe.user;
     const nome = user.username ? "@" + user.username : user.first_name;
     // 🔐 Verificar bloqueio no servidor
-    const res = await fetch(
+    const res = await fetchSeguro(
 `${SCRIPT_SITE}?funcao=loginTelegram&usuario=${encodeURIComponent(nome)}`
     );
     const dados = await res.json();
@@ -1007,7 +1003,7 @@ async function mostrarFormulario() {
     campoUsuario.value = sessao.nome;
     campoUsuario.setAttribute("readonly", true);
     // 🔥 Buscar WhatsApp automaticamente
-fetch(`${SCRIPT_SITE}?funcao=buscarWhatsapp&nome=${encodeURIComponent(sessao.nome)}`)
+fetchSeguro(`${SCRIPT_SITE}?funcao=buscarWhatsapp&nome=${encodeURIComponent(sessao.nome)}`)
       .then(res => res.text())
       .then(telefone => {
         const inputWhatsapp = document.getElementById("whatsappInput");
@@ -1018,7 +1014,7 @@ fetch(`${SCRIPT_SITE}?funcao=buscarWhatsapp&nome=${encodeURIComponent(sessao.nom
       .catch(err => console.error("Erro ao buscar WhatsApp:", err));
   }
   // 🔹 Carregar opções de streaming
-  fetch(`${SCRIPT_SITE}?funcao=listarOpcoesStreaming`)
+  fetchSeguro(`${SCRIPT_SITE}?funcao=listarOpcoesStreaming`)
     .then(res => res.json())
     .then(opcoes => {
       const select = document.getElementById("selectStreaming");
@@ -1074,7 +1070,7 @@ Object.keys(dados).forEach(chave => {
                         	.map(input => input.value);
   dados.extra = selecionados.join(", ");
   const params = new URLSearchParams(dados).toString();
-  fetch(`${SCRIPT_SITE}?${params}`)
+  fetchSeguro(`${SCRIPT_SITE}?${params}`)
 	.then(res => res.text())
 	.then(msg => {
   	alert(msg);
@@ -1175,14 +1171,14 @@ function getUserId() {
 
 function registrarLike(idMensagem) {
 const userId = getUserId();
-fetch(`${SCRIPT_BOT}?funcao=registrarLike&id=${encodeURIComponent(idMensagem)}&userId=${encodeURIComponent(userId)}`)
+fetchSeguro(`${SCRIPT_BOT}?funcao=registrarLike&id=${encodeURIComponent(idMensagem)}&userId=${encodeURIComponent(userId)}`)
 .then(res => res.text())
 .then(msg => alert(msg))
 .catch(err => alert("Erro ao registrar like."));
 }
 
 function registrarCompra(idMensagem) {
-fetch(`${SCRIPT_BOT}?funcao=registrarCompra&id=${encodeURIComponent(idMensagem)}`)
+fetchSeguro(`${SCRIPT_BOT}?funcao=registrarCompra&id=${encodeURIComponent(idMensagem)}`)
 .catch(err => console.warn("Erro ao registrar compra", err));
 }
 
@@ -1561,7 +1557,7 @@ function filtrarAnuncios() {
 
 function excluirAnuncio(idMensagem, anunciante) {
   if (!confirm("Tem certeza que deseja excluir este anúncio?")) return;
-fetch(`${SCRIPT_BOT}?funcao=excluirAnuncio&id=${encodeURIComponent(idMensagem)}&nomeUsuario=${encodeURIComponent(anunciante)}`)
+fetchSeguro(`${SCRIPT_BOT}?funcao=excluirAnuncio&id=${encodeURIComponent(idMensagem)}&nomeUsuario=${encodeURIComponent(anunciante)}`)
     .then(res => res.text())
     .then(msg => {
       alert(msg);
@@ -1589,6 +1585,35 @@ function esconderTodasTelas() {
     });
 }
 
+async function fetchSeguro(url, tempo = 15000) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), tempo);
+  try {
+    const urlFinal = url + (url.includes("?") ? "&" : "?") + "_=" + Date.now();
+    const response = await fetch(urlFinal, {
+      signal: controller.signal,
+      cache: "no-store",
+      mode: "cors",
+      keepalive: true
+    });
+    clearTimeout(timeout);
+    if (!response.ok) {
+      throw new Error("HTTP " + response.status);
+    }
+    return response;
+  } catch (err) {
+    clearTimeout(timeout);
+    if (err.name === "AbortError") {
+      throw new Error("Tempo de resposta excedido");
+    }
+
+    if (err.message === "Failed to fetch") {
+      throw new Error("Falha de conexão");
+    }
+    throw err;
+  }
+}
+
 window.addEventListener("load", async () => {
   const params = new URLSearchParams(window.location.search);
   const sessao = obterSessao();
@@ -1597,7 +1622,7 @@ window.addEventListener("load", async () => {
     if (tgUser) {
       const nome = tgUser.username ? "@" + tgUser.username : tgUser.first_name;
       try {
-        const res = await fetch(          `${SCRIPT_SITE}?funcao=loginTelegram&usuario=${encodeURIComponent(nome)}`
+        const res = await fetchSeguro(          `${SCRIPT_SITE}?funcao=loginTelegram&usuario=${encodeURIComponent(nome)}`
         );
         const dados = await res.json();
         if (dados.status === "ok") {
