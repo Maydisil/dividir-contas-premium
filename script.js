@@ -1,9 +1,9 @@
-﻿// ===============================
+// ===============================
 // 🔗 CONFIGURAÇÃO GLOBAL APPS SCRIPT
 // ===============================
-const SCRIPT_SITE = "https://script.google.com/macros/s/AKfycbwwC1b5pPAaKlkXkKkMtUteb4yG4-YbnmugdXbhXDtTxPSE_OOCvs34ivYxlD8VJhEXjg/exec";
-const SCRIPT_BOT = "https://script.google.com/macros/s/AKfycbwkc7674s3_YfXsiv1vQzzOx0QzVjWptbJi10wA4N1_mN5Xu1Rsu5-vP4m5py443iXI/exec";
-  const DURACAO_SESSAO = 30 * 24 * 60 * 60 * 1000; // 30 dias
+const SCRIPT_SITE = "https://script.google.com/macros/s/AKfycbzzuRJPa7G-m3BwjGKPqLhQbe5AB7nVGNymImiGL-RdQVUkLZ9dJZBwimgJHzeL39X1Yg/exec";
+
+const DURACAO_SESSAO = 30 * 24 * 60 * 60 * 1000; // 30 dias
 
 // ===============================
 // VARIÁVEIS GLOBAIS
@@ -14,6 +14,105 @@ let bloqueioLogin = false;
 let indiceAtualDetalhes = -1;
 let startX = 0;
 let endX = 0;
+
+function registrarLike(idMensagem) {
+  const token = localStorage.getItem("token");
+if (!token) {
+alert("Faça login primeiro.");
+return;
+}
+  fetch(`${SCRIPT_SITE}?funcao=executarAcao`
+    + `&acao=like`
+    + `&id=${encodeURIComponent(idMensagem)}`
+    + `&token=${encodeURIComponent(token)}`)
+    .then(res => res.text())
+    .then(msg => alert(msg))
+    .catch(err => alert("Erro ao registrar like."));
+}
+
+function registrarCompra(idMensagem) {
+  const token = localStorage.getItem("token");
+if (!token) {
+alert("Faça login primeiro.");
+return;
+}
+  fetch(`${SCRIPT_SITE}?funcao=executarAcao`
+    + `&acao=compra`
+    + `&id=${encodeURIComponent(idMensagem)}`
+    + `&token=${encodeURIComponent(token)}`)
+    .then(res => res.text())
+    .catch(err => console.warn("Erro ao registrar compra", err));
+}
+
+function excluirAnuncio(idMensagem) {
+  if (!confirm("Tem certeza que deseja excluir este anúncio?")) return;
+  const token = localStorage.getItem("token");
+if (!token) {
+alert("Faça login primeiro.");
+return;
+}
+  fetch(`${SCRIPT_SITE}?funcao=executarAcao`
+    + `&acao=excluir`
+    + `&id=${encodeURIComponent(idMensagem)}`
+    + `&token=${encodeURIComponent(token)}`)
+
+    .then(res => res.text())
+    .then(msg => {
+      alert(msg);
+      voltarParaLista(true);
+    })
+    .catch(err => alert("Erro ao excluir anúncio."));
+}
+
+function enviarFormulario(event) {
+  event.preventDefault();
+  const form = document.getElementById("formAnuncio");
+  const btnEnviar = form.querySelector('button[type="submit"]');
+  const btnCancelar = form.querySelector('button[type="button"]');
+  // 🔒 Evita múltiplos cliques
+  btnEnviar.disabled = true;
+  btnEnviar.textContent = "Enviando...";
+  btnCancelar.disabled = true;
+  const dados = Object.fromEntries(new FormData(form).entries());
+  // 🧹 Remove campos vazios
+  Object.keys(dados).forEach(chave => {
+    if (dados[chave].trim() === "") {
+      delete dados[chave];
+    }
+  });
+  // ➕ Extras selecionados
+  const selecionados = Array.from(
+    document.querySelectorAll('input[name="extra"]:checked')
+  ).map(input => input.value);
+  dados.extra = selecionados.join(", ");
+  // 🔐 TOKEN DA SESSÃO
+  const token = localStorage.getItem("token");
+  if (!token) {
+    alert("Sessão inválida. Faça login novamente.");
+    return;
+  }
+  // 🧩 Montar parâmetros
+  const params = new URLSearchParams({
+    funcao: "salvarFormulario",
+    token: token,
+    ...dados
+  }).toString();
+  fetch(`${SCRIPT_SITE}?${params}`)
+    .then(res => res.text())
+    .then(msg => {
+      alert(msg);
+      form.reset();
+      voltarParaLista(true);
+    })
+    .catch(err => {
+      alert("Erro ao enviar o formulário.");
+    })
+    .finally(() => {
+      btnEnviar.disabled = false;
+      btnEnviar.textContent = "Enviar";
+      btnCancelar.disabled = false;
+    });
+}
 
   async function carregarAnuncios() {
   const container = document.getElementById("anuncios");
@@ -84,6 +183,7 @@ function limparSessao() {
   localStorage.removeItem("usuarioNome");
   localStorage.removeItem("usuarioId");
   localStorage.removeItem("sessaoExpira");
+  localStorage.removeItem("token");
   atualizarMenuUsuario();
 }
 
@@ -119,6 +219,7 @@ async function verificarAutenticacao() {
     const dados = await res.json();
     if (dados.status === "ok") {
       salvarSessao(dados.nome, dados.id);
+      localStorage.setItem("token", dados.token);
       return { nome: dados.nome, id: dados.id };
     }
     if (dados.status === "bloqueado") {
@@ -149,11 +250,12 @@ async function fazerLogin() {
 `${SCRIPT_SITE}?funcao=loginManual&usuario=${encodeURIComponent(usuario)}&senha=${senha}`
   );
   const dados = await res.json();
-  if (dados.status === "ok") {
-    salvarSessao(dados.nome, dados.id);
-    mostrarFormulario();
-    return; // aqui não precisa reabilitar porque vai trocar de tela
-  }
+if (dados.status === "ok") {
+salvarSessao(dados.nome, dados.id);
+localStorage.setItem("token", dados.token);
+mostrarFormulario();
+return;
+}
   if (dados.status === "bloqueado") {
     erro.innerText = "⚠️ Usuário bloqueado.";
     erro.style.display = "block";
@@ -226,6 +328,7 @@ async function mostrarFormulario() {
     const dados = await res.json();
     if (dados.status === "ok") {
       salvarSessao(dados.nome, dados.id);
+      localStorage.setItem("token", dados.token);
       atualizarMenuUsuario();
       sessao = { nome: dados.nome, id: dados.id };
     }
@@ -292,55 +395,6 @@ fetch(`${SCRIPT_SITE}?funcao=buscarWhatsapp&nome=${encodeURIComponent(sessao.nom
     }
   }
   renderizarBottomBar("formulario");
-}
-
-function enviarFormulario(event) {
-  event.preventDefault();
-  const form = document.getElementById("formAnuncio");
-  const btnEnviar = form.querySelector('button[type="submit"]');
-  const btnCancelar = form.querySelector('button[type="button"]');
-  // Desativa os botões para evitar múltiplos cliques
-  btnEnviar.disabled = true;
-  btnEnviar.textContent = "Enviando...";
-  btnCancelar.disabled = true;
-  const dados = Object.fromEntries(new FormData(form).entries());
-//  Remove campos vazios (inclusive a oferta se não selecionado)
-Object.keys(dados).forEach(chave => {
-  if (dados[chave].trim() === "") {
-    delete dados[chave];
-  }
-});
-  // Concatena múltiplas assinaturas extras
-  const selecionados = Array.from(document.querySelectorAll('input[name="extra"]:checked'))
-                        	.map(input => input.value);
-  dados.extra = selecionados.join(", ");
-  const params = new URLSearchParams(dados).toString();
-  fetch(`${SCRIPT_SITE}?${params}`)
-	.then(res => res.text())
-	.then(msg => {
-  	alert(msg);
-  	form.reset();
-  	voltarParaLista(true);
-	})
-	.catch(err => {
-  	alert("Erro ao enviar o formulário.");
-	})
-	.finally(() => {
-  	// Reativa os botões
-  	btnEnviar.disabled = false;
-  	btnEnviar.textContent = "Enviar";
-  	btnCancelar.disabled = false;
-	});
-}
-
-function formatarUsuario(input) {
-  // Remove espaços no início e fim
-  let valor = input.value.trim();
-  // Se não começa com @, adiciona
-  if (valor && !valor.startsWith('@')) {
-	valor = '@' + valor.replace(/^@+/, '');
-  }
-  input.value = valor;
 }
 
 function formatarWhatsapp(input) {
@@ -414,18 +468,6 @@ function getUserId() {
   return userId;
 }
 
-function registrarLike(idMensagem) {
-const userId = getUserId();
-fetch(`${SCRIPT_BOT}?funcao=registrarLike&id=${encodeURIComponent(idMensagem)}&userId=${encodeURIComponent(userId)}`)
-.then(res => res.text())
-.then(msg => alert(msg))
-.catch(err => alert("Erro ao registrar like."));
-}
-
-function registrarCompra(idMensagem) {
-fetch(`${SCRIPT_BOT}?funcao=registrarCompra&id=${encodeURIComponent(idMensagem)}`)
-.catch(err => console.warn("Erro ao registrar compra", err));
-}
 
 function modoLista() {
   document.getElementById("btnVoltar").style.display = "none";
@@ -718,7 +760,7 @@ function renderizarBottomBar(tipo) {
     // 🗑 Excluir (somente dono)
     if (window.podeExcluir) {
       criarBotao("bi bi-trash", "Excluir", () => {
-        excluirAnuncio(item.postagem, item.anunciante);
+        excluirAnuncio(item.postagem);
       });
     }
   }
@@ -800,17 +842,6 @@ function filtrarAnuncios() {
   });
 }
 
-function excluirAnuncio(idMensagem, anunciante) {
-  if (!confirm("Tem certeza que deseja excluir este anúncio?")) return;
-fetch(`${SCRIPT_BOT}?funcao=excluirAnuncio&id=${encodeURIComponent(idMensagem)}&nomeUsuario=${encodeURIComponent(anunciante)}`)
-    .then(res => res.text())
-    .then(msg => {
-      alert(msg);
-      voltarParaLista(true);
-    })
-    .catch(err => alert("Erro ao excluir anúncio."));
-}
-
 async function voltarParaLista(recarregar = false) {
   modoLista();
   esconderTodasTelas();
@@ -842,9 +873,10 @@ window.addEventListener("load", async () => {
 `${SCRIPT_SITE}?funcao=loginTelegram&usuario=${encodeURIComponent(nome)}`
     );
     const dados = await res.json();
-    if (dados.status === "ok") {
-      salvarSessao(dados.nome, dados.id);
-    }
+   if (dados.status === "ok") {
+salvarSessao(dados.nome, dados.id);
+localStorage.setItem("token", dados.token);
+}
   }
   // 🔄 Atualiza botão Sair após possível login automático
   atualizarMenuUsuario();
@@ -874,3 +906,4 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 });
+
