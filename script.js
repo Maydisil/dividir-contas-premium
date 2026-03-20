@@ -820,8 +820,10 @@ function filtrarAnuncios() {
   const termo = document.getElementById("pesquisa")
     .value.trim()
     .toLowerCase();
+  const container = document.getElementById("anuncios");
   const anuncios = document.querySelectorAll(".anuncio");
   anunciantePesquisaValido = null;
+  let encontrou = false;
   anuncios.forEach(el => {
     const titulo = el.querySelector(".titulo")
       .textContent.toLowerCase();
@@ -836,10 +838,26 @@ function filtrarAnuncios() {
       valor.includes(termo) ||
       anunciante.includes(termo);
     el.style.display = mostrar ? "flex" : "none";
+    if (mostrar) encontrou = true;
     if (termo && anunciante === termo.replace(/^@/, "")) {
       anunciantePesquisaValido = anuncianteOriginal;
     }
   });
+  // ===============================
+  // 🔍 SE NÃO ENCONTROU RESULTADOS
+  // ===============================
+  let msg = document.getElementById("msgSemResultados");
+  if (!encontrou && termo) {
+    if (!msg) {
+      msg = document.createElement("div");
+      msg.id = "msgSemResultados";
+      msg.className = "loading";
+      msg.textContent = "Nenhum Resultado Encontrado";
+      container.appendChild(msg);
+    }
+  } else {
+    if (msg) msg.remove();
+  }
 }
 
 async function voltarParaLista(recarregar = false) {
@@ -906,4 +924,3 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 });
-
