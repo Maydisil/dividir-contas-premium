@@ -851,13 +851,12 @@ function renderizarBottomBar(tipo) {
   let mensagem =
 `📺 ${item.streaming}
 ${item.streamingExtra ? `➕ ${item.streamingExtra}\n` : ""}
-
 💵 ${item.valor}
 📌 ${item.vagas}
 🔐 ${item.login}
 ${item.oferta ? `⏰ ${item.oferta}\n` : ""}
 
-👇 *VER ANÚNCIO COMPRETO*
+👇 *VER ANÚNCIO COMPLETO*
 ${link}
 
 👤 *MEUS ANÚNCIOS*
