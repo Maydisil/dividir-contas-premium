@@ -848,9 +848,8 @@ function renderizarBottomBar(tipo) {
   const link =
     `https://tinyurl.com/divcp01?a=${item.postagem}`;
 
-  let mensagem =
-`📺 ${item.streaming}
-${item.streamingExtra ? `➕ ${item.streamingExtra}\n` : ""}
+let mensagem =
+`📺 ${item.streaming}${item.streamingExtra ? `\n➕ ${item.streamingExtra}` : ""}
 💵 ${item.valor}
 📌 ${item.vagas}
 🔐 ${item.login}
