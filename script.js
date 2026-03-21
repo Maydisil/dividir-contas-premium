@@ -5,116 +5,152 @@ const SCRIPT_SITE = "https://script.google.com/macros/s/AKfycbzzuRJPa7G-m3BwjGKP
 
 const DURACAO_SESSAO = 30 * 24 * 60 * 60 * 1000; // 30 dias
 
+const opcoesExtra = [
+  "Adrenalina Pura", "Apple TV+", "Canais Globo", "Cindie", "Combate",
+  "Crunchyroll", "Disney+", "ESPN", "GloboPlay", "HBO Max", "Look", "MGM+",
+  "MUBI", "NBA", "Netflix", "Nosso Futebol+", "Paramount+", "Premiere", "Reserva Imovision",  "Sony One", "Spotify", "Telecine", "UFC Fight Pass", "Universal+", "YouTube"
+];
+
 // ===============================
 // VARIÁVEIS GLOBAIS
 // ===============================
 let anunciantePesquisaValido = null;
+let carregandoAnuncios = false;
 let tentativasLogin = 0;
 let bloqueioLogin = false;
 let indiceAtualDetalhes = -1;
 let startX = 0;
 let endX = 0;
 
-function registrarLike(idMensagem) {
+const likesEmAndamento = new Set();
+
+async function registrarLike(idMensagem) {
+  if (likesEmAndamento.has(idMensagem)) return;
+  likesEmAndamento.add(idMensagem);
   const token = localStorage.getItem("token");
-if (!token) {
-alert("Faça login primeiro.");
-return;
-}
-  fetch(`${SCRIPT_SITE}?funcao=executarAcao`
+  if (!token) {
+    alert("Faça login primeiro.");
+    likesEmAndamento.delete(idMensagem);
+    return;
+  }
+  const url = `${SCRIPT_SITE}?funcao=executarAcao`
     + `&acao=like`
     + `&id=${encodeURIComponent(idMensagem)}`
-    + `&token=${encodeURIComponent(token)}`)
-    .then(res => res.text())
-    .then(msg => alert(msg))
-    .catch(err => alert("Erro ao registrar like."));
+    + `&token=${encodeURIComponent(token)}`;
+  try {
+    const msg = await fetchAutenticado(url);
+    if (msg) alert(msg);
+  } catch {
+    alert("Erro ao registrar like.");
+  } finally {
+    likesEmAndamento.delete(idMensagem);
+  }
 }
 
-function registrarCompra(idMensagem) {
+const comprasEmAndamento = new Set();
+
+async function registrarCompra(idMensagem) {
+  if (comprasEmAndamento.has(idMensagem)) return;
+  comprasEmAndamento.add(idMensagem);
   const token = localStorage.getItem("token");
-if (!token) {
-alert("Faça login primeiro.");
-return;
-}
-  fetch(`${SCRIPT_SITE}?funcao=executarAcao`
+  if (!token) {
+    alert("Faça login primeiro.");
+    comprasEmAndamento.delete(idMensagem);
+    return;
+  }
+  const url = `${SCRIPT_SITE}?funcao=executarAcao`
     + `&acao=compra`
     + `&id=${encodeURIComponent(idMensagem)}`
-    + `&token=${encodeURIComponent(token)}`)
-    .then(res => res.text())
-    .catch(err => console.warn("Erro ao registrar compra", err));
+    + `&token=${encodeURIComponent(token)}`;
+  try {
+    await fetchAutenticado(url);
+  } catch (err) {
+    console.warn("Erro ao registrar compra", err);
+  } finally {
+    comprasEmAndamento.delete(idMensagem);
+  }
 }
 
-function excluirAnuncio(idMensagem) {
+let exclusaoEmAndamento = false;
+
+async function excluirAnuncio(idMensagem) {
+  if (exclusaoEmAndamento) return;
   if (!confirm("Tem certeza que deseja excluir este anúncio?")) return;
+  exclusaoEmAndamento = true;
   const token = localStorage.getItem("token");
-if (!token) {
-alert("Faça login primeiro.");
-return;
-}
-  fetch(`${SCRIPT_SITE}?funcao=executarAcao`
+  if (!token) {
+    alert("Faça login primeiro.");
+    exclusaoEmAndamento = false;
+    return;
+  }
+  const url = `${SCRIPT_SITE}?funcao=executarAcao`
     + `&acao=excluir`
     + `&id=${encodeURIComponent(idMensagem)}`
-    + `&token=${encodeURIComponent(token)}`)
-
-    .then(res => res.text())
-    .then(msg => {
+    + `&token=${encodeURIComponent(token)}`;
+  try {
+    const msg = await fetchAutenticado(url);
+    if (msg) {
       alert(msg);
       voltarParaLista(true);
-    })
-    .catch(err => alert("Erro ao excluir anúncio."));
+    }
+  } catch {
+    alert("Erro ao excluir anúncio.");
+  } finally {
+    exclusaoEmAndamento = false;
+  }
 }
 
-function enviarFormulario(event) {
+let envioEmAndamento = false;
+
+async function enviarFormulario(event) {
   event.preventDefault();
+  if (envioEmAndamento) return;
+  envioEmAndamento = true;
   const form = document.getElementById("formAnuncio");
   const btnEnviar = form.querySelector('button[type="submit"]');
   const btnCancelar = form.querySelector('button[type="button"]');
-  // 🔒 Evita múltiplos cliques
   btnEnviar.disabled = true;
   btnEnviar.textContent = "Enviando...";
   btnCancelar.disabled = true;
   const dados = Object.fromEntries(new FormData(form).entries());
-  // 🧹 Remove campos vazios
   Object.keys(dados).forEach(chave => {
-    if (dados[chave].trim() === "") {
-      delete dados[chave];
-    }
+    if (dados[chave].trim() === "") delete dados[chave];
   });
-  // ➕ Extras selecionados
   const selecionados = Array.from(
     document.querySelectorAll('input[name="extra"]:checked')
-  ).map(input => input.value);
+  ).map(i => i.value);
   dados.extra = selecionados.join(", ");
-  // 🔐 TOKEN DA SESSÃO
   const token = localStorage.getItem("token");
   if (!token) {
     alert("Sessão inválida. Faça login novamente.");
+    envioEmAndamento = false;
     return;
   }
-  // 🧩 Montar parâmetros
   const params = new URLSearchParams({
     funcao: "salvarFormulario",
-    token: token,
+    token,
     ...dados
   }).toString();
-  fetch(`${SCRIPT_SITE}?${params}`)
-    .then(res => res.text())
-    .then(msg => {
+  try {
+    const msg = await fetchAutenticado(`${SCRIPT_SITE}?${params}`);
+    if (msg) {
       alert(msg);
       form.reset();
       voltarParaLista(true);
-    })
-    .catch(err => {
-      alert("Erro ao enviar o formulário.");
-    })
-    .finally(() => {
-      btnEnviar.disabled = false;
-      btnEnviar.textContent = "Enviar";
-      btnCancelar.disabled = false;
-    });
+    }
+  } catch {
+    alert("Erro ao enviar o formulário.");
+  } finally {
+    btnEnviar.disabled = false;
+    btnEnviar.textContent = "Enviar";
+    btnCancelar.disabled = false;
+    envioEmAndamento = false;
+  }
 }
 
   async function carregarAnuncios() {
+if (carregandoAnuncios) return;
+  carregandoAnuncios = true;
   const container = document.getElementById("anuncios");
   container.innerHTML = '<div class="loading">Carregando Anúncios...</div>';
   try {
@@ -137,13 +173,8 @@ function enviarFormulario(event) {
     container.innerHTML = '<div class="erro">Erro ao carregar anúncios.</div>';
     console.error("Erro ao carregar anúncios:", erro);
   }
+carregandoAnuncios = false;
 }
-
-const opcoesExtra = [
-  "Adrenalina Pura", "Apple TV+", "Canais Globo", "Cindie", "Combate",
-  "Crunchyroll", "Disney+", "ESPN", "GloboPlay", "HBO Max", "Look", "MGM+",
-  "MUBI", "NBA", "Netflix", "Nosso Futebol+", "Paramount+", "Premiere", "Reserva Imovision",  "Sony One", "Spotify", "Telecine", "UFC Fight Pass", "Universal+", "YouTube"
-];
 
 function limitarKotas(input) {
   if (input.value.length > 6) {
@@ -191,6 +222,55 @@ function sair() {
   limparSessao();
   alert("Sessão encerrada.");
   location.reload();
+}
+
+async function renovarTokenAutomatico() {
+  // 🟢 Se estiver no Telegram WebApp
+  if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
+    const user = Telegram.WebApp.initDataUnsafe.user;
+    const nome = user.username ? "@" + user.username : user.first_name;
+    const res = await fetch(      `${SCRIPT_SITE}?funcao=loginTelegram&usuario=${encodeURIComponent(nome)}`
+    );
+    const dados = await res.json();
+    if (dados.status === "ok") {
+      salvarSessao(dados.nome, dados.id);
+      localStorage.setItem("token", dados.token);
+      return true;
+    }
+    return false;
+  }
+  // 🔵 Login manual — usa usuário salvo
+  const nome = localStorage.getItem("usuarioNome");
+  if (!nome) return false;
+  const res = await fetch(    `${SCRIPT_SITE}?funcao=loginTelegram&usuario=${encodeURIComponent(nome)}`
+  );
+  const dados = await res.json();
+  if (dados.status === "ok") {
+    salvarSessao(dados.nome, dados.id);
+    localStorage.setItem("token", dados.token);
+    return true;
+  }
+  return false;
+}
+
+async function fetchAutenticado(url, jaTentou = false) {
+  let res = await fetch(url);
+  let texto = await res.text();
+  if (texto.includes("Sessão inválida") && !jaTentou) {
+    const ok = await renovarTokenAutomatico();
+    if (!ok) {
+      alert("Sua sessão expirou. Faça login novamente.");
+      mostrarTelaLogin();
+      return null;
+    }
+    const novoToken = localStorage.getItem("token");
+    const urlAtualizada = url.replace(
+      /([?&])token=[^&]*/,
+      `$1token=${encodeURIComponent(novoToken)}`
+    );
+    return fetchAutenticado(urlAtualizada, true);
+  }
+  return texto;
 }
 
 // Decide se mostra o botão Sair dentro do menu
@@ -521,7 +601,8 @@ function mostrarDetalhes(item) {
   if (sessao && sessao.nome === item.anunciante) {
     window.podeExcluir = true;
   }
-  // =========================
+	
+// =========================
   // BOTÕES DE CONTATO (IMAGENS)
   // =========================
   let botoesContato = "";
