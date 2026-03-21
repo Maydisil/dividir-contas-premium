@@ -157,11 +157,23 @@ if (carregandoAnuncios) return;
     const resposta = await fetch(`${SCRIPT_SITE}?funcao=listarAnuncios`);
     if (!resposta.ok) throw new Error('Resposta HTTP ' + resposta.status);
     const anuncios = await resposta.json();
-    // usa a função já existente no seu código para renderizar os itens
+    window.anunciosCarregados = anuncios;
     renderizarAnuncios(anuncios);
-    // 🔹 Depois que exibir os anúncios, aplica filtro inicial (se existir)
     const params = new URLSearchParams(window.location.search);
-    const termoPesquisa = params.get("pesquisar");
+// 🔗 1) ABRIR DIRETO POR ID
+const idDireto = params.get("a") || params.get("id");
+if (idDireto && window.anunciosCarregados) {
+  const item = window.anunciosCarregados.find(a =>
+    a.postagem == idDireto
+  );
+  if (item) {
+    mostrarDetalhes(item);
+    return;
+  }
+}
+// 🔍 2) PESQUISA NORMAL
+    const termoPesquisa =
+  params.get("p") || params.get("pesquisar");
     if (termoPesquisa) {
       const barraPesquisa = document.getElementById("pesquisa");
       if (barraPesquisa) {
@@ -601,8 +613,7 @@ function mostrarDetalhes(item) {
   if (sessao && sessao.nome === item.anunciante) {
     window.podeExcluir = true;
   }
-	
-// =========================
+  // =========================
   // BOTÕES DE CONTATO (IMAGENS)
   // =========================
   let botoesContato = "";
@@ -612,7 +623,7 @@ function mostrarDetalhes(item) {
       <a href="https://t.me/${usuarioLimpo}"
          target="_blank"
          onclick="registrarCompra('${item.postagem}')">
-        <img src="https://drive.google.com/thumbnail?id=1qXoQt7RBq3gXbeEelRQbawl5Ni2oUxdl&sz=w1000">
+        <img src="https://drive.google.com/thumbnail?id=1qXoQt7RBq3gXbeEelRQbawl5Ni2oUxdl&sz=w600">
       </a>
     `;
   }
@@ -621,7 +632,7 @@ function mostrarDetalhes(item) {
       <a href="https://wa.me/${item.whatsapp}"
          target="_blank"
          onclick="registrarCompra('${item.postagem}')">
-        <img src="https://drive.google.com/thumbnail?id=1zdhXAhIUNrZfurE_7_i56Hj7TZkJhjN_&sz=w1000">
+        <img src="https://drive.google.com/thumbnail?id=1zdhXAhIUNrZfurE_7_i56Hj7TZkJhjN_&sz=w600">
       </a>
     `;
   }
@@ -630,7 +641,7 @@ function mostrarDetalhes(item) {
       <a href="https://app.kotas.com.br/grupo/${item.kotas}"
          target="_blank"
          onclick="registrarCompra('${item.postagem}')">
-        <img src="https://drive.google.com/thumbnail?id=1aPf9zlL3M85F5kXxhbvzhq6iKpyK5lXb&sz=w1000">
+        <img src="https://drive.google.com/thumbnail?id=1aPf9zlL3M85F5kXxhbvzhq6iKpyK5lXb&sz=w600">
       </a>
     `;
   }
@@ -640,7 +651,7 @@ function mostrarDetalhes(item) {
   document.getElementById("detalhes").innerHTML = `
     <div class="detalhes-box">
       <a href="${item.linkStreaming}" target="_blank">
-        <img src="https://drive.google.com/thumbnail?id=${item.logo2}&sz=w1000">
+        <img src="https://drive.google.com/thumbnail?id=${item.logo2}&sz=w600">
       </a>
       <hr>
       <p><strong>📺 ${item.streaming}</strong></p>
@@ -834,10 +845,38 @@ function renderizarBottomBar(tipo) {
     });
     // 📲 Compartilhar link da postagem
     criarBotao("bi bi-send", "Enviar", () => {
-      const link = `https://t.me/dividir_contas_premium/${item.postagem}`;
-      const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(link)}`;
-      window.open(url, "_blank");
-    });
+  const link =
+    `https://tinyurl.com/divcp01?a=${item.postagem}`;
+
+  let mensagem =
+`📺 ${item.streaming}
+${item.streamingExtra ? `➕ ${item.streamingExtra}\n` : ""}
+
+💵 ${item.valor}
+📌 ${item.vagas}
+🔐 ${item.login}
+${item.oferta ? `⏰ ${item.oferta}\n` : ""}
+
+👇 *VER ANÚNCIO COMPRETO*
+${link}
+
+👤 *MEUS ANÚNCIOS*
+https://tinyurl.com/divcp01?p=${item.anunciante.replace(/^@/, "")}
+
+📲 *CONTATO POR TELEGRAM*
+https://t.me/${item.anunciante.replace(/^@/, "")}`;
+
+  if (item.whatsapp) {
+    mensagem += `
+
+📲 *CONTATO POR WHATSAPP*
+https://wa.me/${item.whatsapp}`;
+  }
+
+  const url =
+    `https://api.whatsapp.com/send?text=${encodeURIComponent(mensagem)}`;
+  window.open(url, "_blank");
+});
     // 🗑 Excluir (somente dono)
     if (window.podeExcluir) {
       criarBotao("bi bi-trash", "Excluir", () => {
@@ -888,7 +927,7 @@ function compartilharUsuarioWhatsapp() {
     }
   });
   texto += `\n-------------------------------------------\n`;
-  texto += `👤 *MEUS ANÚNCIOS*\nhttps://tinyurl.com/divcp01?pesquisar=${usuarioSemArroba}\n\n`;
+  texto += `👤 *MEUS ANÚNCIOS*\nhttps://tinyurl.com/divcp01?p=${usuarioSemArroba}\n\n`;
   texto += `📲 *CONTATO POR TELEGRAM*\nhttps://t.me/${usuarioSemArroba}`;
   if (whatsappUsuario) {
     texto += `\n\n📲 *CONTATO POR WHATSAPP*\nhttps://wa.me/${whatsappUsuario}`;
