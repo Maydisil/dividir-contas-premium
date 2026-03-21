@@ -654,7 +654,7 @@ function mostrarDetalhes(item) {
         <img src="https://drive.google.com/thumbnail?id=${item.logo2}&sz=w600">
       </a>
       <hr>
-      <p><strong>📺 ${item.streaming}</strong></p>
+      <p><strong>🖥 ${item.streaming}</strong></p>
       ${item.streamingExtra ? `<p><strong>➕ ${item.streamingExtra}</strong></p>` : ""}
       <p><strong>💵 ${item.valor}</strong></p>
       <p><strong>📌 ${item.vagas}</strong></p>
@@ -844,17 +844,15 @@ function renderizarBottomBar(tipo) {
       );
     });
     // 📲 Compartilhar link da postagem
-    criarBotao("bi bi-send", "Enviar", () => {
+criarBotao("bi bi-send", "Enviar", () => {
   const link =
     `https://tinyurl.com/divcp01?a=${item.postagem}`;
-
-let mensagem =
-`📺 ${item.streaming}${item.streamingExtra ? `\n➕ ${item.streamingExtra}` : ""}
+  let mensagem =
+`🖥 *${item.streaming}*${item.streamingExtra ? `\n➕ ${item.streamingExtra}` : ""}
 💵 ${item.valor}
 📌 ${item.vagas}
-🔐 ${item.login}
-${item.oferta ? `⏰ ${item.oferta}\n` : ""}
-
+🔐 ${item.login}${item.oferta ? `\n⏰ ${item.oferta}` : ""}
+-------------------------------------------
 👇 *VER ANÚNCIO COMPLETO*
 ${link}
 
@@ -870,7 +868,6 @@ https://t.me/${item.anunciante.replace(/^@/, "")}`;
 📲 *CONTATO POR WHATSAPP*
 https://wa.me/${item.whatsapp}`;
   }
-
   const url =
     `https://api.whatsapp.com/send?text=${encodeURIComponent(mensagem)}`;
   window.open(url, "_blank");
