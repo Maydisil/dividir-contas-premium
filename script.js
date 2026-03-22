@@ -1015,11 +1015,11 @@ localStorage.setItem("token", dados.token);
   atualizarMenuUsuario();
   await carregarAnuncios();
   // 🔥 Se abrir direto no formulário
-  if (params.has("anunciar")) {
-    mostrarFormulario();
-  } else {
-    renderizarBottomBar("lista");
-  }
+if (params.has("anunciar")) {
+  mostrarFormulario();
+} else if (!window.itemAtual) {
+  renderizarBottomBar("lista");
+}
   document.getElementById("pesquisa")
     .addEventListener("input", () => {
       filtrarAnuncios();
