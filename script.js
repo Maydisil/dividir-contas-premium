@@ -623,7 +623,7 @@ function mostrarDetalhes(item) {
       <a href="https://t.me/${usuarioLimpo}"
          target="_blank"
          onclick="registrarCompra('${item.postagem}')">
-        <img src="https://drive.google.com/thumbnail?id=1qXoQt7RBq3gXbeEelRQbawl5Ni2oUxdl&sz=w600">
+        <img src="https://drive.google.com/thumbnail?id=1qXoQt7RBq3gXbeEelRQbawl5Ni2oUxdl&sz=w1000">
       </a>
     `;
   }
@@ -632,7 +632,7 @@ function mostrarDetalhes(item) {
       <a href="https://wa.me/${item.whatsapp}"
          target="_blank"
          onclick="registrarCompra('${item.postagem}')">
-        <img src="https://drive.google.com/thumbnail?id=1zdhXAhIUNrZfurE_7_i56Hj7TZkJhjN_&sz=w600">
+        <img src="https://drive.google.com/thumbnail?id=1zdhXAhIUNrZfurE_7_i56Hj7TZkJhjN_&sz=w1000">
       </a>
     `;
   }
@@ -641,7 +641,7 @@ function mostrarDetalhes(item) {
       <a href="https://app.kotas.com.br/grupo/${item.kotas}"
          target="_blank"
          onclick="registrarCompra('${item.postagem}')">
-        <img src="https://drive.google.com/thumbnail?id=1aPf9zlL3M85F5kXxhbvzhq6iKpyK5lXb&sz=w600">
+        <img src="https://drive.google.com/thumbnail?id=1aPf9zlL3M85F5kXxhbvzhq6iKpyK5lXb&sz=w1000">
       </a>
     `;
   }
@@ -651,7 +651,7 @@ function mostrarDetalhes(item) {
   document.getElementById("detalhes").innerHTML = `
     <div class="detalhes-box">
       <a href="${item.linkStreaming}" target="_blank">
-        <img src="https://drive.google.com/thumbnail?id=${item.logo2}&sz=w600">
+        <img src="https://drive.google.com/thumbnail?id=${item.logo2}&sz=w1000">
       </a>
       <hr>
       <p><strong>🖥 ${item.streaming}</strong></p>
