@@ -1060,27 +1060,32 @@ window.addEventListener("load", async () => {
   // 🔄 Se não tiver sessão → tentar login Telegram
   if (!sessao && window.Telegram?.WebApp?.initDataUnsafe?.user) {
     const user = Telegram.WebApp.initDataUnsafe.user;
-    const nome = user.username ? "@" + user.username : user.first_name;
+    const nome = user.username
+      ? "@" + user.username
+      : user.first_name;
+    // 🔥 CORREÇÃO: agora envia também o ID
     const res = await fetch(
-      `${SCRIPT_SITE}?funcao=loginTelegram&usuario=${encodeURIComponent(nome)}`
+      `${SCRIPT_SITE}?funcao=loginTelegram`
+      + `&id=${encodeURIComponent(user.id)}`
+      + `&usuario=${encodeURIComponent(nome)}`
     );
     const dados = await res.json();
     if (dados.status === "ok") {
-  salvarSessao(dados.nome, dados.id, dados.token);
-  sessao = obterSessao();
-}
-else if (dados.status === "nome_diferente") {
-  alert("⚠️ Seu nome do Telegram mudou.\nRefaça o cadastro no grupo.");
-}
-else if (dados.status === "bloqueado") {
-  alert("⛔ Seu acesso está bloqueado.\nFale com um administrador.");
-}
-else if (dados.status === "nao_cadastrado") {
-  alert("🚫 Você não está cadastrado.\nFaça o cadastro no grupo.");
-}
-else {
-  alert("⚠️ Usuário não autorizado.");
-}
+      salvarSessao(dados.nome, dados.id, dados.token);
+      sessao = obterSessao();
+    }
+    else if (dados.status === "nome_diferente") {
+      alert("⚠️ Seu nome do Telegram mudou.\nRefaça o cadastro no grupo.");
+    }
+    else if (dados.status === "bloqueado") {
+      alert("⛔ Seu acesso está bloqueado.\nFale com um administrador.");
+    }
+    else if (dados.status === "nao_cadastrado") {
+      alert("🚫 Você não está cadastrado.\nFaça o cadastro no grupo.");
+    }
+    else {
+      alert("⚠️ Usuário não autorizado.");
+    }
   }
   // 🔄 Atualizar menu após login automático
   atualizarMenuUsuario();
@@ -1092,13 +1097,16 @@ else {
   else if (!window.itemAtual) {
     renderizarBottomBar("lista");
   }
+
   document.getElementById("pesquisa")
     .addEventListener("input", () => {
       filtrarAnuncios();
       renderizarBottomBar("lista");
     });
+
   document.querySelector(".menu-icon")
     .addEventListener("click", toggleMenu);
+
   document.getElementById("menu-overlay")
     .addEventListener("click", toggleMenu);
 });
