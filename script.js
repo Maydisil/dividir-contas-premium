@@ -176,7 +176,7 @@ async function enviarFormulario(event) {
   }
 }
 
-async function carregarAnuncios() {
+  async function carregarAnuncios() {
 if (carregandoAnuncios) return;
   carregandoAnuncios = true;
   const container = document.getElementById("anuncios");
@@ -616,6 +616,7 @@ function getUserId() {
   return userId;
 }
 
+
 function modoLista() {
   document.getElementById("btnVoltar").style.display = "none";
   document.getElementById("searchContainer").style.display = "flex";
@@ -838,7 +839,6 @@ function resetarPosicao() {
   if (!box) return;
   box.style.transform = "translateX(0) scale(1)";
 }
-
 
 function renderizarBottomBar(tipo) {
   const bar = document.getElementById("bottomBar");
@@ -1119,3 +1119,4 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 });
+
