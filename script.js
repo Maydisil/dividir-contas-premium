@@ -290,31 +290,35 @@ async function renovarTokenAutomatico() {
   // 🟢 Telegram WebApp
   if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
     const user = Telegram.WebApp.initDataUnsafe.user;
+    const id   = user.id;
     const nome = user.username ? "@" + user.username : user.first_name;
     const res = await fetch(
-      `${SCRIPT_SITE}?funcao=loginTelegram&usuario=${encodeURIComponent(nome)}`
+      `${SCRIPT_SITE}?funcao=loginTelegram`
+      + `&id=${encodeURIComponent(id)}`
+      + `&usuario=${encodeURIComponent(nome)}`
     );
     const dados = await res.json();
     if (dados.status === "ok") {
-  salvarSessao(dados.nome, dados.id, dados.token);
-  return true;
-}
-else if (dados.status === "bloqueado") {
-  alert("⛔ Seu acesso está bloqueado.");
-}
-else if (dados.status === "nome_diferente") {
-  alert("⚠️ Seu nome do Telegram mudou.\nRefaça o cadastro.");
-}
-else if (dados.status === "nao_cadastrado") {
-  alert("🚫 Você não está cadastrado.");
-}
-return false;
+      salvarSessao(dados.nome, dados.id, dados.token);
+      return true;
+    }
+    else if (dados.status === "bloqueado") {
+      alert("⛔ Seu acesso está bloqueado.");
+    }
+    else if (dados.status === "nome_diferente") {
+      alert("⚠️ Seu nome do Telegram mudou.\nRefaça o cadastro.");
+    }
+    else if (dados.status === "nao_cadastrado") {
+      alert("🚫 Você não está cadastrado.");
+    }
+    return false;
   }
   // 🔵 Login manual salvo
   const nome = localStorage.getItem("usuarioNome");
   if (!nome) return false;
   const res = await fetch(
-    `${SCRIPT_SITE}?funcao=loginManualPersistente&usuario=${encodeURIComponent(nome)}`
+    `${SCRIPT_SITE}?funcao=loginManualPersistente`
+    + `&usuario=${encodeURIComponent(nome)}`
   );
   const dados = await res.json();
   if (dados.status === "ok") {
