@@ -24,8 +24,6 @@ let endX = 0;
 
 const likesEmAndamento = new Set();
 
-const likesEmAndamento = new Set();
-
 async function registrarLike(idMensagem) {
   if (likesEmAndamento.has(idMensagem)) return;
   likesEmAndamento.add(idMensagem);
