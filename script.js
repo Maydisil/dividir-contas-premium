@@ -24,20 +24,30 @@ let endX = 0;
 
 const likesEmAndamento = new Set();
 
+const likesEmAndamento = new Set();
+
 async function registrarLike(idMensagem) {
   if (likesEmAndamento.has(idMensagem)) return;
   likesEmAndamento.add(idMensagem);
-  const token = localStorage.getItem("token");
-  if (!token) {
-    alert("Faça login primeiro.");
-    likesEmAndamento.delete(idMensagem);
-    return;
-  }
-  const url = `${SCRIPT_SITE}?funcao=executarAcao`
-    + `&acao=like`
-    + `&id=${encodeURIComponent(idMensagem)}`
-    + `&token=${encodeURIComponent(token)}`;
   try {
+    // 🔎 Garantir sessão válida
+    let sessao = obterSessao();
+    if (!sessao) {
+      const ok = await renovarTokenAutomatico();
+      if (!ok) {
+        alert("Faça login primeiro.");
+        return;
+      }
+    }
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Faça login primeiro.");
+      return;
+    }
+    const url = `${SCRIPT_SITE}?funcao=executarAcao`
+      + `&acao=like`
+      + `&id=${encodeURIComponent(idMensagem)}`
+      + `&token=${encodeURIComponent(token)}`;
     const msg = await fetchAutenticado(url);
     if (msg) alert(msg);
   } catch {
@@ -52,17 +62,18 @@ const comprasEmAndamento = new Set();
 async function registrarCompra(idMensagem) {
   if (comprasEmAndamento.has(idMensagem)) return;
   comprasEmAndamento.add(idMensagem);
-  const token = localStorage.getItem("token");
-  if (!token) {
-    alert("Faça login primeiro.");
-    comprasEmAndamento.delete(idMensagem);
-    return;
-  }
-  const url = `${SCRIPT_SITE}?funcao=executarAcao`
-    + `&acao=compra`
-    + `&id=${encodeURIComponent(idMensagem)}`
-    + `&token=${encodeURIComponent(token)}`;
   try {
+    let sessao = obterSessao();
+    if (!sessao) {
+      const ok = await renovarTokenAutomatico();
+      if (!ok) return;
+    }
+    const token = localStorage.getItem("token");
+    if (!token) return;
+    const url = `${SCRIPT_SITE}?funcao=executarAcao`
+      + `&acao=compra`
+      + `&id=${encodeURIComponent(idMensagem)}`
+      + `&token=${encodeURIComponent(token)}`;
     await fetchAutenticado(url);
   } catch (err) {
     console.warn("Erro ao registrar compra", err);
@@ -77,17 +88,24 @@ async function excluirAnuncio(idMensagem) {
   if (exclusaoEmAndamento) return;
   if (!confirm("Tem certeza que deseja excluir este anúncio?")) return;
   exclusaoEmAndamento = true;
-  const token = localStorage.getItem("token");
-  if (!token) {
-    alert("Faça login primeiro.");
-    exclusaoEmAndamento = false;
-    return;
-  }
-  const url = `${SCRIPT_SITE}?funcao=executarAcao`
-    + `&acao=excluir`
-    + `&id=${encodeURIComponent(idMensagem)}`
-    + `&token=${encodeURIComponent(token)}`;
   try {
+    let sessao = obterSessao();
+    if (!sessao) {
+      const ok = await renovarTokenAutomatico();
+      if (!ok) {
+        alert("Faça login primeiro.");
+        return;
+      }
+    }
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Faça login primeiro.");
+      return;
+    }
+    const url = `${SCRIPT_SITE}?funcao=executarAcao`
+      + `&acao=excluir`
+      + `&id=${encodeURIComponent(idMensagem)}`
+      + `&token=${encodeURIComponent(token)}`;
     const msg = await fetchAutenticado(url);
     if (msg) {
       alert(msg);
@@ -112,33 +130,45 @@ async function enviarFormulario(event) {
   btnEnviar.disabled = true;
   btnEnviar.textContent = "Enviando...";
   btnCancelar.disabled = true;
-  const dados = Object.fromEntries(new FormData(form).entries());
-  Object.keys(dados).forEach(chave => {
-    if (dados[chave].trim() === "") delete dados[chave];
-  });
-  const selecionados = Array.from(
-    document.querySelectorAll('input[name="extra"]:checked')
-  ).map(i => i.value);
-  dados.extra = selecionados.join(", ");
-  const token = localStorage.getItem("token");
-  if (!token) {
-    alert("Sessão inválida. Faça login novamente.");
-    envioEmAndamento = false;
-    return;
-  }
-  const params = new URLSearchParams({
-    funcao: "salvarFormulario",
-    token,
-    ...dados
-  }).toString();
   try {
+    // 🔎 Garantir sessão válida
+    let sessao = obterSessao();
+    if (!sessao) {
+      const ok = await renovarTokenAutomatico();
+      if (!ok) {
+        alert("Sessão inválida. Faça login novamente.");
+        return;
+      }
+    }
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Sessão inválida. Faça login novamente.");
+      return;
+    }
+    // 📝 Coletar dados do formulário
+    const dados = Object.fromEntries(new FormData(form).entries());
+    Object.keys(dados).forEach(chave => {
+      if (dados[chave].trim() === "") delete dados[chave];
+    });
+    const selecionados = Array.from(
+      document.querySelectorAll('input[name="extra"]:checked')
+    ).map(i => i.value);
+    dados.extra = selecionados.join(", ");
+    // 📦 Montar parâmetros (como antes)
+    const params = new URLSearchParams({
+      funcao: "salvarFormulario",
+      token,
+      ...dados
+    }).toString();
+    // 🚀 Enviar usando sua função autenticada
     const msg = await fetchAutenticado(`${SCRIPT_SITE}?${params}`);
     if (msg) {
       alert(msg);
       form.reset();
       voltarParaLista(true);
     }
-  } catch {
+  } catch (erro) {
+    console.error("Erro ao enviar formulário:", erro);
     alert("Erro ao enviar o formulário.");
   } finally {
     btnEnviar.disabled = false;
@@ -148,7 +178,7 @@ async function enviarFormulario(event) {
   }
 }
 
-  async function carregarAnuncios() {
+async function carregarAnuncios() {
 if (carregandoAnuncios) return;
   carregandoAnuncios = true;
   const container = document.getElementById("anuncios");
@@ -202,10 +232,25 @@ function formatarUsuario(input) {
   input.value = valor;
 }
 
-function salvarSessao(nome, id) {
+async function verificarSessaoAoEntrar() {
+  const token = localStorage.getItem("token");
+  const nome  = localStorage.getItem("usuarioNome");
+  // 🔐 Não logado
+  if (!token || !nome) return false;
+  // 🟢 Tenta validar silenciosamente
+  const ok = await renovarTokenAutomatico();
+  if (!ok) {
+    limparSessao();
+    return false;
+  }
+  return true;
+}
+
+function salvarSessao(nome, id, token) {
   const agora = Date.now();
   localStorage.setItem("usuarioNome", nome);
   localStorage.setItem("usuarioId", id);
+  localStorage.setItem("token", token);
   localStorage.setItem("sessaoExpira", agora + DURACAO_SESSAO);
   atualizarMenuUsuario();
 }
@@ -230,36 +275,52 @@ function limparSessao() {
   atualizarMenuUsuario();
 }
 
-function sair() {
+async function sair() {
+  const token = localStorage.getItem("token");
+  if (token) {
+    try {
+      await fetch(        `${SCRIPT_SITE}?funcao=logout&token=${encodeURIComponent(token)}`
+      );
+    } catch (e) {}
+  }
   limparSessao();
   alert("Sessão encerrada.");
   location.reload();
 }
 
 async function renovarTokenAutomatico() {
-  // 🟢 Se estiver no Telegram WebApp
+  // 🟢 Telegram WebApp
   if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
     const user = Telegram.WebApp.initDataUnsafe.user;
     const nome = user.username ? "@" + user.username : user.first_name;
-    const res = await fetch(      `${SCRIPT_SITE}?funcao=loginTelegram&usuario=${encodeURIComponent(nome)}`
+    const res = await fetch(
+      `${SCRIPT_SITE}?funcao=loginTelegram&usuario=${encodeURIComponent(nome)}`
     );
     const dados = await res.json();
     if (dados.status === "ok") {
-      salvarSessao(dados.nome, dados.id);
-      localStorage.setItem("token", dados.token);
-      return true;
-    }
-    return false;
+  salvarSessao(dados.nome, dados.id, dados.token);
+  return true;
+}
+else if (dados.status === "bloqueado") {
+  alert("⛔ Seu acesso está bloqueado.");
+}
+else if (dados.status === "nome_diferente") {
+  alert("⚠️ Seu nome do Telegram mudou.\nRefaça o cadastro.");
+}
+else if (dados.status === "nao_cadastrado") {
+  alert("🚫 Você não está cadastrado.");
+}
+return false;
   }
-  // 🔵 Login manual — usa usuário salvo
+  // 🔵 Login manual salvo
   const nome = localStorage.getItem("usuarioNome");
   if (!nome) return false;
-  const res = await fetch(    `${SCRIPT_SITE}?funcao=loginTelegram&usuario=${encodeURIComponent(nome)}`
+  const res = await fetch(
+    `${SCRIPT_SITE}?funcao=loginManualPersistente&usuario=${encodeURIComponent(nome)}`
   );
   const dados = await res.json();
   if (dados.status === "ok") {
-    salvarSessao(dados.nome, dados.id);
-    localStorage.setItem("token", dados.token);
+    salvarSessao(dados.nome, dados.id, dados.token);
     return true;
   }
   return false;
@@ -310,8 +371,7 @@ async function verificarAutenticacao() {
     );
     const dados = await res.json();
     if (dados.status === "ok") {
-      salvarSessao(dados.nome, dados.id);
-      localStorage.setItem("token", dados.token);
+      salvarSessao(dados.nome, dados.id, dados.token);
       return { nome: dados.nome, id: dados.id };
     }
     if (dados.status === "bloqueado") {
@@ -343,8 +403,7 @@ async function fazerLogin() {
   );
   const dados = await res.json();
 if (dados.status === "ok") {
-salvarSessao(dados.nome, dados.id);
-localStorage.setItem("token", dados.token);
+salvarSessao(dados.nome, dados.id, dados.token);
 mostrarFormulario();
 return;
 }
@@ -419,8 +478,7 @@ async function mostrarFormulario() {
     );
     const dados = await res.json();
     if (dados.status === "ok") {
-      salvarSessao(dados.nome, dados.id);
-      localStorage.setItem("token", dados.token);
+      salvarSessao(dados.nome, dados.id, dados.token);
       atualizarMenuUsuario();
       sessao = { nome: dados.nome, id: dados.id };
     }
@@ -559,7 +617,6 @@ function getUserId() {
   }
   return userId;
 }
-
 
 function modoLista() {
   document.getElementById("btnVoltar").style.display = "none";
@@ -784,6 +841,7 @@ function resetarPosicao() {
   box.style.transform = "translateX(0) scale(1)";
 }
 
+
 function renderizarBottomBar(tipo) {
   const bar = document.getElementById("bottomBar");
   bar.innerHTML = "";
@@ -844,9 +902,10 @@ function renderizarBottomBar(tipo) {
       );
     });
     // 📲 Compartilhar link da postagem
-criarBotao("bi bi-send", "Enviar", () => {
+    criarBotao("bi bi-send", "Enviar", () => {
   const link =
     `https://tinyurl.com/divcp01?a=${item.postagem}`;
+
   let mensagem =
 `🖥 *${item.streaming}*${item.streamingExtra ? `\n➕ ${item.streamingExtra}` : ""}
 💵 ${item.valor}
@@ -868,6 +927,7 @@ https://t.me/${item.anunciante.replace(/^@/, "")}`;
 📲 *CONTATO POR WHATSAPP*
 https://wa.me/${item.whatsapp}`;
   }
+
   const url =
     `https://api.whatsapp.com/send?text=${encodeURIComponent(mensagem)}`;
   window.open(url, "_blank");
@@ -996,30 +1056,44 @@ function esconderTodasTelas() {
 
 window.addEventListener("load", async () => {
   const params = new URLSearchParams(window.location.search);
-  // 🔎 Verifica sessão existente
-  const sessao = obterSessao();
-  // 🔄 Se não tiver sessão, tentar login automático via Telegram
+  // 🔎 Verificar sessão existente
+  await verificarSessaoAoEntrar();
+  let sessao = obterSessao();
+  // 🔄 Se não tiver sessão → tentar login Telegram
   if (!sessao && window.Telegram?.WebApp?.initDataUnsafe?.user) {
     const user = Telegram.WebApp.initDataUnsafe.user;
     const nome = user.username ? "@" + user.username : user.first_name;
     const res = await fetch(
-`${SCRIPT_SITE}?funcao=loginTelegram&usuario=${encodeURIComponent(nome)}`
+      `${SCRIPT_SITE}?funcao=loginTelegram&usuario=${encodeURIComponent(nome)}`
     );
     const dados = await res.json();
-   if (dados.status === "ok") {
-salvarSessao(dados.nome, dados.id);
-localStorage.setItem("token", dados.token);
+    if (dados.status === "ok") {
+  salvarSessao(dados.nome, dados.id, dados.token);
+  sessao = obterSessao();
+}
+else if (dados.status === "nome_diferente") {
+  alert("⚠️ Seu nome do Telegram mudou.\nRefaça o cadastro no grupo.");
+}
+else if (dados.status === "bloqueado") {
+  alert("⛔ Seu acesso está bloqueado.\nFale com um administrador.");
+}
+else if (dados.status === "nao_cadastrado") {
+  alert("🚫 Você não está cadastrado.\nFaça o cadastro no grupo.");
+}
+else {
+  alert("⚠️ Usuário não autorizado.");
 }
   }
-  // 🔄 Atualiza botão Sair após possível login automático
+  // 🔄 Atualizar menu após login automático
   atualizarMenuUsuario();
   await carregarAnuncios();
-  // 🔥 Se abrir direto no formulário
-if (params.has("anunciar")) {
-  mostrarFormulario();
-} else if (!window.itemAtual) {
-  renderizarBottomBar("lista");
-}
+  // 🔥 Abrir direto no formulário
+  if (params.has("anunciar")) {
+    mostrarFormulario();
+  } 
+  else if (!window.itemAtual) {
+    renderizarBottomBar("lista");
+  }
   document.getElementById("pesquisa")
     .addEventListener("input", () => {
       filtrarAnuncios();
