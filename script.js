@@ -250,16 +250,15 @@ function formatarUsuario(input) {
 async function verificarSessaoAoEntrar() {
   const token = localStorage.getItem("token");
   const nome  = localStorage.getItem("usuarioNome");
-  // 🔐 Não logado
   if (!token || !nome) return false;
-  // 🟢 Tenta validar silenciosamente
   const ok = await renovarTokenAutomatico();
-  if (!ok) {
+  if (ok !== true) {
     limparSessao();
     return false;
   }
   return true;
 }
+
 
 function salvarSessao(nome, id, token) {
   const agora = Date.now();
@@ -304,14 +303,15 @@ async function sair() {
 }
 
 async function renovarTokenAutomatico() {
-  // 🟢 Telegram WebApp
+  // 🟢 TELEGRAM
   if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
     const user = Telegram.WebApp.initDataUnsafe.user;
-    const id   = user.id;
-    const nome = user.username ? "@" + user.username : user.first_name;
+    const nome = user.username
+      ? "@" + user.username
+      : user.first_name;
     const res = await fetch(
       `${SCRIPT_SITE}?funcao=loginTelegram`
-      + `&id=${encodeURIComponent(id)}`
+      + `&id=${encodeURIComponent(user.id)}`
       + `&usuario=${encodeURIComponent(nome)}`
     );
     const dados = await res.json();
@@ -319,23 +319,13 @@ async function renovarTokenAutomatico() {
       salvarSessao(dados.nome, dados.id, dados.token);
       return true;
     }
-    else if (dados.status === "bloqueado") {
-      alert("⛔ Seu acesso está bloqueado.");
-    }
-    else if (dados.status === "nome_diferente") {
-      alert("⚠️ Seu nome do Telegram mudou.\nRefaça o cadastro.");
-    }
-    else if (dados.status === "nao_cadastrado") {
-      alert("🚫 Você não está cadastrado.");
-    }
-    return false;
+    return dados.status || false;
   }
-  // 🔵 Login manual salvo
+  // 🔵 LOGIN MANUAL PERSISTENTE
   const nome = localStorage.getItem("usuarioNome");
   if (!nome) return false;
   const res = await fetch(
-    `${SCRIPT_SITE}?funcao=loginManualPersistente`
-    + `&usuario=${encodeURIComponent(nome)}`
+    `${SCRIPT_SITE}?funcao=loginManualPersistente&usuario=${encodeURIComponent(nome)}`
   );
   const dados = await res.json();
   if (dados.status === "ok") {
@@ -1075,56 +1065,57 @@ function esconderTodasTelas() {
 
 window.addEventListener("load", async () => {
   const params = new URLSearchParams(window.location.search);
-  // 🔎 Verificar sessão existente
+  const precisaLogin = params.has("anunciar");
+  // 🔎 1) Validar sessão existente silenciosamente
   await verificarSessaoAoEntrar();
   let sessao = obterSessao();
-  // 🔄 Se não tiver sessão → tentar login Telegram
+  // 🔄 2) Se não houver sessão → tentar login automático Telegram
   if (!sessao && window.Telegram?.WebApp?.initDataUnsafe?.user) {
-    const user = Telegram.WebApp.initDataUnsafe.user;
-    const nome = user.username
-      ? "@" + user.username
-      : user.first_name;
-    // 🔥 CORREÇÃO: agora envia também o ID
-    const res = await fetch(
-      `${SCRIPT_SITE}?funcao=loginTelegram`
-      + `&id=${encodeURIComponent(user.id)}`
-      + `&usuario=${encodeURIComponent(nome)}`
-    );
-    const dados = await res.json();
-    if (dados.status === "ok") {
-      salvarSessao(dados.nome, dados.id, dados.token);
+    const resultado = await renovarTokenAutomatico();
+    if (resultado === true) {
       sessao = obterSessao();
     }
-    else if (dados.status === "nome_diferente") {
-      alert("⚠️ Seu nome do Telegram mudou.\nRefaça o cadastro no grupo.");
-    }
-    else if (dados.status === "bloqueado") {
-      alert("⛔ Seu acesso está bloqueado.\nFale com um administrador.");
-    }
-    else if (dados.status === "nao_cadastrado") {
-      alert("🚫 Você não está cadastrado.\nFaça o cadastro no grupo.");
-    }
-    else {
-      alert("⚠️ Usuário não autorizado.");
+    // ❌ Só mostrar mensagens se for área protegida
+    else if (precisaLogin) {
+      if (resultado === "nome_diferente") {
+        alert("⚠️ Seu nome do Telegram mudou.\nRefaça o cadastro no grupo.");
+      }
+      else if (resultado === "bloqueado") {
+        alert("⛔ Seu acesso está bloqueado.\nFale com um administrador.");
+      }
+      else if (resultado === "nao_cadastrado") {
+        alert("🚫 Você não está cadastrado.\nFaça o cadastro no grupo.");
+      }
+      else {
+        alert("🔐 Faça login para anunciar.");
+      }
+      mostrarTelaLogin();
+      return;
     }
   }
-  // 🔄 Atualizar menu após login automático
+  // 🔄 Atualiza menu (logado ou não)
   atualizarMenuUsuario();
+  // 📦 3) Carregar anúncios (público)
   await carregarAnuncios();
-  // 🔥 Abrir direto no formulário
-  if (params.has("anunciar")) {
-    mostrarFormulario();
-  } 
+  // 🔐 4) Se for anunciar → abrir formulário
+  if (precisaLogin) {
+    if (sessao) {
+      mostrarFormulario();
+    } else {
+      mostrarTelaLogin();
+    }
+  }
   else if (!window.itemAtual) {
     renderizarBottomBar("lista");
   }
-
+  // 🔎 Pesquisa
   document.getElementById("pesquisa")
     .addEventListener("input", () => {
       filtrarAnuncios();
       renderizarBottomBar("lista");
     });
 
+  // 📂 Menu
   document.querySelector(".menu-icon")
     .addEventListener("click", toggleMenu);
 
