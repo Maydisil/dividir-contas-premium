@@ -1066,59 +1066,57 @@ function esconderTodasTelas() {
 window.addEventListener("load", async () => {
   const params = new URLSearchParams(window.location.search);
   const precisaLogin = params.has("anunciar");
-  // 🔎 1) Validar sessão existente silenciosamente
+  // 🔹 1) Atualiza sessão silenciosamente (se existir)
   await verificarSessaoAoEntrar();
   let sessao = obterSessao();
-  // 🔄 2) Se não houver sessão → tentar login automático Telegram
-  if (!sessao && window.Telegram?.WebApp?.initDataUnsafe?.user) {
-    const resultado = await renovarTokenAutomatico();
-    if (resultado === true) {
-      sessao = obterSessao();
-    }
-    // ❌ Só mostrar mensagens se for área protegida
-    else if (precisaLogin) {
-      if (resultado === "nome_diferente") {
-        alert("⚠️ Seu nome do Telegram mudou.\nRefaça o cadastro no grupo.");
-      }
-      else if (resultado === "bloqueado") {
-        alert("⛔ Seu acesso está bloqueado.\nFale com um administrador.");
-      }
-      else if (resultado === "nao_cadastrado") {
-        alert("🚫 Você não está cadastrado.\nFaça o cadastro no grupo.");
+  // 🔹 2) Se for anunciar → exigir login
+  if (precisaLogin) {
+    // 🔄 Tentar login automático Telegram
+    if (!sessao && window.Telegram?.WebApp?.initDataUnsafe?.user) {
+      const resultado = await renovarTokenAutomatico();
+      if (resultado === true) {
+        sessao = obterSessao();
       }
       else {
-        alert("🔐 Faça login para anunciar.");
+        if (resultado === "nome_diferente") {
+          alert("⚠️ Seu nome do Telegram mudou.\nRefaça o cadastro no grupo.");
+        }
+        else if (resultado === "bloqueado") {
+          alert("⛔ Seu acesso está bloqueado.\nFale com um administrador.");
+        }
+        else if (resultado === "nao_cadastrado") {
+          alert("🚫 Você não está cadastrado.\nFaça o cadastro no grupo.");
+        }
+        mostrarTelaLogin();
+        return;
       }
+    }
+    // ❌ Ainda não logado → login manual
+    if (!sessao) {
       mostrarTelaLogin();
       return;
     }
   }
-  // 🔄 Atualiza menu (logado ou não)
+  // 🔹 3) Atualizar menu
   atualizarMenuUsuario();
-  // 📦 3) Carregar anúncios (público)
+  // 🔹 4) SEMPRE carregar anúncios (público)
   await carregarAnuncios();
-  // 🔐 4) Se for anunciar → abrir formulário
+  // 🔹 5) Se for anunciar e estiver logado → abrir formulário
   if (precisaLogin) {
-    if (sessao) {
-      mostrarFormulario();
-    } else {
-      mostrarTelaLogin();
-    }
+    mostrarFormulario();
   }
   else if (!window.itemAtual) {
     renderizarBottomBar("lista");
   }
-  // 🔎 Pesquisa
+  // 🔍 Pesquisa
   document.getElementById("pesquisa")
     .addEventListener("input", () => {
       filtrarAnuncios();
       renderizarBottomBar("lista");
     });
-
   // 📂 Menu
   document.querySelector(".menu-icon")
     .addEventListener("click", toggleMenu);
-
   document.getElementById("menu-overlay")
     .addEventListener("click", toggleMenu);
 });
