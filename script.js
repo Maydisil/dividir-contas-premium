@@ -176,44 +176,61 @@ async function enviarFormulario(event) {
   }
 }
 
-  async function carregarAnuncios() {
-if (carregandoAnuncios) return;
+async function carregarAnuncios() {
+  if (carregandoAnuncios) return;
   carregandoAnuncios = true;
   const container = document.getElementById("anuncios");
-  container.innerHTML = '<div class="loading">Carregando Anúncios...</div>';
+  container.innerHTML =
+    '<div class="loading">Carregando Anúncios...</div>';
   try {
-    const resposta = await fetch(`${SCRIPT_SITE}?funcao=listarAnuncios`);
-    if (!resposta.ok) throw new Error('Resposta HTTP ' + resposta.status);
+    const resposta =
+      await fetch(`${SCRIPT_SITE}?funcao=listarAnuncios`);
+    if (!resposta.ok)
+      throw new Error('Resposta HTTP ' + resposta.status);
     const anuncios = await resposta.json();
+    if (!Array.isArray(anuncios) || anuncios.length === 0) {
+      container.innerHTML =
+        '<div class="erro">Nenhum anúncio encontrado.</div>';
+      return;
+    }
+    // 🔥 Salva globalmente
     window.anunciosCarregados = anuncios;
+    // 🔥 GARANTE QUE A LISTA ESTÁ VISÍVEL
+    modoLista();
+    esconderTodasTelas();
+    container.style.display = "flex";
     renderizarAnuncios(anuncios);
-    const params = new URLSearchParams(window.location.search);
-// 🔗 1) ABRIR DIRETO POR ID
-const idDireto = params.get("a") || params.get("id");
-if (idDireto && window.anunciosCarregados) {
-  const item = window.anunciosCarregados.find(a =>
-    a.postagem == idDireto
-  );
-  if (item) {
-    mostrarDetalhes(item);
-    return;
-  }
-}
-// 🔍 2) PESQUISA NORMAL
+    const params =
+      new URLSearchParams(window.location.search);
+    // 🔗 1) ABRIR DIRETO POR ID
+    const idDireto = params.get("a") || params.get("id");
+    if (idDireto) {
+      const item = anuncios.find(a =>
+        a.postagem == idDireto
+      );
+      if (item) {
+        mostrarDetalhes(item);
+        return;
+      }
+    }
+    // 🔍 2) PESQUISA VIA LINK
     const termoPesquisa =
-  params.get("p") || params.get("pesquisar");
+      params.get("p") || params.get("pesquisar");
     if (termoPesquisa) {
-      const barraPesquisa = document.getElementById("pesquisa");
+      const barraPesquisa =
+        document.getElementById("pesquisa");
       if (barraPesquisa) {
         barraPesquisa.value = termoPesquisa;
-        filtrarAnuncios(); // agora roda com os anúncios já carregados
+        filtrarAnuncios();
       }
     }
   } catch (erro) {
-    container.innerHTML = '<div class="erro">Erro ao carregar anúncios.</div>';
+    container.innerHTML =
+      '<div class="erro">Erro ao carregar anúncios.</div>';
     console.error("Erro ao carregar anúncios:", erro);
+  } finally {
+    carregandoAnuncios = false;
   }
-carregandoAnuncios = false;
 }
 
 function limitarKotas(input) {
