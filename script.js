@@ -997,12 +997,15 @@ localStorage.setItem("token", dados.token);
   // 🔄 Atualiza botão Sair após possível login automático
   atualizarMenuUsuario();
   await carregarAnuncios();
-  // 🔥 Se abrir direto no formulário
+  // 🔥  Abre com a barra certa
+  const temDetalheDireto =
+  params.get("a") || params.get("id");
   if (params.has("anunciar")) {
-    mostrarFormulario();
-  } else {
-    renderizarBottomBar("lista");
+  mostrarFormulario();
   }
+  else if (!temDetalheDireto) {
+  renderizarBottomBar("lista");
+  }	
   document.getElementById("pesquisa")
     .addEventListener("input", () => {
       filtrarAnuncios();
