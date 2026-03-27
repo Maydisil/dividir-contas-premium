@@ -5,12 +5,6 @@ const SCRIPT_SITE = "https://script.google.com/macros/s/AKfycbzzuRJPa7G-m3BwjGKP
 
 const DURACAO_SESSAO = 30 * 24 * 60 * 60 * 1000; // 30 dias
 
-const opcoesExtra = [
-  "Adrenalina Pura", "Apple TV+", "Canais Globo", "Cindie", "Combate",
-  "Crunchyroll", "Disney+", "ESPN", "GloboPlay", "HBO Max", "Look", "MGM+",
-  "MUBI", "NBA", "Netflix", "Nosso Futebol+", "Paramount+", "Premiere", "Reserva Imovision",  "Sony One", "Spotify", "Telecine", "UFC Fight Pass", "Universal+", "YouTube"
-];
-
 // ===============================
 // VARIÁVEIS GLOBAIS
 // ===============================
@@ -22,161 +16,112 @@ let indiceAtualDetalhes = -1;
 let startX = 0;
 let endX = 0;
 
-const likesEmAndamento = new Set();
+const opcoesExtra = [
+  "Adrenalina Pura", "Apple TV+", "Canais Globo", "Cindie", "Combate",
+  "Crunchyroll", "Disney+", "ESPN", "GloboPlay", "HBO Max", "Look", "MGM+",
+  "MUBI", "NBA", "Netflix", "Nosso Futebol+", "Paramount+", "Premiere", "Reserva Imovision",  "Sony One", "Spotify", "Telecine", "UFC Fight Pass", "Universal+", "YouTube"
+];
 
-async function registrarLike(idMensagem) {
-  if (likesEmAndamento.has(idMensagem)) return;
-  likesEmAndamento.add(idMensagem);
-  try {
-    // 🔎 Garantir sessão válida
-    let sessao = obterSessao();
-    if (!sessao) {
-      const ok = await renovarTokenAutomatico();
-      if (!ok) {
-        alert("Faça login primeiro.");
-        return;
-      }
-    }
-    const token = localStorage.getItem("token");
-    if (!token) {
-      alert("Faça login primeiro.");
-      return;
-    }
-    const url = `${SCRIPT_SITE}?funcao=executarAcao`
-      + `&acao=like`
-      + `&id=${encodeURIComponent(idMensagem)}`
-      + `&token=${encodeURIComponent(token)}`;
-    const msg = await fetchAutenticado(url);
-    if (msg) alert(msg);
-  } catch {
-    alert("Erro ao registrar like.");
-  } finally {
-    likesEmAndamento.delete(idMensagem);
-  }
+function registrarLike(idMensagem) {
+  const token = localStorage.getItem("token");
+if (!token) {
+alert("Faça login primeiro.");
+return;
+}
+  fetch(`${SCRIPT_SITE}?funcao=executarAcao`
+    + `&acao=like`
+    + `&id=${encodeURIComponent(idMensagem)}`
+    + `&token=${encodeURIComponent(token)}`)
+    .then(res => res.text())
+    .then(msg => alert(msg))
+    .catch(err => alert("Erro ao registrar like."));
 }
 
-const comprasEmAndamento = new Set();
-
-async function registrarCompra(idMensagem) {
-  if (comprasEmAndamento.has(idMensagem)) return;
-  comprasEmAndamento.add(idMensagem);
-  try {
-    let sessao = obterSessao();
-    if (!sessao) {
-      const ok = await renovarTokenAutomatico();
-      if (!ok) return;
-    }
-    const token = localStorage.getItem("token");
-    if (!token) return;
-    const url = `${SCRIPT_SITE}?funcao=executarAcao`
-      + `&acao=compra`
-      + `&id=${encodeURIComponent(idMensagem)}`
-      + `&token=${encodeURIComponent(token)}`;
-    await fetchAutenticado(url);
-  } catch (err) {
-    console.warn("Erro ao registrar compra", err);
-  } finally {
-    comprasEmAndamento.delete(idMensagem);
-  }
+function registrarCompra(idMensagem) {
+  const token = localStorage.getItem("token");
+if (!token) {
+alert("Faça login primeiro.");
+return;
+}
+  fetch(`${SCRIPT_SITE}?funcao=executarAcao`
+    + `&acao=compra`
+    + `&id=${encodeURIComponent(idMensagem)}`
+    + `&token=${encodeURIComponent(token)}`)
+    .then(res => res.text())
+    .catch(err => console.warn("Erro ao registrar compra", err));
 }
 
-let exclusaoEmAndamento = false;
-
-async function excluirAnuncio(idMensagem) {
-  if (exclusaoEmAndamento) return;
+function excluirAnuncio(idMensagem) {
   if (!confirm("Tem certeza que deseja excluir este anúncio?")) return;
-  exclusaoEmAndamento = true;
-  try {
-    let sessao = obterSessao();
-    if (!sessao) {
-      const ok = await renovarTokenAutomatico();
-      if (!ok) {
-        alert("Faça login primeiro.");
-        return;
-      }
-    }
-    const token = localStorage.getItem("token");
-    if (!token) {
-      alert("Faça login primeiro.");
-      return;
-    }
-    const url = `${SCRIPT_SITE}?funcao=executarAcao`
-      + `&acao=excluir`
-      + `&id=${encodeURIComponent(idMensagem)}`
-      + `&token=${encodeURIComponent(token)}`;
-    const msg = await fetchAutenticado(url);
-    if (msg) {
+  const token = localStorage.getItem("token");
+if (!token) {
+alert("Faça login primeiro.");
+return;
+}
+  fetch(`${SCRIPT_SITE}?funcao=executarAcao`
+    + `&acao=excluir`
+    + `&id=${encodeURIComponent(idMensagem)}`
+    + `&token=${encodeURIComponent(token)}`)
+
+    .then(res => res.text())
+    .then(msg => {
       alert(msg);
       voltarParaLista(true);
-    }
-  } catch {
-    alert("Erro ao excluir anúncio.");
-  } finally {
-    exclusaoEmAndamento = false;
-  }
+    })
+    .catch(err => alert("Erro ao excluir anúncio."));
 }
 
-let envioEmAndamento = false;
-
-async function enviarFormulario(event) {
+function enviarFormulario(event) {
   event.preventDefault();
-  if (envioEmAndamento) return;
-  envioEmAndamento = true;
   const form = document.getElementById("formAnuncio");
   const btnEnviar = form.querySelector('button[type="submit"]');
   const btnCancelar = form.querySelector('button[type="button"]');
+  // 🔒 Evita múltiplos cliques
   btnEnviar.disabled = true;
   btnEnviar.textContent = "Enviando...";
   btnCancelar.disabled = true;
-  try {
-    // 🔎 Garantir sessão válida
-    let sessao = obterSessao();
-    if (!sessao) {
-      const ok = await renovarTokenAutomatico();
-      if (!ok) {
-        alert("Sessão inválida. Faça login novamente.");
-        return;
-      }
+  const dados = Object.fromEntries(new FormData(form).entries());
+  // 🧹 Remove campos vazios
+  Object.keys(dados).forEach(chave => {
+    if (dados[chave].trim() === "") {
+      delete dados[chave];
     }
-    const token = localStorage.getItem("token");
-    if (!token) {
-      alert("Sessão inválida. Faça login novamente.");
-      return;
-    }
-    // 📝 Coletar dados do formulário
-    const dados = Object.fromEntries(new FormData(form).entries());
-    Object.keys(dados).forEach(chave => {
-      if (dados[chave].trim() === "") delete dados[chave];
-    });
-    const selecionados = Array.from(
-      document.querySelectorAll('input[name="extra"]:checked')
-    ).map(i => i.value);
-    dados.extra = selecionados.join(", ");
-    // 📦 Montar parâmetros (como antes)
-    const params = new URLSearchParams({
-      funcao: "salvarFormulario",
-      token,
-      ...dados
-    }).toString();
-    // 🚀 Enviar usando sua função autenticada
-    const msg = await fetchAutenticado(`${SCRIPT_SITE}?${params}`);
-    if (msg) {
+  });
+  // ➕ Extras selecionados
+  const selecionados = Array.from(
+    document.querySelectorAll('input[name="extra"]:checked')
+  ).map(input => input.value);
+  dados.extra = selecionados.join(", ");
+  // 🔐 TOKEN DA SESSÃO
+  const token = localStorage.getItem("token");
+  if (!token) {
+    alert("Sessão inválida. Faça login novamente.");
+    return;
+  }
+  // 🧩 Montar parâmetros
+  const params = new URLSearchParams({
+    funcao: "salvarFormulario",
+    token: token,
+    ...dados
+  }).toString();
+  fetch(`${SCRIPT_SITE}?${params}`)
+    .then(res => res.text())
+    .then(msg => {
       alert(msg);
       form.reset();
       voltarParaLista(true);
-    }
-  } catch (erro) {
-    console.error("Erro ao enviar formulário:", erro);
-    alert("Erro ao enviar o formulário.");
-  } finally {
-    btnEnviar.disabled = false;
-    btnEnviar.textContent = "Enviar";
-    btnCancelar.disabled = false;
-    envioEmAndamento = false;
-  }
+    })
+    .catch(err => {
+      alert("Erro ao enviar o formulário.");
+    })
+    .finally(() => {
+      btnEnviar.disabled = false;
+      btnEnviar.textContent = "Enviar";
+      btnCancelar.disabled = false;
+    });
 }
 
-async function carregarAnuncios() {
+  async function carregarAnuncios() {
   if (carregandoAnuncios) return;
   carregandoAnuncios = true;
   const container = document.getElementById("anuncios");
@@ -193,9 +138,8 @@ async function carregarAnuncios() {
         '<div class="erro">Nenhum anúncio encontrado.</div>';
       return;
     }
-    // 🔥 Salva globalmente
     window.anunciosCarregados = anuncios;
-    // 🔥 GARANTE QUE A LISTA ESTÁ VISÍVEL
+    // 🔥 MOSTRA LISTA
     modoLista();
     esconderTodasTelas();
     container.style.display = "flex";
@@ -222,7 +166,13 @@ async function carregarAnuncios() {
       if (barraPesquisa) {
         barraPesquisa.value = termoPesquisa;
         filtrarAnuncios();
+        return;
       }
+    }
+    // ➕ 3) ANUNCIAR VIA LINK (PROTEGIDO)
+    if (params.has("anunciar")) {
+      await mostrarFormularioProtegido();
+      return;
     }
   } catch (erro) {
     container.innerHTML =
@@ -232,39 +182,6 @@ async function carregarAnuncios() {
     carregandoAnuncios = false;
   }
 }
-
-function limitarKotas(input) {
-  if (input.value.length > 6) {
-	input.value = input.value.slice(0, 6);
-  }
-}
-
-function formatarUsuario(input) {
-  let valor = input.value.trim();
-  if (valor && !valor.startsWith('@')) {
-    valor = '@' + valor.replace(/^@+/, '');
-  }
-  input.value = valor;
-}
-
-async function verificarSessaoAoEntrar() {
-  const token = localStorage.getItem("token");
-  const nome  = localStorage.getItem("usuarioNome");
-  // 🔐 Não logado
-  if (!token || !nome) return false;
-  try {
-    const ok = await renovarTokenAutomatico();
-    if (!ok) {
-      limparSessao();
-      return false;
-    }
-    return true;
-  } catch (e) {
-    console.warn("Falha ao validar sessão:", e);
-    return false; // NÃO quebra o site
-  }
-}
-
 
 function salvarSessao(nome, id, token) {
   const agora = Date.now();
@@ -278,12 +195,7 @@ function salvarSessao(nome, id, token) {
 function obterSessao() {
   const nome = localStorage.getItem("usuarioNome");
   const id = localStorage.getItem("usuarioId");
-  const expira = localStorage.getItem("sessaoExpira");
-  if (!nome || !id || !expira) return null;
-  if (Date.now() > Number(expira)) {
-    limparSessao();
-    return null;
-  }
+  if (!nome || !id) return null;
   return { nome, id };
 }
 
@@ -308,60 +220,6 @@ async function sair() {
   location.reload();
 }
 
-async function renovarTokenAutomatico() {
-  try {
-    // 🟢 Telegram WebApp
-    if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
-      const user = Telegram.WebApp.initDataUnsafe.user;
-      const nome = user.username ? "@" + user.username : user.first_name;
-      const res = await fetch(
-        `${SCRIPT_SITE}?funcao=loginTelegram&usuario=${encodeURIComponent(nome)}`
-      );
-      const dados = await res.json();
-      if (dados.status === "ok") {
-        salvarSessao(dados.nome, dados.id, dados.token);
-        return true;
-      }
-      return dados.status;
-    }
-    // 🔵 Login manual salvo
-    const nome = localStorage.getItem("usuarioNome");
-    if (!nome) return false;
-    const res = await fetch(
-      `${SCRIPT_SITE}?funcao=loginManualPersistente&usuario=${encodeURIComponent(nome)}`
-    );
-    const dados = await res.json();
-    if (dados.status === "ok") {
-      salvarSessao(dados.nome, dados.id, dados.token);
-      return true;
-    }
-    return false;
-  } catch (e) {
-    console.warn("Erro ao renovar token:", e);
-    return false;
-  }
-}
-
-async function fetchAutenticado(url, jaTentou = false) {
-  let res = await fetch(url);
-  let texto = await res.text();
-  if (texto.includes("Sessão inválida") && !jaTentou) {
-    const ok = await renovarTokenAutomatico();
-    if (!ok) {
-      alert("Sua sessão expirou. Faça login novamente.");
-      mostrarTelaLogin();
-      return null;
-    }
-    const novoToken = localStorage.getItem("token");
-    const urlAtualizada = url.replace(
-      /([?&])token=[^&]*/,
-      `$1token=${encodeURIComponent(novoToken)}`
-    );
-    return fetchAutenticado(urlAtualizada, true);
-  }
-  return texto;
-}
-
 // Decide se mostra o botão Sair dentro do menu
 function atualizarMenuUsuario() {
   const nome = localStorage.getItem("usuarioNome");
@@ -376,14 +234,18 @@ function atualizarMenuUsuario() {
   }
 }
 
+//Só verifica para o telegram? e quando não for telegram?
 async function verificarAutenticacao() {
   const sessao = obterSessao();
   if (sessao) return sessao;
   if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
     const user = Telegram.WebApp.initDataUnsafe.user;
     const nome = user.username ? "@" + user.username : user.first_name;
+// 🔥 CORREÇÃO: agora envia também o ID
     const res = await fetch(
-`${SCRIPT_SITE}?funcao=loginTelegram&usuario=${encodeURIComponent(nome)}`
+      `${SCRIPT_SITE}?funcao=loginTelegram`
+      + `&id=${encodeURIComponent(user.id)}`
+      + `&usuario=${encodeURIComponent(nome)}`
     );
     const dados = await res.json();
     if (dados.status === "ok") {
@@ -395,6 +257,34 @@ async function verificarAutenticacao() {
     }
   }
   return null;
+}
+
+//Só renova o token para o telegram? e quando não for telegram?
+async function renovarTokenAutomatico() {
+  try {
+    if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
+      const user = Telegram.WebApp.initDataUnsafe.user;
+      const nome = user.username
+        ? "@" + user.username
+        : user.first_name;
+// 🔥 CORREÇÃO: agora envia também o ID
+    const res = await fetch(
+      `${SCRIPT_SITE}?funcao=loginTelegram`
+      + `&id=${encodeURIComponent(user.id)}`
+      + `&usuario=${encodeURIComponent(nome)}`
+    );
+      const dados = await res.json();
+      if (dados.status === "ok") {
+        salvarSessao(dados.nome, dados.id, dados.token);
+        return true;
+      }
+      return dados.status;
+    }
+    return false;
+  } catch (e) {
+    console.warn("Erro ao renovar token:", e);
+    return false;
+  }
 }
 
 async function fazerLogin() {
@@ -481,6 +371,33 @@ function mostrarTelaLogin() {
   renderizarBottomBar("login");
 }
 
+async function mostrarFormularioProtegido() {
+  let sessao = obterSessao();
+  // 🟢 Já logado
+  if (sessao) {
+    mostrarFormulario();
+    return;
+  }
+  // 🤖 Tenta login automático Telegram
+  const resultado = await renovarTokenAutomatico();
+  if (resultado === true) {
+    mostrarFormulario();
+    return;
+  }
+  // ❌ ERROS COM MENSAGEM
+  if (resultado === "nome_diferente") {
+    alert("⚠️ Seu nome do Telegram mudou.\nRefaça o cadastro no grupo.");
+  }
+  else if (resultado === "bloqueado") {
+    alert("⛔ Seu acesso está bloqueado.\nFale com um administrador.");
+  }
+  else if (resultado === "nao_cadastrado") {
+    alert("🚫 Você não está cadastrado.\nFaça o cadastro no grupo.");
+  }
+  // 🔑 Mostra login manual
+  mostrarTelaLogin();
+}
+
 async function mostrarFormulario() {
   // 🔎 1️⃣ Verificar sessão válida
   let sessao = obterSessao();
@@ -490,7 +407,9 @@ async function mostrarFormulario() {
     const nome = user.username ? "@" + user.username : user.first_name;
     // 🔐 Verificar bloqueio no servidor
     const res = await fetch(
-`${SCRIPT_SITE}?funcao=loginTelegram&usuario=${encodeURIComponent(nome)}`
+      `${SCRIPT_SITE}?funcao=loginTelegram`
+      + `&id=${encodeURIComponent(user.id)}`
+      + `&usuario=${encodeURIComponent(nome)}`
     );
     const dados = await res.json();
     if (dados.status === "ok") {
@@ -577,6 +496,20 @@ function formatarWhatsapp(input) {
   input.value = valor;
 }
 
+function limitarKotas(input) {
+  if (input.value.length > 6) {
+	input.value = input.value.slice(0, 6);
+  }
+}
+
+function formatarUsuario(input) {
+  let valor = input.value.trim();
+  if (valor && !valor.startsWith('@')) {
+    valor = '@' + valor.replace(/^@+/, '');
+  }
+  input.value = valor;
+}
+
 function renderizarAnuncios(lista) {
   const container = document.getElementById("anuncios");
   container.innerHTML = "";
@@ -603,13 +536,13 @@ function renderizarAnuncios(lista) {
   });
 }
 
-	function toggleMenu() {
-  	const painel = document.getElementById("painel-menu");
-  	const overlay = document.getElementById("menu-overlay");
-  	const ativo = painel.classList.contains("ativo");
-  	painel.classList.toggle("ativo", !ativo);
-  	overlay.style.display = ativo ? "none" : "block";
-	}
+function toggleMenu() {
+const painel = document.getElementById("painel-menu");
+const overlay = document.getElementById("menu-overlay");
+const ativo = painel.classList.contains("ativo");
+painel.classList.toggle("ativo", !ativo);
+overlay.style.display = ativo ? "none" : "block";
+}
 
 function toggleExtras() {
   const extras = document.getElementById("containerExtras");
@@ -620,6 +553,7 @@ function toggleExtras() {
     : "Fechar extras ▲";
 }
 
+//Consegue gerar um ID para navegador normal
 function getUserId() {
   // 🟢 Se estiver dentro do Telegram WebApp
   if (window.Telegram?.WebApp?.initDataUnsafe?.user?.id) {
@@ -666,23 +600,17 @@ document.getElementById("searchContainer").style.display = "none";
 }
 
 function mostrarDetalhes(item) {
-
   const anunciosVisiveis = Array.from(document.querySelectorAll(".anuncio"))
     .filter(el => el.style.display !== "none");
-
   indiceAtualDetalhes = anunciosVisiveis.findIndex(el =>
     el._itemCompleto.postagem === item.postagem
   );
-
   window.listaVisivelDetalhes = anunciosVisiveis;
-
   modoDetalhes();
   esconderTodasTelas();
   document.getElementById("detalhes").style.display = "block";
-
   window.itemAtual = item;
   window.podeExcluir = false;
-
   const sessao = obterSessao();
   if (sessao && sessao.nome === item.anunciante) {
     window.podeExcluir = true;
@@ -728,7 +656,7 @@ function mostrarDetalhes(item) {
         <img src="https://drive.google.com/thumbnail?id=${item.logo2}&sz=w1000">
       </a>
       <hr>
-      <p><strong>🖥 ${item.streaming}</strong></p>
+      <p><strong>📺 ${item.streaming}</strong></p>
       ${item.streamingExtra ? `<p><strong>➕ ${item.streamingExtra}</strong></p>` : ""}
       <p><strong>💵 ${item.valor}</strong></p>
       <p><strong>📌 ${item.vagas}</strong></p>
@@ -921,7 +849,6 @@ function renderizarBottomBar(tipo) {
     criarBotao("bi bi-send", "Enviar", () => {
   const link =
     `https://tinyurl.com/divcp01?a=${item.postagem}`;
-
   let mensagem =
 `🖥 *${item.streaming}*${item.streamingExtra ? `\n➕ ${item.streamingExtra}` : ""}
 💵 ${item.valor}
@@ -930,20 +857,15 @@ function renderizarBottomBar(tipo) {
 -------------------------------------------
 👇 *VER ANÚNCIO COMPLETO*
 ${link}
-
 👤 *MEUS ANÚNCIOS*
 https://tinyurl.com/divcp01?p=${item.anunciante.replace(/^@/, "")}
-
 📲 *CONTATO POR TELEGRAM*
 https://t.me/${item.anunciante.replace(/^@/, "")}`;
-
   if (item.whatsapp) {
     mensagem += `
-
 📲 *CONTATO POR WHATSAPP*
 https://wa.me/${item.whatsapp}`;
   }
-
   const url =
     `https://api.whatsapp.com/send?text=${encodeURIComponent(mensagem)}`;
   window.open(url, "_blank");
@@ -998,7 +920,7 @@ function compartilharUsuarioWhatsapp() {
     }
   });
   texto += `\n-------------------------------------------\n`;
-  texto += `👤 *MEUS ANÚNCIOS*\nhttps://tinyurl.com/divcp01?p=${usuarioSemArroba}\n\n`;
+  texto += `👤 *MEUS ANÚNCIOS*\nhttps://tinyurl.com/divcp01?pesquisar=${usuarioSemArroba}\n\n`;
   texto += `📲 *CONTATO POR TELEGRAM*\nhttps://t.me/${usuarioSemArroba}`;
   if (whatsappUsuario) {
     texto += `\n\n📲 *CONTATO POR WHATSAPP*\nhttps://wa.me/${whatsappUsuario}`;
@@ -1011,10 +933,8 @@ function filtrarAnuncios() {
   const termo = document.getElementById("pesquisa")
     .value.trim()
     .toLowerCase();
-  const container = document.getElementById("anuncios");
   const anuncios = document.querySelectorAll(".anuncio");
   anunciantePesquisaValido = null;
-  let encontrou = false;
   anuncios.forEach(el => {
     const titulo = el.querySelector(".titulo")
       .textContent.toLowerCase();
@@ -1029,26 +949,10 @@ function filtrarAnuncios() {
       valor.includes(termo) ||
       anunciante.includes(termo);
     el.style.display = mostrar ? "flex" : "none";
-    if (mostrar) encontrou = true;
     if (termo && anunciante === termo.replace(/^@/, "")) {
       anunciantePesquisaValido = anuncianteOriginal;
     }
   });
-  // ===============================
-  // 🔍 SE NÃO ENCONTROU RESULTADOS
-  // ===============================
-  let msg = document.getElementById("msgSemResultados");
-  if (!encontrou && termo) {
-    if (!msg) {
-      msg = document.createElement("div");
-      msg.id = "msgSemResultados";
-      msg.className = "loading";
-      msg.textContent = "Nenhum Resultado Encontrado";
-      container.appendChild(msg);
-    }
-  } else {
-    if (msg) msg.remove();
-  }
 }
 
 async function voltarParaLista(recarregar = false) {
@@ -1072,56 +976,38 @@ function esconderTodasTelas() {
 
 window.addEventListener("load", async () => {
   const params = new URLSearchParams(window.location.search);
-  const precisaLogin = params.has("anunciar");
-  // 🔹 1) Atualiza sessão silenciosamente (se existir)
-  await verificarSessaoAoEntrar();
-  let sessao = obterSessao();
-  // 🔹 2) Se for anunciar → exigir login
-  if (precisaLogin) {
-    // 🔄 Tentar login automático Telegram
-    if (!sessao && window.Telegram?.WebApp?.initDataUnsafe?.user) {
-      const resultado = await renovarTokenAutomatico();
-      if (resultado === true) {
-        sessao = obterSessao();
-      }
-      else {
-        if (resultado === "nome_diferente") {
-          alert("⚠️ Seu nome do Telegram mudou.\nRefaça o cadastro no grupo.");
-        }
-        else if (resultado === "bloqueado") {
-          alert("⛔ Seu acesso está bloqueado.\nFale com um administrador.");
-        }
-        else if (resultado === "nao_cadastrado") {
-          alert("🚫 Você não está cadastrado.\nFaça o cadastro no grupo.");
-        }
-        mostrarTelaLogin();
-        return;
-      }
-    }
-    // ❌ Ainda não logado → login manual
-    if (!sessao) {
-      mostrarTelaLogin();
-      return;
-    }
+  // 🔎 Verifica sessão existente
+  const sessao = obterSessao();
+  // 🔄 Se não tiver sessão, tentar login automático via Telegram
+  if (!sessao && window.Telegram?.WebApp?.initDataUnsafe?.user) {
+    const user = Telegram.WebApp.initDataUnsafe.user;
+    const nome = user.username ? "@" + user.username : user.first_name;
+    // 🔥 CORREÇÃO: agora envia também o ID
+    const res = await fetch(
+      `${SCRIPT_SITE}?funcao=loginTelegram`
+      + `&id=${encodeURIComponent(user.id)}`
+      + `&usuario=${encodeURIComponent(nome)}`
+    );
+    const dados = await res.json();
+   if (dados.status === "ok") {
+salvarSessao(dados.nome, dados.id);
+localStorage.setItem("token", dados.token);
+}
   }
-  // 🔹 3) Atualizar menu
+  // 🔄 Atualiza botão Sair após possível login automático
   atualizarMenuUsuario();
-  // 🔹 4) SEMPRE carregar anúncios (público)
   await carregarAnuncios();
-  // 🔹 5) Se for anunciar e estiver logado → abrir formulário
-  if (precisaLogin) {
+  // 🔥 Se abrir direto no formulário
+  if (params.has("anunciar")) {
     mostrarFormulario();
-  }
-  else if (!window.itemAtual) {
+  } else {
     renderizarBottomBar("lista");
   }
-  // 🔍 Pesquisa
   document.getElementById("pesquisa")
     .addEventListener("input", () => {
       filtrarAnuncios();
       renderizarBottomBar("lista");
     });
-  // 📂 Menu
   document.querySelector(".menu-icon")
     .addEventListener("click", toggleMenu);
   document.getElementById("menu-overlay")
