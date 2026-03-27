@@ -250,13 +250,19 @@ function formatarUsuario(input) {
 async function verificarSessaoAoEntrar() {
   const token = localStorage.getItem("token");
   const nome  = localStorage.getItem("usuarioNome");
+  // 🔐 Não logado
   if (!token || !nome) return false;
-  const ok = await renovarTokenAutomatico();
-  if (ok !== true) {
-    limparSessao();
-    return false;
+  try {
+    const ok = await renovarTokenAutomatico();
+    if (!ok) {
+      limparSessao();
+      return false;
+    }
+    return true;
+  } catch (e) {
+    console.warn("Falha ao validar sessão:", e);
+    return false; // NÃO quebra o site
   }
-  return true;
 }
 
 
@@ -303,36 +309,37 @@ async function sair() {
 }
 
 async function renovarTokenAutomatico() {
-  // 🟢 TELEGRAM
-  if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
-    const user = Telegram.WebApp.initDataUnsafe.user;
-    const nome = user.username
-      ? "@" + user.username
-      : user.first_name;
+  try {
+    // 🟢 Telegram WebApp
+    if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
+      const user = Telegram.WebApp.initDataUnsafe.user;
+      const nome = user.username ? "@" + user.username : user.first_name;
+      const res = await fetch(
+        `${SCRIPT_SITE}?funcao=loginTelegram&usuario=${encodeURIComponent(nome)}`
+      );
+      const dados = await res.json();
+      if (dados.status === "ok") {
+        salvarSessao(dados.nome, dados.id, dados.token);
+        return true;
+      }
+      return dados.status;
+    }
+    // 🔵 Login manual salvo
+    const nome = localStorage.getItem("usuarioNome");
+    if (!nome) return false;
     const res = await fetch(
-      `${SCRIPT_SITE}?funcao=loginTelegram`
-      + `&id=${encodeURIComponent(user.id)}`
-      + `&usuario=${encodeURIComponent(nome)}`
+      `${SCRIPT_SITE}?funcao=loginManualPersistente&usuario=${encodeURIComponent(nome)}`
     );
     const dados = await res.json();
     if (dados.status === "ok") {
       salvarSessao(dados.nome, dados.id, dados.token);
       return true;
     }
-    return dados.status || false;
+    return false;
+  } catch (e) {
+    console.warn("Erro ao renovar token:", e);
+    return false;
   }
-  // 🔵 LOGIN MANUAL PERSISTENTE
-  const nome = localStorage.getItem("usuarioNome");
-  if (!nome) return false;
-  const res = await fetch(
-    `${SCRIPT_SITE}?funcao=loginManualPersistente&usuario=${encodeURIComponent(nome)}`
-  );
-  const dados = await res.json();
-  if (dados.status === "ok") {
-    salvarSessao(dados.nome, dados.id, dados.token);
-    return true;
-  }
-  return false;
 }
 
 async function fetchAutenticado(url, jaTentou = false) {
