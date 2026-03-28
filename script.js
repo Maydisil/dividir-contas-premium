@@ -796,16 +796,9 @@ function renderizarBottomBar(tipo) {
   if (tipo === "detalhes" && window.itemAtual) {
     const item = window.itemAtual;
     // ❤️ Like
-    const jaCurtiu = !!likesDados[item.postagem];
-    criarBotao(
-  jaCurtiu ? "bi bi-heart-fill" : "bi bi-heart",
-  "Like",
-  () => {
-    if (!likesDados[item.postagem]) {
-    registrarLike(item.postagem);
-  }
-  }
-);
+    criarBotao("bi bi-heart", "Like", () => {
+      registrarLike(item.postagem);
+    });
     // 💬 Ver Postagem no Telegram
     criarBotao("bi bi-chat", "Postagem", () => {
       window.open(
@@ -839,18 +832,12 @@ https://wa.me/${item.whatsapp}`;
   window.open(url, "_blank");
 });
     // 🗑 Excluir (somente dono)
-if (window.podeExcluir) {
-  criarBotao(
-    excluindoAnuncio ? "bi bi-arrow-repeat" : "bi bi-trash",
-    excluindoAnuncio ? "Excluindo..." : "Excluir",
-    () => {
-      if (!excluindoAnuncio) {
+    if (window.podeExcluir) {
+      criarBotao("bi bi-trash", "Excluir", () => {
         excluirAnuncio(item.postagem);
-      }
+      });
     }
-  );
-}
-}
+  }
   // ===============================
   // 📝 FORMULÁRIO
   // ===============================
