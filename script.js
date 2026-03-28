@@ -23,35 +23,6 @@ const opcoesExtra = [
   "MUBI", "NBA", "Netflix", "Nosso Futebol+", "Paramount+", "Premiere", "Reserva Imovision",  "Sony One", "Spotify", "Telecine", "UFC Fight Pass", "Universal+", "YouTube"
 ];
 
-// Função para atualizar o like ao vivo
-function atualizarLikeVisual(idMensagem) {
-  if (!window.itemAtual) return;
-  if (window.itemAtual.postagem != idMensagem) return;
-  // 🔢 soma +1 visualmente
-  if (!window.itemAtual.pontos) {
-    window.itemAtual.pontos = {};
-  }
-  if (!window.itemAtual.pontos.coracao) {
-    window.itemAtual.pontos.coracao = 0;
-  }
-  // só soma se foi curtido
-  if (likesDados[idMensagem]) {
-  window.itemAtual.pontos.coracao += 1;
-} else {
-  window.itemAtual.pontos.coracao =
-    Math.max(0, (window.itemAtual.pontos.coracao || 0) - 1);
-}
-  // 🔄 re-renderiza detalhes
-  const contador = document.getElementById("contadorPontos");
-if (contador) {
-  contador.innerHTML = `
-    ❤️ ${window.itemAtual.pontos.coracao ?? 0}
-    💬 ${window.itemAtual.pontos?.balao ?? 0}
-    📢 ${window.itemAtual.pontos?.megafone ?? 0}
-  `;
-}
-}
-
 let likesCarregando = {};
 
 function registrarLike(idMensagem) {
@@ -68,7 +39,6 @@ function registrarLike(idMensagem) {
   }
   // ❤️ marca visual
   likesDados[idMensagem] = !likesDados[idMensagem];
-  atualizarLikeVisual(idMensagem);
   renderizarBottomBar("detalhes");
   fetch(url)
     .then(() => {
