@@ -961,12 +961,12 @@ window.addEventListener("load", async () => {
   // ===============================
   // 🚫 BLOQUEIA EXECUÇÃO DUPLA DOS PARÂMETROS
   // ===============================
-  if (!parametrosJaProcessados && window.location.search) {
+  let acaoExecutada = false;
+if (!parametrosJaProcessados && window.location.search) {
   const idDireto = params.get("a") || params.get("id");
   const termoPesquisa = params.get("p") || params.get("pesquisar");
   parametrosJaProcessados = true;
-  let acaoExecutada = false;
-  // 🔗 ABRIR DETALHE DIRETO
+  // 🔗 DETALHE
   if (idDireto) {
     const item = window.anunciosCarregados?.find(
       a => a.postagem == idDireto
@@ -976,7 +976,7 @@ window.addEventListener("load", async () => {
       acaoExecutada = true;
     }
   }
-  // 🔍 PESQUISA VIA LINK
+  // 🔍 PESQUISA
   if (termoPesquisa) {
     const barra = document.getElementById("pesquisa");
     if (barra) {
@@ -986,18 +986,19 @@ window.addEventListener("load", async () => {
     renderizarBottomBar("lista");
     acaoExecutada = true;
   }
-  // ➕ FORMULÁRIO VIA LINK
+  // ➕ FORMULÁRIO
   if (params.has("anunciar")) {
     await mostrarFormularioProtegido();
     acaoExecutada = true;
   }
-  // 🔥 limpa URL (sempre)
   if (acaoExecutada) {
     window.history.replaceState({}, document.title, window.location.pathname);
   }
 }
 // 🏠 PADRÃO
-renderizarBottomBar("lista");
+if (!acaoExecutada) {
+  renderizarBottomBar("lista");
+}
   // ===============================
   // 🎧 EVENTOS
   // ===============================
