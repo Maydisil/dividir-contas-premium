@@ -121,62 +121,27 @@ function enviarFormulario(event) {
     });
 }
 
-  async function carregarAnuncios() {
+async function carregarAnuncios() {
   if (carregandoAnuncios) return;
   carregandoAnuncios = true;
   const container = document.getElementById("anuncios");
-  container.innerHTML =
-    '<div class="loading">Carregando Anúncios...</div>';
+  container.innerHTML = '<div class="loading">Carregando Anúncios...</div>';
   try {
-    const resposta =
-      await fetch(`${SCRIPT_SITE}?funcao=listarAnuncios`);
+    const resposta = await fetch(`${SCRIPT_SITE}?funcao=listarAnuncios`);
     if (!resposta.ok)
       throw new Error('Resposta HTTP ' + resposta.status);
     const anuncios = await resposta.json();
     if (!Array.isArray(anuncios) || anuncios.length === 0) {
-      container.innerHTML =
-        '<div class="erro">Nenhum anúncio encontrado.</div>';
+      container.innerHTML = '<div class="erro">Nenhum anúncio encontrado.</div>';
       return;
     }
     window.anunciosCarregados = anuncios;
-    // 🔥 MOSTRA LISTA
     modoLista();
     esconderTodasTelas();
     container.style.display = "flex";
     renderizarAnuncios(anuncios);
-    const params =
-      new URLSearchParams(window.location.search);
-    // 🔗 1) ABRIR DIRETO POR ID
-    const idDireto = params.get("a") || params.get("id");
-    if (idDireto) {
-      const item = anuncios.find(a =>
-        a.postagem == idDireto
-      );
-      if (item) {
-        mostrarDetalhes(item);
-        return;
-      }
-    }
-    // 🔍 2) PESQUISA VIA LINK
-    const termoPesquisa =
-      params.get("p") || params.get("pesquisar");
-    if (termoPesquisa) {
-      const barraPesquisa =
-        document.getElementById("pesquisa");
-      if (barraPesquisa) {
-        barraPesquisa.value = termoPesquisa;
-        filtrarAnuncios();
-        return;
-      }
-    }
-    // ➕ 3) ANUNCIAR VIA LINK (PROTEGIDO)
-    if (params.has("anunciar")) {
-      await mostrarFormularioProtegido();
-      return;
-    }
   } catch (erro) {
-    container.innerHTML =
-      '<div class="erro">Erro ao carregar anúncios.</div>';
+    container.innerHTML = '<div class="erro">Erro ao carregar anúncios.</div>';
     console.error("Erro ao carregar anúncios:", erro);
   } finally {
     carregandoAnuncios = false;
@@ -997,15 +962,32 @@ localStorage.setItem("token", dados.token);
   // 🔄 Atualiza botão Sair após possível login automático
   atualizarMenuUsuario();
   await carregarAnuncios();
-  // 🔥  Abre com a barra certa
-  const temDetalheDireto =
-  params.get("a") || params.get("id");
-  if (params.has("anunciar")) {
-  mostrarFormulario();
+// 🔥 TRATAR PARÂMETROS UMA ÚNICA VEZ
+const idDireto = params.get("a") || params.get("id");
+const termoPesquisa = params.get("p") || params.get("pesquisar");
+if (idDireto) {
+  const item = window.anunciosCarregados?.find(a => a.postagem == idDireto);
+  if (item) {
+    mostrarDetalhes(item);
+    return;
   }
-  else if (!temDetalheDireto) {
+}
+if (termoPesquisa) {
+  const barra = document.getElementById("pesquisa");
+  if (barra) {
+    barra.value = termoPesquisa;
+    filtrarAnuncios();
+  }
   renderizarBottomBar("lista");
-  }	
+  return;
+}
+if (params.has("anunciar")) {
+  await mostrarFormularioProtegido();
+  return;
+}
+// padrão
+renderizarBottomBar("lista");
+
   document.getElementById("pesquisa")
     .addEventListener("input", () => {
       filtrarAnuncios();
@@ -1025,4 +1007,3 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 });
-
