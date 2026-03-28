@@ -943,51 +943,69 @@ window.addEventListener("load", async () => {
   const params = new URLSearchParams(window.location.search);
   // 🔎 Verifica sessão existente
   const sessao = obterSessao();
-  // 🔄 Se não tiver sessão, tentar login automático via Telegram
+  // 🔄 Login automático Telegram
   if (!sessao && window.Telegram?.WebApp?.initDataUnsafe?.user) {
     const user = Telegram.WebApp.initDataUnsafe.user;
     const nome = user.username ? "@" + user.username : user.first_name;
-    // 🔥 CORREÇÃO: agora envia também o ID
     const res = await fetch(
       `${SCRIPT_SITE}?funcao=loginTelegram`
       + `&id=${encodeURIComponent(user.id)}`
       + `&usuario=${encodeURIComponent(nome)}`
     );
     const dados = await res.json();
-   if (dados.status === "ok") {
-salvarSessao(dados.nome, dados.id);
-localStorage.setItem("token", dados.token);
-}
+    if (dados.status === "ok") {
+      salvarSessao(dados.nome, dados.id, dados.token);
+      localStorage.setItem("token", dados.token);
+    }
   }
-  // 🔄 Atualiza botão Sair após possível login automático
+  // 🔄 Atualiza botão sair
   atualizarMenuUsuario();
+  // 🔄 Carrega anúncios
   await carregarAnuncios();
-// 🔥 TRATAR PARÂMETROS UMA ÚNICA VEZ
-const idDireto = params.get("a") || params.get("id");
-const termoPesquisa = params.get("p") || params.get("pesquisar");
-if (idDireto) {
-  const item = window.anunciosCarregados?.find(a => a.postagem == idDireto);
-  if (item) {
-    mostrarDetalhes(item);
+  // ===============================
+  // 🚫 BLOQUEIA EXECUÇÃO DUPLA DOS PARÂMETROS
+  // ===============================
+  if (!parametrosJaProcessados && window.location.search) {
+  const idDireto = params.get("a") || params.get("id");
+  const termoPesquisa = params.get("p") || params.get("pesquisar");
+  parametrosJaProcessados = true;
+  // 🔗 ABRIR DETALHE DIRETO
+  if (idDireto) {
+    const item = window.anunciosCarregados?.find(
+      a => a.postagem == idDireto
+    );
+    if (item) {
+      mostrarDetalhes(item);
+      // 🔥 limpa URL depois de usar
+      window.history.replaceState({}, document.title, window.location.pathname);
+      return;
+    }
+  }
+  // 🔍 PESQUISA VIA LINK
+  if (termoPesquisa) {
+    const barra = document.getElementById("pesquisa");
+    if (barra) {
+      barra.value = termoPesquisa;
+      filtrarAnuncios();
+    }
+    renderizarBottomBar("lista");
+    window.history.replaceState({}, document.title, window.location.pathname);
     return;
   }
-}
-if (termoPesquisa) {
-  const barra = document.getElementById("pesquisa");
-  if (barra) {
-    barra.value = termoPesquisa;
-    filtrarAnuncios();
+  // ➕ FORMULÁRIO VIA LINK
+  if (params.has("anunciar")) {
+    await mostrarFormularioProtegido();
+    window.history.replaceState({}, document.title, window.location.pathname);
+    return;
   }
-  renderizarBottomBar("lista");
-  return;
+  // 🔥 limpa mesmo se não tiver parâmetro relevante
+  window.history.replaceState({}, document.title, window.location.pathname);
 }
-if (params.has("anunciar")) {
-  await mostrarFormularioProtegido();
-  return;
-}
-// padrão
+// 🏠 PADRÃO
 renderizarBottomBar("lista");
-
+  // ===============================
+  // 🎧 EVENTOS
+  // ===============================
   document.getElementById("pesquisa")
     .addEventListener("input", () => {
       filtrarAnuncios();
@@ -998,7 +1016,6 @@ renderizarBottomBar("lista");
   document.getElementById("menu-overlay")
     .addEventListener("click", toggleMenu);
 });
-
 document.addEventListener("DOMContentLoaded", function () {
   const btnVoltar = document.getElementById("btnVoltar");
   if (btnVoltar) {
