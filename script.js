@@ -23,23 +23,65 @@ const opcoesExtra = [
   "MUBI", "NBA", "Netflix", "Nosso Futebol+", "Paramount+", "Premiere", "Reserva Imovision",  "Sony One", "Spotify", "Telecine", "UFC Fight Pass", "Universal+", "YouTube"
 ];
 
+// Função para atualizar o like ao vivo
+function atualizarLikeVisual(idMensagem) {
+  if (!window.itemAtual) return;
+  if (window.itemAtual.postagem != idMensagem) return;
+  // 🔢 soma +1 visualmente
+  if (!window.itemAtual.pontos) {
+    window.itemAtual.pontos = {};
+  }
+  if (!window.itemAtual.pontos.coracao) {
+    window.itemAtual.pontos.coracao = 0;
+  }
+  // só soma se foi curtido
+  if (likesDados[idMensagem]) {
+  window.itemAtual.pontos.coracao += 1;
+} else {
+  window.itemAtual.pontos.coracao =
+    Math.max(0, (window.itemAtual.pontos.coracao || 0) - 1);
+}
+  // 🔄 re-renderiza detalhes
+  const contador = document.getElementById("contadorPontos");
+if (contador) {
+  contador.innerHTML = `
+    ❤️ ${window.itemAtual.pontos.coracao ?? 0}
+    💬 ${window.itemAtual.pontos?.balao ?? 0}
+    📢 ${window.itemAtual.pontos?.megafone ?? 0}
+  `;
+}
+}
+
+let likesCarregando = {};
+
 function registrarLike(idMensagem) {
+  if (likesCarregando[idMensagem]) return;
+  likesCarregando[idMensagem] = true;
   const token = localStorage.getItem("token");
   let url = `${SCRIPT_SITE}?funcao=executarAcao`
     + `&acao=like`
     + `&id=${encodeURIComponent(idMensagem)}`;
-  // 🔐 Se estiver logado → usa token
   if (token) {
     url += `&token=${encodeURIComponent(token)}`;
   } else {
-    // 🌐 Se NÃO estiver logado → usa userId
-    const userId = getUserId();
-    url += `&userId=${encodeURIComponent(userId)}`;
+    url += `&userId=${encodeURIComponent(getUserId())}`;
   }
+  // ❤️ marca visual
+  likesDados[idMensagem] = !likesDados[idMensagem];
+  atualizarLikeVisual(idMensagem);
+  renderizarBottomBar("detalhes");
   fetch(url)
-    .then(res => res.text())
-    .then(msg => alert(msg))
-    .catch(err => alert("Erro ao registrar like."));
+    .then(() => {
+      mostrarToast("❤️ Curtido");
+    })
+    .catch(() => {
+      delete likesDados[idMensagem];
+      atualizarLikeVisual(idMensagem);
+      mostrarToast("Erro ao curtir.");
+    })
+    .finally(() => {
+      likesCarregando[idMensagem] = false;
+    });
 }
 
 function registrarCompra(idMensagem) {
@@ -47,24 +89,57 @@ function registrarCompra(idMensagem) {
     .catch(err => console.warn("Erro ao registrar compra", err));
 }
 
+let excluindoAnuncio = false;
+
 function excluirAnuncio(idMensagem) {
+  if (excluindoAnuncio) return;
   if (!confirm("Tem certeza que deseja excluir este anúncio?")) return;
   const token = localStorage.getItem("token");
-if (!token) {
-alert("Faça login primeiro.");
-return;
-}
+  if (!token) {
+    alert("Faça login primeiro.");
+    return;
+  }
+  excluindoAnuncio = true;
+  // 🔄 Atualiza botão visual
+  renderizarBottomBar("detalhes");
   fetch(`${SCRIPT_SITE}?funcao=executarAcao`
     + `&acao=excluir`
     + `&id=${encodeURIComponent(idMensagem)}`
     + `&token=${encodeURIComponent(token)}`)
-
     .then(res => res.text())
     .then(msg => {
-      alert(msg);
-      voltarParaLista(true);
+  mostrarToast(msg);
+  // 🔍 verifica se ainda está no mesmo anúncio
+  if (window.itemAtual && window.itemAtual.postagem == idMensagem) {
+    voltarParaLista(true);
+  } else {
+    // 🔄 só atualiza lista em segundo plano
+    carregarAnuncios();
+  }
+})
+    .catch(err => {
+      mostrarToast("Erro ao excluir anúncio.");
     })
-    .catch(err => alert("Erro ao excluir anúncio."));
+    .finally(() => {
+      excluindoAnuncio = false;
+    });
+}
+
+let toastTimeout;
+
+function mostrarToast(msg) {
+  let toast = document.querySelector(".toast");
+  if (!toast) {
+    toast = document.createElement("div");
+    toast.className = "toast";
+    document.body.appendChild(toast);
+  }
+  toast.innerText = msg;
+  toast.style.opacity = "1";
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => {
+    toast.style.opacity = "0";
+  }, 2500);
 }
 
 function enviarFormulario(event) {
@@ -627,7 +702,7 @@ function mostrarDetalhes(item) {
       <p><strong>Postado em: ${item.data}</strong></p>
       <hr>
       <p><strong>👤 ${item.anunciante}</strong></p>
-      <p><strong>
+      <p><strong id="contadorPontos">
   ❤️ ${item.pontos?.coracao ?? 0}
   💬 ${item.pontos?.balao ?? 0}
   📢 ${item.pontos?.megafone ?? 0}
@@ -796,9 +871,16 @@ function renderizarBottomBar(tipo) {
   if (tipo === "detalhes" && window.itemAtual) {
     const item = window.itemAtual;
     // ❤️ Like
-    criarBotao("bi bi-heart", "Like", () => {
-      registrarLike(item.postagem);
-    });
+    const jaCurtiu = !!likesDados[item.postagem];
+    criarBotao(
+  jaCurtiu ? "bi bi-heart-fill" : "bi bi-heart",
+  "Like",
+  () => {
+    if (!likesDados[item.postagem]) {
+    registrarLike(item.postagem);
+  }
+  }
+);
     // 💬 Ver Postagem no Telegram
     criarBotao("bi bi-chat", "Postagem", () => {
       window.open(
@@ -832,12 +914,18 @@ https://wa.me/${item.whatsapp}`;
   window.open(url, "_blank");
 });
     // 🗑 Excluir (somente dono)
-    if (window.podeExcluir) {
-      criarBotao("bi bi-trash", "Excluir", () => {
+if (window.podeExcluir) {
+  criarBotao(
+    excluindoAnuncio ? "bi bi-arrow-repeat" : "bi bi-trash",
+    excluindoAnuncio ? "Excluindo..." : "Excluir",
+    () => {
+      if (!excluindoAnuncio) {
         excluirAnuncio(item.postagem);
-      });
+      }
     }
-  }
+  );
+}
+}
   // ===============================
   // 📝 FORMULÁRIO
   // ===============================
@@ -936,82 +1024,102 @@ function esconderTodasTelas() {
 }
 
 window.addEventListener("load", async () => {
-  const params = new URLSearchParams(window.location.search);
-  // 🔎 Verifica sessão existente
-  const sessao = obterSessao();
-  // 🔄 Login automático Telegram
-  if (!sessao && window.Telegram?.WebApp?.initDataUnsafe?.user) {
-    const user = Telegram.WebApp.initDataUnsafe.user;
-    const nome = user.username ? "@" + user.username : user.first_name;
-    const res = await fetch(
-      `${SCRIPT_SITE}?funcao=loginTelegram`
-      + `&id=${encodeURIComponent(user.id)}`
-      + `&usuario=${encodeURIComponent(nome)}`
-    );
-    const dados = await res.json();
-    if (dados.status === "ok") {
-      salvarSessao(dados.nome, dados.id, dados.token);
-      localStorage.setItem("token", dados.token);
+  try {
+    const params = new URLSearchParams(window.location.search);
+    // 🔎 Verifica sessão existente
+    let sessao = obterSessao();
+    // 🔄 Login automático Telegram
+    if (!sessao && window.Telegram?.WebApp?.initDataUnsafe?.user) {
+      try {
+        const user = Telegram.WebApp.initDataUnsafe.user;
+        const nome = user.username ? "@" + user.username : user.first_name;
+        const res = await fetch(
+          `${SCRIPT_SITE}?funcao=loginTelegram`
+          + `&id=${encodeURIComponent(user.id)}`
+          + `&usuario=${encodeURIComponent(nome)}`
+        );
+        const dados = await res.json();
+        if (dados.status === "ok") {
+          salvarSessao(dados.nome, dados.id, dados.token);
+          localStorage.setItem("token", dados.token);
+          sessao = { nome: dados.nome, id: dados.id };
+        }
+      } catch (e) {
+        console.warn("Erro no login automático:", e);
+      }
     }
-  }
-  // 🔄 Atualiza botão sair
-  atualizarMenuUsuario();
-  // 🔄 Carrega anúncios
-  await carregarAnuncios();
-  // ===============================
-  // 🚫 BLOQUEIA EXECUÇÃO DUPLA DOS PARÂMETROS
-  // ===============================
-  if (!parametrosJaProcessados && window.location.search) {
-  const idDireto = params.get("a") || params.get("id");
-  const termoPesquisa = params.get("p") || params.get("pesquisar");
-  parametrosJaProcessados = true;
-  // 🔗 ABRIR DETALHE DIRETO
-  if (idDireto) {
-    const item = window.anunciosCarregados?.find(
-      a => a.postagem == idDireto
-    );
-    if (item) {
-      mostrarDetalhes(item);
-      // 🔥 limpa URL depois de usar
+    // 🔄 Atualiza botão sair
+    atualizarMenuUsuario();
+    // 🔄 Carrega anúncios (com proteção)
+    try {
+      await carregarAnuncios();
+    } catch (e) {
+      console.error("Erro ao carregar anúncios:", e);
+    }
+    // ===============================
+    // 🚫 BLOQUEIA EXECUÇÃO DUPLA DOS PARÂMETROS
+    // ===============================
+    if (!parametrosJaProcessados && window.location.search) {
+      const idDireto = params.get("a") || params.get("id");
+      const termoPesquisa = params.get("p") || params.get("pesquisar");
+      parametrosJaProcessados = true;
+      // 🔗 ABRIR DETALHE DIRETO
+      if (idDireto) {
+        const item = window.anunciosCarregados?.find(
+          a => a.postagem == idDireto
+        );
+        if (item) {
+          mostrarDetalhes(item);
+          window.history.replaceState({}, document.title, window.location.pathname);
+          return;
+        }
+      }
+      // 🔍 PESQUISA VIA LINK
+      if (termoPesquisa) {
+        const barra = document.getElementById("pesquisa");
+        if (barra) {
+          barra.value = termoPesquisa;
+          filtrarAnuncios();
+        }
+        renderizarBottomBar("lista");
+        window.history.replaceState({}, document.title, window.location.pathname);
+        return;
+      }
+      // ➕ FORMULÁRIO VIA LINK
+      if (params.has("anunciar")) {
+        await mostrarFormularioProtegido();
+        window.history.replaceState({}, document.title, window.location.pathname);
+        return;
+      }
+      // 🔥 limpa URL
       window.history.replaceState({}, document.title, window.location.pathname);
-      return;
     }
-  }
-  // 🔍 PESQUISA VIA LINK
-  if (termoPesquisa) {
-    const barra = document.getElementById("pesquisa");
-    if (barra) {
-      barra.value = termoPesquisa;
-      filtrarAnuncios();
-    }
+    // 🏠 PADRÃO
     renderizarBottomBar("lista");
-    window.history.replaceState({}, document.title, window.location.pathname);
-    return;
+    // ===============================
+    // 🎧 EVENTOS (COM PROTEÇÃO)
+    // ===============================
+    const inputPesquisa = document.getElementById("pesquisa");
+    if (inputPesquisa) {
+      inputPesquisa.addEventListener("input", () => {
+        filtrarAnuncios();
+        renderizarBottomBar("lista");
+      });
+    }
+    const menuIcon = document.querySelector(".menu-icon");
+    if (menuIcon) {
+      menuIcon.addEventListener("click", toggleMenu);
+    }
+    const overlay = document.getElementById("menu-overlay");
+    if (overlay) {
+      overlay.addEventListener("click", toggleMenu);
+    }
+  } catch (e) {
+    console.error("Erro geral no load:", e);
   }
-  // ➕ FORMULÁRIO VIA LINK
-  if (params.has("anunciar")) {
-    await mostrarFormularioProtegido();
-    window.history.replaceState({}, document.title, window.location.pathname);
-    return;
-  }
-  // 🔥 limpa mesmo se não tiver parâmetro relevante
-  window.history.replaceState({}, document.title, window.location.pathname);
-}
-// 🏠 PADRÃO
-renderizarBottomBar("lista");
-  // ===============================
-  // 🎧 EVENTOS
-  // ===============================
-  document.getElementById("pesquisa")
-    .addEventListener("input", () => {
-      filtrarAnuncios();
-      renderizarBottomBar("lista");
-    });
-  document.querySelector(".menu-icon")
-    .addEventListener("click", toggleMenu);
-  document.getElementById("menu-overlay")
-    .addEventListener("click", toggleMenu);
 });
+
+// 🔙 Botão voltar (mantido separado)
 document.addEventListener("DOMContentLoaded", function () {
   const btnVoltar = document.getElementById("btnVoltar");
   if (btnVoltar) {
