@@ -22,59 +22,23 @@ const opcoesExtra = [
   "MUBI", "NBA", "Netflix", "Nosso Futebol+", "Paramount+", "Premiere", "Reserva Imovision",  "Sony One", "Spotify", "Telecine", "UFC Fight Pass", "Universal+", "YouTube"
 ];
 
-// Função temporária para atualizar likes ao vivo.
-function atualizarLikeVisual(idMensagem) {
-  if (!window.itemAtual) return;
-  if (window.itemAtual.postagem != idMensagem) return;
-  // 🔢 soma +1 visualmente
-  if (!window.itemAtual.pontos) {
-    window.itemAtual.pontos = {};
-  }
-  if (!window.itemAtual.pontos.coracao) {
-    window.itemAtual.pontos.coracao = 0;
-  }
-  // só soma se foi curtido
-  if (likesDados[idMensagem]) {
-    window.itemAtual.pontos.coracao += 1;
-  } else {
-    window.itemAtual.pontos.coracao -= 1;
-  }
-  // 🔄 re-renderiza detalhes
-  mostrarDetalhes(window.itemAtual);
-}
-
-let likesDados = {}; // { idMensagem: true }
-
 function registrarLike(idMensagem) {
   const token = localStorage.getItem("token");
   let url = `${SCRIPT_SITE}?funcao=executarAcao`
     + `&acao=like`
     + `&id=${encodeURIComponent(idMensagem)}`;
+  // 🔐 Se estiver logado → usa token
   if (token) {
     url += `&token=${encodeURIComponent(token)}`;
   } else {
+    // 🌐 Se NÃO estiver logado → usa userId
     const userId = getUserId();
     url += `&userId=${encodeURIComponent(userId)}`;
   }
-  // 🔒 evita múltiplos cliques
-  if (likesDados[idMensagem]) return;
-  // ❤️ marca como curtido
-  likesDados[idMensagem] = true;
-  // 🔥 Atualiza visual IMEDIATO
-  atualizarLikeVisual(idMensagem);
-  // 🔄 Atualiza botão
-  renderizarBottomBar("detalhes");
   fetch(url)
-    .then(() => {
-      mostrarToast("❤️ Curtido");
-     })
-    .catch(() => {
-      // ❌ se der erro, desfaz
-      likesDados[idMensagem] = false;
-      atualizarLikeVisual(idMensagem);
-      renderizarBottomBar("detalhes");
-      mostrarToast("Erro ao curtir.");
-    });
+    .then(res => res.text())
+    .then(msg => alert(msg))
+    .catch(err => alert("Erro ao registrar like."));
 }
 
 function registrarCompra(idMensagem) {
@@ -82,50 +46,24 @@ function registrarCompra(idMensagem) {
     .catch(err => console.warn("Erro ao registrar compra", err));
 }
 
-let excluindoAnuncio = false;
-
 function excluirAnuncio(idMensagem) {
-  if (excluindoAnuncio) return;
   if (!confirm("Tem certeza que deseja excluir este anúncio?")) return;
   const token = localStorage.getItem("token");
-  if (!token) {
-    alert("Faça login primeiro.");
-    return;
-  }
-  excluindoAnuncio = true;
-  // 🔄 Atualiza botão visual
-  renderizarBottomBar("detalhes");
+if (!token) {
+alert("Faça login primeiro.");
+return;
+}
   fetch(`${SCRIPT_SITE}?funcao=executarAcao`
     + `&acao=excluir`
     + `&id=${encodeURIComponent(idMensagem)}`
     + `&token=${encodeURIComponent(token)}`)
+
     .then(res => res.text())
     .then(msg => {
-  mostrarToast(msg);
-  // 🔍 verifica se ainda está no mesmo anúncio
-  if (window.itemAtual && window.itemAtual.postagem == idMensagem) {
-    voltarParaLista(true);
-  } else {
-    // 🔄 só atualiza lista em segundo plano
-    carregarAnuncios();
-  }
-})
-    .catch(err => {
-      alert("Erro ao excluir anúncio.");
+      alert(msg);
+      voltarParaLista(true);
     })
-    .finally(() => {
-      excluindoAnuncio = false;
-    });
-}
-
-function mostrarToast(msg) {
-  const toast = document.createElement("div");
-  toast.className = "toast";
-  toast.innerText = msg;
-  document.body.appendChild(toast);
-  setTimeout(() => {
-    toast.remove();
-  }, 3000);
+    .catch(err => alert("Erro ao excluir anúncio."));
 }
 
 function enviarFormulario(event) {
@@ -854,19 +792,12 @@ function renderizarBottomBar(tipo) {
   // ===============================
   // 📄 DETALHES
   // ===============================
-  if (tipo === "detalhes" && window.itemAtual) {
+if (tipo === "detalhes" && window.itemAtual) {
     const item = window.itemAtual;
     // ❤️ Like
-    const jaCurtiu = likesDados[item.postagem];
-    criarBotao(
-  jaCurtiu ? "bi bi-heart-fill" : "bi bi-heart",
-  "Like",
-  () => {
-    if (!jaCurtiu) {
+    criarBotao("bi bi-heart", "Like", () => {
       registrarLike(item.postagem);
-    }
-  }
-);
+    });
     // 💬 Ver Postagem no Telegram
     criarBotao("bi bi-chat", "Postagem", () => {
       window.open(
@@ -900,17 +831,11 @@ https://wa.me/${item.whatsapp}`;
   window.open(url, "_blank");
 });
     // 🗑 Excluir (somente dono)
-if (window.podeExcluir) {
-  criarBotao(
-    excluindoAnuncio ? "bi bi-arrow-repeat" : "bi bi-trash",
-    excluindoAnuncio ? "Excluindo..." : "Excluir",
-    () => {
-      if (!excluindoAnuncio) {
+    if (window.podeExcluir) {
+      criarBotao("bi bi-trash", "Excluir", () => {
         excluirAnuncio(item.postagem);
-      }
+      });
     }
-  );
-}
 }
   // ===============================
   // 📝 FORMULÁRIO
