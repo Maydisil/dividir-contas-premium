@@ -23,35 +23,23 @@ const opcoesExtra = [
   "MUBI", "NBA", "Netflix", "Nosso Futebol+", "Paramount+", "Premiere", "Reserva Imovision",  "Sony One", "Spotify", "Telecine", "UFC Fight Pass", "Universal+", "YouTube"
 ];
 
-let likesCarregando = {};
-
 function registrarLike(idMensagem) {
-  if (likesCarregando[idMensagem]) return;
-  likesCarregando[idMensagem] = true;
   const token = localStorage.getItem("token");
   let url = `${SCRIPT_SITE}?funcao=executarAcao`
     + `&acao=like`
     + `&id=${encodeURIComponent(idMensagem)}`;
+  // 🔐 Se estiver logado → usa token
   if (token) {
     url += `&token=${encodeURIComponent(token)}`;
   } else {
-    url += `&userId=${encodeURIComponent(getUserId())}`;
+    // 🌐 Se NÃO estiver logado → usa userId
+    const userId = getUserId();
+    url += `&userId=${encodeURIComponent(userId)}`;
   }
-  // ❤️ marca visual
-  likesDados[idMensagem] = !likesDados[idMensagem];
-  renderizarBottomBar("detalhes");
   fetch(url)
-    .then(() => {
-      mostrarToast("❤️ Curtido");
-    })
-    .catch(() => {
-      delete likesDados[idMensagem];
-      atualizarLikeVisual(idMensagem);
-      mostrarToast("Erro ao curtir.");
-    })
-    .finally(() => {
-      likesCarregando[idMensagem] = false;
-    });
+    .then(res => res.text())
+    .then(msg => alert(msg))
+    .catch(err => alert("Erro ao registrar like."));
 }
 
 function registrarCompra(idMensagem) {
@@ -59,57 +47,24 @@ function registrarCompra(idMensagem) {
     .catch(err => console.warn("Erro ao registrar compra", err));
 }
 
-let excluindoAnuncio = false;
-
 function excluirAnuncio(idMensagem) {
-  if (excluindoAnuncio) return;
   if (!confirm("Tem certeza que deseja excluir este anúncio?")) return;
   const token = localStorage.getItem("token");
-  if (!token) {
-    alert("Faça login primeiro.");
-    return;
-  }
-  excluindoAnuncio = true;
-  // 🔄 Atualiza botão visual
-  renderizarBottomBar("detalhes");
+if (!token) {
+alert("Faça login primeiro.");
+return;
+}
   fetch(`${SCRIPT_SITE}?funcao=executarAcao`
     + `&acao=excluir`
     + `&id=${encodeURIComponent(idMensagem)}`
     + `&token=${encodeURIComponent(token)}`)
+
     .then(res => res.text())
     .then(msg => {
-  mostrarToast(msg);
-  // 🔍 verifica se ainda está no mesmo anúncio
-  if (window.itemAtual && window.itemAtual.postagem == idMensagem) {
-    voltarParaLista(true);
-  } else {
-    // 🔄 só atualiza lista em segundo plano
-    carregarAnuncios();
-  }
-})
-    .catch(err => {
-      mostrarToast("Erro ao excluir anúncio.");
+      alert(msg);
+      voltarParaLista(true);
     })
-    .finally(() => {
-      excluindoAnuncio = false;
-    });
-}
-
-let toastTimeout;
-
-function mostrarToast(msg) {
-  let toast = document.querySelector(".toast");
-  if (!toast) {
-    toast = document.createElement("div");
-    toast.className = "toast";
-    document.body.appendChild(toast);
-  }
-  toast.innerText = msg;
-  toast.style.opacity = "1";
-  clearTimeout(toastTimeout);
-  toastTimeout = setTimeout(() => {
-    toast.style.opacity = "0";
-  }, 2500);
+    .catch(err => alert("Erro ao excluir anúncio."));
 }
 
 function enviarFormulario(event) {
