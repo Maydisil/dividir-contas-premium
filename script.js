@@ -936,102 +936,81 @@ function esconderTodasTelas() {
 }
 
 window.addEventListener("load", async () => {
-  try {
-    const params = new URLSearchParams(window.location.search);
-    // 🔎 Verifica sessão existente
-    let sessao = obterSessao();
-    // 🔄 Login automático Telegram
-    if (!sessao && window.Telegram?.WebApp?.initDataUnsafe?.user) {
-      try {
-        const user = Telegram.WebApp.initDataUnsafe.user;
-        const nome = user.username ? "@" + user.username : user.first_name;
-        const res = await fetch(
-          `${SCRIPT_SITE}?funcao=loginTelegram`
-          + `&id=${encodeURIComponent(user.id)}`
-          + `&usuario=${encodeURIComponent(nome)}`
-        );
-        const dados = await res.json();
-        if (dados.status === "ok") {
-          salvarSessao(dados.nome, dados.id, dados.token);
-          localStorage.setItem("token", dados.token);
-          sessao = { nome: dados.nome, id: dados.id };
-        }
-      } catch (e) {
-        console.warn("Erro no login automático:", e);
-      }
+  const params = new URLSearchParams(window.location.search);
+  // 🔎 Verifica sessão existente
+  const sessao = obterSessao();
+  // 🔄 Login automático Telegram
+  if (!sessao && window.Telegram?.WebApp?.initDataUnsafe?.user) {
+    const user = Telegram.WebApp.initDataUnsafe.user;
+    const nome = user.username ? "@" + user.username : user.first_name;
+    const res = await fetch(
+      `${SCRIPT_SITE}?funcao=loginTelegram`
+      + `&id=${encodeURIComponent(user.id)}`
+      + `&usuario=${encodeURIComponent(nome)}`
+    );
+    const dados = await res.json();
+    if (dados.status === "ok") {
+      salvarSessao(dados.nome, dados.id, dados.token);
+      localStorage.setItem("token", dados.token);
     }
-    // 🔄 Atualiza botão sair
-    atualizarMenuUsuario();
-    // 🔄 Carrega anúncios (com proteção)
-    try {
-      await carregarAnuncios();
-    } catch (e) {
-      console.error("Erro ao carregar anúncios:", e);
-    }
-    // ===============================
-    // 🚫 BLOQUEIA EXECUÇÃO DUPLA DOS PARÂMETROS
-    // ===============================
-    if (!parametrosJaProcessados && window.location.search) {
-      const idDireto = params.get("a") || params.get("id");
-      const termoPesquisa = params.get("p") || params.get("pesquisar");
-      parametrosJaProcessados = true;
-      // 🔗 ABRIR DETALHE DIRETO
-      if (idDireto) {
-        const item = window.anunciosCarregados?.find(
-          a => a.postagem == idDireto
-        );
-        if (item) {
-          mostrarDetalhes(item);
-          window.history.replaceState({}, document.title, window.location.pathname);
-          return;
-        }
-      }
-      // 🔍 PESQUISA VIA LINK
-      if (termoPesquisa) {
-        const barra = document.getElementById("pesquisa");
-        if (barra) {
-          barra.value = termoPesquisa;
-          filtrarAnuncios();
-        }
-        renderizarBottomBar("lista");
-        window.history.replaceState({}, document.title, window.location.pathname);
-        return;
-      }
-      // ➕ FORMULÁRIO VIA LINK
-      if (params.has("anunciar")) {
-        await mostrarFormularioProtegido();
-        window.history.replaceState({}, document.title, window.location.pathname);
-        return;
-      }
-      // 🔥 limpa URL
-      window.history.replaceState({}, document.title, window.location.pathname);
-    }
-    // 🏠 PADRÃO
-    renderizarBottomBar("lista");
-    // ===============================
-    // 🎧 EVENTOS (COM PROTEÇÃO)
-    // ===============================
-    const inputPesquisa = document.getElementById("pesquisa");
-    if (inputPesquisa) {
-      inputPesquisa.addEventListener("input", () => {
-        filtrarAnuncios();
-        renderizarBottomBar("lista");
-      });
-    }
-    const menuIcon = document.querySelector(".menu-icon");
-    if (menuIcon) {
-      menuIcon.addEventListener("click", toggleMenu);
-    }
-    const overlay = document.getElementById("menu-overlay");
-    if (overlay) {
-      overlay.addEventListener("click", toggleMenu);
-    }
-  } catch (e) {
-    console.error("Erro geral no load:", e);
   }
+  // 🔄 Atualiza botão sair
+  atualizarMenuUsuario();
+  // 🔄 Carrega anúncios
+  await carregarAnuncios();
+  // ===============================
+  // 🚫 BLOQUEIA EXECUÇÃO DUPLA DOS PARÂMETROS
+  // ===============================
+  if (!parametrosJaProcessados && window.location.search) {
+  const idDireto = params.get("a") || params.get("id");
+  const termoPesquisa = params.get("p") || params.get("pesquisar");
+  parametrosJaProcessados = true;
+  let acaoExecutada = false;
+  // 🔗 ABRIR DETALHE DIRETO
+  if (idDireto) {
+    const item = window.anunciosCarregados?.find(
+      a => a.postagem == idDireto
+    );
+    if (item) {
+      mostrarDetalhes(item);
+      acaoExecutada = true;
+    }
+  }
+  // 🔍 PESQUISA VIA LINK
+  if (termoPesquisa) {
+    const barra = document.getElementById("pesquisa");
+    if (barra) {
+      barra.value = termoPesquisa;
+      filtrarAnuncios();
+    }
+    renderizarBottomBar("lista");
+    acaoExecutada = true;
+  }
+  // ➕ FORMULÁRIO VIA LINK
+  if (params.has("anunciar")) {
+    await mostrarFormularioProtegido();
+    acaoExecutada = true;
+  }
+  // 🔥 limpa URL (sempre)
+  if (acaoExecutada) {
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+}
+// 🏠 PADRÃO
+renderizarBottomBar("lista");
+  // ===============================
+  // 🎧 EVENTOS
+  // ===============================
+  document.getElementById("pesquisa")
+    .addEventListener("input", () => {
+      filtrarAnuncios();
+      renderizarBottomBar("lista");
+    });
+  document.querySelector(".menu-icon")
+    .addEventListener("click", toggleMenu);
+  document.getElementById("menu-overlay")
+    .addEventListener("click", toggleMenu);
 });
-
-// 🔙 Botão voltar (mantido separado)
 document.addEventListener("DOMContentLoaded", function () {
   const btnVoltar = document.getElementById("btnVoltar");
   if (btnVoltar) {
