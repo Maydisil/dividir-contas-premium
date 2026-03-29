@@ -24,17 +24,32 @@ const opcoesExtra = [
 function atualizarLikeVisual(idMensagem) {
   if (!window.itemAtual) return;
   if (window.itemAtual.postagem != idMensagem) return;
-  if (!window.itemAtual.likes) {
+  // ===============================
+  // 👍 GARANTE ESTRUTURA
+  // ===============================
+  if (typeof window.itemAtual.likes !== "number") {
     window.itemAtual.likes = 0;
   }
-  // 👍 incrementa ou decrementa
+  if (!window.itemAtual.pontos) {
+    window.itemAtual.pontos = {};
+  }
+  if (typeof window.itemAtual.pontos.coracao !== "number") {
+    window.itemAtual.pontos.coracao = 0;
+  }
+  // ===============================
+  // ❤️ ATUALIZA LIKES (ANÚNCIO)
+  // ===============================
   if (likesDados[idMensagem]) {
     window.itemAtual.likes += 1;
+    window.itemAtual.pontos.coracao += 1; // 💥 atualiza pontos também
   } else {
-    window.itemAtual.likes =
-      Math.max(0, window.itemAtual.likes - 1);
+    window.itemAtual.likes = Math.max(0, window.itemAtual.likes - 1);
+    window.itemAtual.pontos.coracao =
+      Math.max(0, window.itemAtual.pontos.coracao - 1);
   }
-  // ❤️ atualizar botão (contador)
+  // ===============================
+  // ❤️ TEXTO DO BOTÃO
+  // ===============================
   const btnLike = document.getElementById("btnLikeTexto");
   if (btnLike) {
     btnLike.innerText =
@@ -42,15 +57,21 @@ function atualizarLikeVisual(idMensagem) {
         ? "1 Like"
         : `${window.itemAtual.likes} Likes`;
   }
-  // ❤️ atualizar pontos do anunciante (já tinha)
+  // ===============================
+  // 📊 ATUALIZA PONTOS DO ANUNCIANTE
+  // ===============================
   const contador = document.getElementById("contadorPontos");
   if (contador) {
     contador.innerHTML = `
-      ❤️ ${window.itemAtual.pontos?.coracao ?? 0}
+      ❤️ ${window.itemAtual.pontos.coracao ?? 0}
       💬 ${window.itemAtual.pontos?.balao ?? 0}
       📢 ${window.itemAtual.pontos?.megafone ?? 0}
     `;
   }
+  // ===============================
+  // 🔄 FORÇA ATUALIZAR BOTÃO (ÍCONE ❤️)
+  // ===============================
+  renderizarBottomBar("detalhes");
 }
 
 let likesCarregando = {};
@@ -159,11 +180,13 @@ function mostrarToast(msg) {
 }
 
 function getUserIdentifier() {
-  const token = localStorage.getItem("token");
-  if (token && window.usuarioLogadoId) {
-    return window.usuarioLogadoId.toString();
+  const sessao = obterSessao();
+  // 🔐 usuário logado (Telegram)
+  if (sessao?.id) {
+    return sessao.id.toString().trim();
   }
-  return getUserId(); // visitante
+  // 🌐 usuário não logado
+  return getUserId().toString().trim();
 }
 
 function enviarFormulario(event) {
@@ -241,10 +264,12 @@ async function carregarAnuncios() {
     likesDados = {};
     const userId = getUserIdentifier() || "";
     anuncios.forEach(a => {
-      if (a.likesUsuarios && a.likesUsuarios.includes(userId)) {
-        likesDados[a.postagem] = true;
-      }
-    });
+  if (a.likesUsuarios?.some(id =>
+    id.toString().trim() === userId.toString().trim()
+  )) {
+    likesDados[a.postagem] = true;
+  }
+});
     modoLista();
     esconderTodasTelas();
     container.style.display = "flex";
