@@ -121,18 +121,20 @@ async function carregarAnuncios() {
   if (carregandoAnuncios) return;
   carregandoAnuncios = true;
   const container = document.getElementById("anuncios");
-  // 🔥 limpa aviso de busca (caso exista)
+  // 🔥 limpa aviso de busca (se existir)
   const aviso = document.getElementById("semResultados");
   if (aviso) aviso.remove();
-  container.innerHTML = '<div class="loading">Carregando Anúncios...</div>';
+  // ⏳ LOADING
+  container.innerHTML = '<div class="loading">Carregando anúncios...</div>';
   try {
     const resposta = await fetch(`${SCRIPT_SITE}?funcao=listarAnuncios`);
     if (!resposta.ok) {
       throw new Error('Resposta HTTP ' + resposta.status);
     }
     const anuncios = await resposta.json();
+    // 🔴 Se vier inválido (erro silencioso)
     if (!Array.isArray(anuncios)) {
-      container.innerHTML = '<div class="erro">Erro ao carregar anúncios.</div>';
+      container.innerHTML = '<div class="loading">Erro ao carregar anúncios.</div>';
       return;
     }
     window.anunciosCarregados = anuncios;
@@ -141,8 +143,9 @@ async function carregarAnuncios() {
     container.style.display = "flex";
     renderizarAnuncios(anuncios);
   } catch (erro) {
-    container.innerHTML = '<div class="erro">Erro ao carregar anúncios.</div>';
     console.error("Erro ao carregar anúncios:", erro);
+    // 🔴 ERRO DE REDE / FETCH
+    container.innerHTML = '<div class="loading">Erro ao carregar anúncios.</div>';
   } finally {
     carregandoAnuncios = false;
   }
@@ -898,15 +901,13 @@ function filtrarAnuncios() {
   const termo = document.getElementById("pesquisa")
     .value.trim()
     .toLowerCase();
-  const anuncios = document.querySelectorAll(".anuncio");
   const container = document.getElementById("anuncios");
+  const anuncios = container.querySelectorAll(".anuncio");
   anunciantePesquisaValido = null;
   let encontrou = false;
   anuncios.forEach(el => {
-    const titulo = el.querySelector(".titulo")
-      .textContent.toLowerCase();
-    const valor = el.querySelector(".valor")
-      .textContent.toLowerCase();
+    const titulo = el.querySelector(".titulo").textContent.toLowerCase();
+    const valor = el.querySelector(".valor").textContent.toLowerCase();
     const anuncianteOriginal = el.dataset.anunciante;
     const anunciante = anuncianteOriginal
       .replace(/^@/, "")
@@ -922,14 +923,14 @@ function filtrarAnuncios() {
     }
   });
   // ===============================
-  // 🔍 MENSAGEM DE SEM RESULTADO
+  // 🔍 SEM RESULTADO (USANDO loading)
   // ===============================
   let aviso = document.getElementById("semResultados");
   if (!encontrou && termo) {
     if (!aviso) {
       aviso = document.createElement("div");
       aviso.id = "semResultados";
-      aviso.className = "erro";
+      aviso.className = "loading"; 
       aviso.innerText = "Nenhum anúncio encontrado.";
       container.appendChild(aviso);
     }
