@@ -18,53 +18,152 @@ let startX = 0;
 let endX = 0;
 
 const opcoesExtra = [
-  "Adrenalina Pura", "Apple TV+", "Canais Globo", "Cindie", "Combate",
-  "Crunchyroll", "Disney+", "ESPN", "GloboPlay", "HBO Max", "Look", "MGM+",
-  "MUBI", "NBA", "Netflix", "Nosso Futebol+", "Paramount+", "Premiere", "Reserva Imovision",  "Sony One", "Spotify", "Telecine", "UFC Fight Pass", "Universal+", "YouTube"
+  "Adrenalina Pura", "Apple TV+", "Canais Globo", "Cindie", "Combate",  "Crunchyroll", "Disney+", "ESPN", "Gemini", "GloboPlay", "HBO Max", "Look", "MGM+",  "MUBI", "NBA", "Netflix", "Nosso Futebol+", "NotebookLM Plus", "Paramount+", "Premiere", "Reserva Imovision",  "Sony One", "Spotify", "Telecine", "UFC Fight Pass", "Universal+", "VEO3", "YouTube"
 ];
 
+function atualizarLikeVisual(idMensagem) {
+  if (!window.itemAtual) return;
+  if (window.itemAtual.postagem != idMensagem) return;
+  if (!window.itemAtual.likes) {
+    window.itemAtual.likes = 0;
+  }
+  // 👍 incrementa ou decrementa
+  if (likesDados[idMensagem]) {
+    window.itemAtual.likes += 1;
+  } else {
+    window.itemAtual.likes =
+      Math.max(0, window.itemAtual.likes - 1);
+  }
+  // ❤️ atualizar botão (contador)
+  const btnLike = document.getElementById("btnLikeTexto");
+  if (btnLike) {
+    btnLike.innerText =
+      window.itemAtual.likes === 1
+        ? "1 Like"
+        : `${window.itemAtual.likes} Likes`;
+  }
+  // ❤️ atualizar pontos do anunciante (já tinha)
+  const contador = document.getElementById("contadorPontos");
+  if (contador) {
+    contador.innerHTML = `
+      ❤️ ${window.itemAtual.pontos?.coracao ?? 0}
+      💬 ${window.itemAtual.pontos?.balao ?? 0}
+      📢 ${window.itemAtual.pontos?.megafone ?? 0}
+    `;
+  }
+}
+
+let likesCarregando = {};
+
 function registrarLike(idMensagem) {
+  if (likesCarregando[idMensagem]) return;
+  // 🚫 BLOQUEIA SE JÁ CURTIU
+  if (likesDados[idMensagem]) {
+    mostrarToast("⚠️ Você já curtiu");
+    return;
+  }
+  likesCarregando[idMensagem] = true;
   const token = localStorage.getItem("token");
   let url = `${SCRIPT_SITE}?funcao=executarAcao`
     + `&acao=like`
     + `&id=${encodeURIComponent(idMensagem)}`;
-  // 🔐 Se estiver logado → usa token
   if (token) {
     url += `&token=${encodeURIComponent(token)}`;
   } else {
-    // 🌐 Se NÃO estiver logado → usa userId
-    const userId = getUserId();
-    url += `&userId=${encodeURIComponent(userId)}`;
+    url += `&userId=${encodeURIComponent(getUserId())}`;
   }
+  // ❤️ marca local
+  likesDados[idMensagem] = true;
+  atualizarLikeVisual(idMensagem);
+  renderizarBottomBar("detalhes");
+  // 💥 ANIMAÇÃO NO CLICK
+  setTimeout(() => {
+    const icone = document.querySelector("#bottomBar i.bi-heart-fill");
+    if (icone) {
+      icone.classList.add("like-animado");
+      setTimeout(() => {
+        icone.classList.remove("like-animado");
+      }, 300);
+    }
+  }, 50);
   fetch(url)
-    .then(res => res.text())
-    .then(msg => alert(msg))
-    .catch(err => alert("Erro ao registrar like."));
+    .then(() => {
+      mostrarToast("❤️ Curtido");
+    })
+    .catch(() => {
+      delete likesDados[idMensagem];
+      atualizarLikeVisual(idMensagem);
+      renderizarBottomBar("detalhes");
+      mostrarToast("⚠️ Erro ao curtir");
+    })
+    .finally(() => {
+      likesCarregando[idMensagem] = false;
+    });
 }
 
-function registrarCompra(idMensagem) {
-  fetch(`${SCRIPT_SITE}?funcao=registrarCompraPublico&id=${encodeURIComponent(idMensagem)}`)
+function registrarCompra(idMensagem) {  fetch(`${SCRIPT_SITE}?funcao=registrarCompraPublico&id=${encodeURIComponent(idMensagem)}`)
     .catch(err => console.warn("Erro ao registrar compra", err));
 }
 
+let excluindoAnuncio = false;
+
 function excluirAnuncio(idMensagem) {
+  if (excluindoAnuncio) return;
   if (!confirm("Tem certeza que deseja excluir este anúncio?")) return;
   const token = localStorage.getItem("token");
-if (!token) {
-alert("Faça login primeiro.");
-return;
-}
+  if (!token) {
+    alert("Faça login primeiro.");
+    return;
+  }
+  excluindoAnuncio = true;
+  // 🔄 Atualiza botão visual
+  renderizarBottomBar("detalhes");
   fetch(`${SCRIPT_SITE}?funcao=executarAcao`
     + `&acao=excluir`
     + `&id=${encodeURIComponent(idMensagem)}`
     + `&token=${encodeURIComponent(token)}`)
-
     .then(res => res.text())
     .then(msg => {
-      alert(msg);
-      voltarParaLista(true);
+  mostrarToast(msg);
+  // 🔍 verifica se ainda está no mesmo anúncio
+  if (window.itemAtual && window.itemAtual.postagem == idMensagem) {
+    voltarParaLista(true);
+  } else {
+    // 🔄 só atualiza lista em segundo plano
+    carregarAnuncios();
+  }
+})
+    .catch(err => {
+      mostrarToast("⚠️ Erro ao excluir");
     })
-    .catch(err => alert("Erro ao excluir anúncio."));
+    .finally(() => {
+      excluindoAnuncio = false;
+    });
+}
+
+let toastTimeout;
+
+function mostrarToast(msg) {
+  let toast = document.querySelector(".toast");
+  if (!toast) {
+    toast = document.createElement("div");
+    toast.className = "toast";
+    document.body.appendChild(toast);
+  }
+  toast.innerText = msg;
+  toast.style.opacity = "1";
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => {
+    toast.style.opacity = "0";
+  }, 2500);
+}
+
+function getUserIdentifier() {
+  const token = localStorage.getItem("token");
+  if (token && window.usuarioLogadoId) {
+    return window.usuarioLogadoId.toString();
+  }
+  return getUserId(); // visitante
 }
 
 function enviarFormulario(event) {
@@ -132,12 +231,20 @@ async function carregarAnuncios() {
       throw new Error('Resposta HTTP ' + resposta.status);
     }
     const anuncios = await resposta.json();
-    // 🔴 Se vier inválido (erro silencioso)
+       // 🔴 Se vier inválido (erro silencioso)
     if (!Array.isArray(anuncios)) {
       container.innerHTML = '<div class="loading">Erro ao carregar anúncios.</div>';
       return;
     }
     window.anunciosCarregados = anuncios;
+    // 🔥 RESETA OS LIKES
+    likesDados = {};
+    const userId = getUserIdentifier() || "";
+    anuncios.forEach(a => {
+      if (a.likesUsuarios && a.likesUsuarios.includes(userId)) {
+        likesDados[a.postagem] = true;
+      }
+    });
     modoLista();
     esconderTodasTelas();
     container.style.display = "flex";
@@ -798,26 +905,35 @@ function renderizarBottomBar(tipo) {
   }
 }
   // ===============================
-  // 📄 DETALHES
-  // ===============================
-  if (tipo === "detalhes" && window.itemAtual) {
-    const item = window.itemAtual;
-    // ❤️ Like
-    criarBotao("bi bi-heart", "Like", () => {
-      registrarLike(item.postagem);
-    });
-    // 💬 Ver Postagem no Telegram
-    criarBotao("bi bi-chat", "Postagem", () => {
-      window.open(
-        `https://t.me/dividir_contas_premium/${item.postagem}`,
-        "_blank"
-      );
-    });
-    // 📲 Compartilhar link da postagem
-    criarBotao("bi bi-send", "Enviar", () => {
-  const link =
-    `https://tinyurl.com/divcp01?a=${item.postagem}`;
-  let mensagem =
+// 📄 DETALHES
+// ===============================
+if (tipo === "detalhes" && window.itemAtual) {
+  const item = window.itemAtual;
+  const jaCurtiu = !!likesDados[item.postagem];
+  // 👍 texto do botão
+  const totalLikes = item.likes || 0;
+  const textoLike = totalLikes === 1
+    ? "1 Like"
+    : `${totalLikes} Likes`;
+  // ❤️ Like
+  criarBotao(
+  jaCurtiu ? "bi bi-heart-fill" : "bi bi-heart",
+  `<span id="btnLikeTexto">${textoLike}</span>`,
+  () => registrarLike(item.postagem)
+);
+  // 💬 Ver Postagem no Telegram
+  criarBotao("bi bi-chat", "Postagem", () => {
+    window.open(
+      `https://t.me/dividir_contas_premium/${item.postagem}`,
+      "_blank"
+    );
+  });
+  // 📲 Compartilhar
+  criarBotao("bi bi-send", "Enviar", () => {
+    const link =
+      `https://tinyurl.com/divcp01?a=${item.postagem}`;
+
+    let mensagem =
 `🖥 *${item.streaming}*${item.streamingExtra ? `\n➕ ${item.streamingExtra}` : ""}
 💵 ${item.valor}
 📌 ${item.vagas}
@@ -829,22 +945,27 @@ ${link}
 https://tinyurl.com/divcp01?p=${item.anunciante.replace(/^@/, "")}
 📲 *CONTATO POR TELEGRAM*
 https://t.me/${item.anunciante.replace(/^@/, "")}`;
-  if (item.whatsapp) {
-    mensagem += `
+    if (item.whatsapp) {
+      mensagem += `
 📲 *CONTATO POR WHATSAPP*
 https://wa.me/${item.whatsapp}`;
-  }
-  const url =
-    `https://api.whatsapp.com/send?text=${encodeURIComponent(mensagem)}`;
-  window.open(url, "_blank");
-});
-    // 🗑 Excluir (somente dono)
-    if (window.podeExcluir) {
-      criarBotao("bi bi-trash", "Excluir", () => {
-        excluirAnuncio(item.postagem);
-      });
     }
+    const url =      `https://api.whatsapp.com/send?text=${encodeURIComponent(mensagem)}`;
+    window.open(url, "_blank");
+  });
+  // 🗑 Excluir
+  if (window.podeExcluir) {
+    criarBotao(
+      excluindoAnuncio ? "bi bi-arrow-repeat" : "bi bi-trash",
+      excluindoAnuncio ? "Excluindo..." : "Excluir",
+      () => {
+        if (!excluindoAnuncio) {
+          excluirAnuncio(item.postagem);
+        }
+      }
+    );
   }
+}
   // ===============================
   // 📝 FORMULÁRIO
   // ===============================
