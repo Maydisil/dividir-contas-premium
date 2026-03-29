@@ -117,18 +117,22 @@ function enviarFormulario(event) {
     });
 }
 
-  async function carregarAnuncios() {
+async function carregarAnuncios() {
   if (carregandoAnuncios) return;
   carregandoAnuncios = true;
   const container = document.getElementById("anuncios");
+  // 🔥 limpa aviso de busca (caso exista)
+  const aviso = document.getElementById("semResultados");
+  if (aviso) aviso.remove();
   container.innerHTML = '<div class="loading">Carregando Anúncios...</div>';
   try {
     const resposta = await fetch(`${SCRIPT_SITE}?funcao=listarAnuncios`);
-    if (!resposta.ok)
+    if (!resposta.ok) {
       throw new Error('Resposta HTTP ' + resposta.status);
+    }
     const anuncios = await resposta.json();
-    if (!Array.isArray(anuncios) || anuncios.length === 0) {
-      container.innerHTML = '<div class="erro">Nenhum anúncio encontrado.</div>';
+    if (!Array.isArray(anuncios)) {
+      container.innerHTML = '<div class="erro">Erro ao carregar anúncios.</div>';
       return;
     }
     window.anunciosCarregados = anuncios;
@@ -142,7 +146,7 @@ function enviarFormulario(event) {
   } finally {
     carregandoAnuncios = false;
   }
-	  }
+}
 
 function salvarSessao(nome, id, token) {
   const agora = Date.now();
@@ -895,7 +899,9 @@ function filtrarAnuncios() {
     .value.trim()
     .toLowerCase();
   const anuncios = document.querySelectorAll(".anuncio");
+  const container = document.getElementById("anuncios");
   anunciantePesquisaValido = null;
+  let encontrou = false;
   anuncios.forEach(el => {
     const titulo = el.querySelector(".titulo")
       .textContent.toLowerCase();
@@ -910,10 +916,26 @@ function filtrarAnuncios() {
       valor.includes(termo) ||
       anunciante.includes(termo);
     el.style.display = mostrar ? "flex" : "none";
+    if (mostrar) encontrou = true;
     if (termo && anunciante === termo.replace(/^@/, "")) {
       anunciantePesquisaValido = anuncianteOriginal;
     }
   });
+  // ===============================
+  // 🔍 MENSAGEM DE SEM RESULTADO
+  // ===============================
+  let aviso = document.getElementById("semResultados");
+  if (!encontrou && termo) {
+    if (!aviso) {
+      aviso = document.createElement("div");
+      aviso.id = "semResultados";
+      aviso.className = "erro";
+      aviso.innerText = "Nenhum anúncio encontrado.";
+      container.appendChild(aviso);
+    }
+  } else {
+    if (aviso) aviso.remove();
+  }
 }
 
 async function voltarParaLista(recarregar = false) {
