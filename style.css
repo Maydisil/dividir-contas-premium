@@ -416,6 +416,51 @@ button:active,
        font-size: 1.5rem;
      }
 
+
+.toast {
+  position: fixed;
+  bottom: clamp(4rem, 12vw, 5.5rem);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  padding: 0.7rem 1.2rem;
+  border-radius: 1.5rem;
+  font-size: var(--font-small);
+  text-align: center;
+  z-index: 300;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-0.5rem);
+}
+
+/* ❤️ coração padrão */
+#bottomBar button i.bi-heart {
+  color: #555;
+  transition: color 0.2s ease, transform 0.15s ease;
+}
+
+/* ❤️ coração curtido */
+#bottomBar button i.bi-heart-fill {
+  color: #e0245e; /* estilo Instagram */
+  transform: scale(1.1);
+}
+
+@keyframes popLike {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.4); }
+  100% { transform: scale(1.1); }
+}
+
+.like-animado {
+  animation: popLike 0.3s ease;
+}
+
      .loading {
        text-align: center;
        padding: 2rem;
