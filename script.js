@@ -18,7 +18,7 @@ let startX = 0;
 let endX = 0;
 
 const opcoesExtra = [
-  "Adrenalina Pura", "Apple TV+", "Canais Globo", "Cindie", "Combate",  "Crunchyroll", "Disney+", "ESPN", "Gemini", "GloboPlay", "HBO Max", "Look", "MGM+",  "MUBI", "NBA", "Netflix", "Nosso Futebol+", "NotebookLM Plus", "Paramount+", "Premiere", "Reserva Imovision",  "Sony One", "Spotify", "Telecine", "UFC Fight Pass", "Universal+", "VEO3", "YouTube"
+  "Adrenalina Pura", "Apple TV+", "Belas Artes", "Box Brasil Play", "Canais ao Vivo", "Canais Globo", "Cindie", "Cine Brasil Já", "Combate",  "Crunchyroll", "CurtaOn", "Darkflix", "Disney+", "Eduk", "Edye", "ESPN", "F1 TV", "Gemini", "GloboPlay", "HBO Max", "Looke", "Lumine", "MGM+",  "MUBI", "NBA", "Netflix", "Nosso Futebol+", "NotebookLM", "Paramount+", "Premiere", "Prime Video", "Reaw Play", "Reserva Imovision", "Sexy Hot", "Sexy Play", "SportyNet+", "Sony One", "Spotify", "Telecine", "UFC Fight Pass", "Universal+", "VEO3", "YouTube"
 ];
 
 function atualizarLikeVisual(idMensagem) {
@@ -132,12 +132,14 @@ function excluirAnuncio(idMensagem) {
   if (excluindoAnuncio) return;
   if (!confirm("Tem certeza que deseja excluir este anúncio?")) return;
   const token = localStorage.getItem("token");
+  // 🚨 SEM TOKEN
   if (!token) {
-    alert("Faça login primeiro.");
+    alert("Sessão inválida. Faça login novamente.");
+    limparSessao();
+    mostrarTelaLogin();
     return;
   }
   excluindoAnuncio = true;
-  // 🔄 Atualiza botão visual
   renderizarBottomBar("detalhes");
   fetch(`${SCRIPT_SITE}?funcao=executarAcao`
     + `&acao=excluir`
@@ -145,16 +147,21 @@ function excluirAnuncio(idMensagem) {
     + `&token=${encodeURIComponent(token)}`)
     .then(res => res.text())
     .then(msg => {
-  mostrarToast(msg);
-  // 🔍 verifica se ainda está no mesmo anúncio
-  if (window.itemAtual && window.itemAtual.postagem == idMensagem) {
-    voltarParaLista(true);
-  } else {
-    // 🔄 só atualiza lista em segundo plano
-    carregarAnuncios();
-  }
-})
-    .catch(err => {
+      // 🚨 TOKEN INVÁLIDO NO SERVIDOR
+      if (msg.includes("Sessão inválida")) {
+        alert("Sessão expirou. Faça login novamente.");
+        limparSessao();
+        mostrarTelaLogin();
+        return;
+      }
+      mostrarToast(msg);
+      if (window.itemAtual && window.itemAtual.postagem == idMensagem) {
+        voltarParaLista(true);
+      } else {
+        carregarAnuncios();
+      }
+    })
+    .catch(() => {
       mostrarToast("⚠️ Erro ao excluir");
     })
     .finally(() => {
@@ -194,29 +201,27 @@ function enviarFormulario(event) {
   const form = document.getElementById("formAnuncio");
   const btnEnviar = form.querySelector('button[type="submit"]');
   const btnCancelar = form.querySelector('button[type="button"]');
-  // 🔒 Evita múltiplos cliques
   btnEnviar.disabled = true;
   btnEnviar.textContent = "Enviando...";
   btnCancelar.disabled = true;
   const dados = Object.fromEntries(new FormData(form).entries());
-  // 🧹 Remove campos vazios
   Object.keys(dados).forEach(chave => {
     if (dados[chave].trim() === "") {
       delete dados[chave];
     }
   });
-  // ➕ Extras selecionados
   const selecionados = Array.from(
     document.querySelectorAll('input[name="extra"]:checked')
   ).map(input => input.value);
   dados.extra = selecionados.join(", ");
-  // 🔐 TOKEN DA SESSÃO
   const token = localStorage.getItem("token");
+  // 🚨 SEM TOKEN = FORÇA LOGIN
   if (!token) {
     alert("Sessão inválida. Faça login novamente.");
+    limparSessao();
+    mostrarTelaLogin();
     return;
   }
-  // 🧩 Montar parâmetros
   const params = new URLSearchParams({
     funcao: "salvarFormulario",
     token: token,
@@ -225,11 +230,18 @@ function enviarFormulario(event) {
   fetch(`${SCRIPT_SITE}?${params}`)
     .then(res => res.text())
     .then(msg => {
+      // 🚨 TOKEN INVÁLIDO NO SERVIDOR
+      if (msg.includes("Sessão inválida")) {
+        alert("Sessão expirou. Faça login novamente.");
+        limparSessao();
+        mostrarTelaLogin();
+        return;
+      }
       alert(msg);
       form.reset();
       voltarParaLista(true);
     })
-    .catch(err => {
+    .catch(() => {
       alert("Erro ao enviar o formulário.");
     })
     .finally(() => {
@@ -311,79 +323,22 @@ async function sair() {
   const token = localStorage.getItem("token");
   if (token) {
     try {
-      await fetch(        `${SCRIPT_SITE}?funcao=logout&token=${encodeURIComponent(token)}`
+      await fetch(
+        `${SCRIPT_SITE}?funcao=logout&token=${encodeURIComponent(token)}`
       );
     } catch (e) {}
   }
   limparSessao();
   alert("Sessão encerrada.");
-  location.reload();
+  mostrarTelaLogin();
 }
 
 // Decide se mostra o botão Sair dentro do menu
 function atualizarMenuUsuario() {
   const nome = localStorage.getItem("usuarioNome");
-  const expira = localStorage.getItem("sessaoExpira");
-  const sessaoValida =
-    nome &&
-    expira &&
-    Date.now() <= Number(expira);
   const btnSair = document.getElementById("menuSair");
   if (btnSair) {
-    btnSair.style.display = sessaoValida ? "flex" : "none";
-  }
-}
-
-//Só verifica para o telegram? e quando não for telegram?
-async function verificarAutenticacao() {
-  const sessao = obterSessao();
-  if (sessao) return sessao;
-  if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
-    const user = Telegram.WebApp.initDataUnsafe.user;
-    const nome = user.username ? "@" + user.username : user.first_name;
-// 🔥 CORREÇÃO: agora envia também o ID
-    const res = await fetch(
-      `${SCRIPT_SITE}?funcao=loginTelegram`
-      + `&id=${encodeURIComponent(user.id)}`
-      + `&usuario=${encodeURIComponent(nome)}`
-    );
-    const dados = await res.json();
-    if (dados.status === "ok") {
-      salvarSessao(dados.nome, dados.id, dados.token);
-      return { nome: dados.nome, id: dados.id };
-    }
-    if (dados.status === "bloqueado") {
-      return null;
-    }
-  }
-  return null;
-}
-
-//Só renova o token para o telegram? e quando não for telegram?
-async function renovarTokenAutomatico() {
-  try {
-    if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
-      const user = Telegram.WebApp.initDataUnsafe.user;
-      const nome = user.username
-        ? "@" + user.username
-        : user.first_name;
-// 🔥 CORREÇÃO: agora envia também o ID
-    const res = await fetch(
-      `${SCRIPT_SITE}?funcao=loginTelegram`
-      + `&id=${encodeURIComponent(user.id)}`
-      + `&usuario=${encodeURIComponent(nome)}`
-    );
-      const dados = await res.json();
-      if (dados.status === "ok") {
-        salvarSessao(dados.nome, dados.id, dados.token);
-        return true;
-      }
-      return dados.status;
-    }
-    return false;
-  } catch (e) {
-    console.warn("Erro ao renovar token:", e);
-    return false;
+    btnSair.style.display = nome ? "flex" : "none";
   }
 }
 
@@ -471,63 +426,13 @@ function mostrarTelaLogin() {
   renderizarBottomBar("login");
 }
 
-async function mostrarFormularioProtegido() {
-  let sessao = obterSessao();
-  // 🟢 Já logado
-  if (sessao) {
-    mostrarFormulario();
-    return;
-  }
-  // 🤖 Tenta login automático Telegram
-  const resultado = await renovarTokenAutomatico();
-  if (resultado === true) {
-    mostrarFormulario();
-    return;
-  }
-  // ❌ ERROS COM MENSAGEM
-  if (resultado === "nome_diferente") {
-    alert("⚠️ Seu nome do Telegram mudou.\nRefaça o cadastro no grupo.");
-  }
-  else if (resultado === "bloqueado") {
-    alert("⛔ Seu acesso está bloqueado.\nFale com um administrador.");
-  }
-  else if (resultado === "nao_cadastrado") {
-    alert("🚫 Você não está cadastrado.\nFaça o cadastro no grupo.");
-  }
-  // 🔑 Mostra login manual
-  mostrarTelaLogin();
-	  }
-
 async function mostrarFormulario() {
-  // 🔎 1️⃣ Verificar sessão válida
-  let sessao = obterSessao();
-  // 🔄 2️⃣ Se não tiver sessão, tentar login automático via Telegram
-  if (!sessao && window.Telegram?.WebApp?.initDataUnsafe?.user) {
-    const user = Telegram.WebApp.initDataUnsafe.user;
-    const nome = user.username ? "@" + user.username : user.first_name;
-    // 🔐 Verificar bloqueio no servidor
-    const res = await fetch(
-      `${SCRIPT_SITE}?funcao=loginTelegram`
-      + `&id=${encodeURIComponent(user.id)}`
-      + `&usuario=${encodeURIComponent(nome)}`
-    );
-    const dados = await res.json();
-    if (dados.status === "ok") {
-      salvarSessao(dados.nome, dados.id, dados.token);
-      atualizarMenuUsuario();
-      sessao = { nome: dados.nome, id: dados.id };
-    }
-    if (dados.status === "bloqueado") {
-      alert("⚠️ Seu acesso está bloqueado.");
-      return;
-    }
-  }
-  // 🚫 3️⃣ Se ainda não autenticado → mostrar login
+  const sessao = obterSessao();
   if (!sessao) {
+    alert("Faça login para continuar.");
     mostrarTelaLogin();
     return;
   }
-  // ✅ 4️⃣ Usuário autenticado → mostrar formulário
   modoFormulario();
   esconderTodasTelas();
   document.getElementById("formulario").style.display = "block";
@@ -535,7 +440,7 @@ async function mostrarFormulario() {
   if (campoUsuario) {
     campoUsuario.value = sessao.nome;
     campoUsuario.setAttribute("readonly", true);
-    // 🔥 Buscar WhatsApp automaticamente
+// 🔥 Buscar WhatsApp
 fetch(`${SCRIPT_SITE}?funcao=buscarWhatsapp&nome=${encodeURIComponent(sessao.nome)}`)
       .then(res => res.text())
       .then(telefone => {
@@ -546,7 +451,7 @@ fetch(`${SCRIPT_SITE}?funcao=buscarWhatsapp&nome=${encodeURIComponent(sessao.nom
       })
       .catch(err => console.error("Erro ao buscar WhatsApp:", err));
   }
-  // 🔹 Carregar opções de streaming
+  // 🔹 Streaming
   fetch(`${SCRIPT_SITE}?funcao=listarOpcoesStreaming`)
     .then(res => res.json())
     .then(opcoes => {
@@ -559,25 +464,22 @@ fetch(`${SCRIPT_SITE}?funcao=buscarWhatsapp&nome=${encodeURIComponent(sessao.nom
         opt.value = op;
         select.add(opt);
       });
-    })
-    .catch(err => console.error("Erro ao carregar opções:", err));
-  // 🔹 Resetar extras
+    });
+  // 🔹 Extras
   const container = document.getElementById("containerExtras");
   if (container) {
     container.className = "checkbox-list hidden";
     container.innerHTML = "";
-    if (typeof opcoesExtra !== "undefined") {
-      opcoesExtra.forEach(opcao => {
-        const label = document.createElement("label");
-        const input = document.createElement("input");
-        input.type = "checkbox";
-        input.name = "extra";
-        input.value = opcao;
-        label.appendChild(input);
-        label.appendChild(document.createTextNode(opcao));
-        container.appendChild(label);
-      });
-    }
+    opcoesExtra.forEach(opcao => {
+      const label = document.createElement("label");
+      const input = document.createElement("input");
+      input.type = "checkbox";
+      input.name = "extra";
+      input.value = opcao;
+      label.appendChild(input);
+      label.appendChild(document.createTextNode(opcao));
+      container.appendChild(label);
+    });
   }
   renderizarBottomBar("formulario");
 }
@@ -600,14 +502,6 @@ function limitarKotas(input) {
   if (input.value.length > 6) {
 	input.value = input.value.slice(0, 6);
   }
-}
-
-function formatarUsuario(input) {
-  let valor = input.value.trim();
-  if (valor && !valor.startsWith('@')) {
-    valor = '@' + valor.replace(/^@+/, '');
-  }
-  input.value = valor;
 }
 
 function renderizarAnuncios(lista) {
@@ -667,7 +561,6 @@ function getUserId() {
   }
   return userId;
 }
-
 
 function modoLista() {
   document.getElementById("btnVoltar").style.display = "none";
@@ -756,7 +649,7 @@ function mostrarDetalhes(item) {
         <img src="https://drive.google.com/thumbnail?id=${item.logo2}&sz=w1000">
       </a>
       <hr>
-      <p><strong>📺 ${item.streaming}</strong></p>
+      <p><strong>🖥 ${item.streaming}</strong></p>
       ${item.streamingExtra ? `<p><strong>➕ ${item.streamingExtra}</strong></p>` : ""}
       <p><strong>💵 ${item.valor}</strong></p>
       <p><strong>📌 ${item.vagas}</strong></p>
@@ -839,19 +732,6 @@ function irAnterior() {
     indiceAtualDetalhes = window.listaVisivelDetalhes.length - 1;
   }
   animarTroca("direita");
-}
-
-function mostrarDetalhesCompleto(el) {
-  const item = {
-    streaming: el.dataset.streaming,
-    streamingExtra: el.dataset.streamingExtra,
-    valor: el.dataset.valor,
-    anunciante: el.dataset.anunciante,
-    whatsapp: el.dataset.whatsapp,
-    postagem: el.dataset.postagem,
-    logo: el.querySelector(".logo")?.src
-  };
-  mostrarDetalhes(item);
 }
 
 function animarTroca(direcao) {
@@ -1106,21 +986,37 @@ function esconderTodasTelas() {
 
 window.addEventListener("load", async () => {
   const params = new URLSearchParams(window.location.search);
-  // 🔎 Verifica sessão existente
-  const sessao = obterSessao();
-  // 🔄 Login automático Telegram
-  if (!sessao && window.Telegram?.WebApp?.initDataUnsafe?.user) {
+  let sessao = obterSessao();
+  // ===============================
+  // 🔄 TENTA LOGIN AUTOMÁTICO TELEGRAM (SEMPRE)
+  // ===============================
+  if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
     const user = Telegram.WebApp.initDataUnsafe.user;
     const nome = user.username ? "@" + user.username : user.first_name;
-    const res = await fetch(
-      `${SCRIPT_SITE}?funcao=loginTelegram`
-      + `&id=${encodeURIComponent(user.id)}`
-      + `&usuario=${encodeURIComponent(nome)}`
-    );
-    const dados = await res.json();
-    if (dados.status === "ok") {
-      salvarSessao(dados.nome, dados.id, dados.token);
-      localStorage.setItem("token", dados.token);
+    try {
+      const res = await fetch(
+        `${SCRIPT_SITE}?funcao=loginTelegram`
+        + `&id=${encodeURIComponent(user.id)}`
+        + `&usuario=${encodeURIComponent(nome)}`
+      );
+      const dados = await res.json();
+      if (dados.status === "ok") {
+        salvarSessao(dados.nome, dados.id, dados.token);
+        sessao = { nome: dados.nome, id: dados.id };
+      } else {
+        // ❌ TRATAMENTO DE ERROS (ANTES ERA DA FUNÇÃO REMOVIDA)
+        if (dados.status === "nome_diferente") {
+          alert("⚠️ Seu nome do Telegram mudou.\nRefaça o cadastro no grupo.");
+        }
+        else if (dados.status === "bloqueado") {
+          alert("⛔ Seu acesso está bloqueado.\nFale com um administrador.");
+        }
+        else if (dados.status === "nao_cadastrado") {
+          alert("🚫 Você não está cadastrado.\nFaça o cadastro no grupo.");
+        }
+      }
+    } catch (e) {
+      console.warn("Erro no login automático Telegram:", e);
     }
   }
   // 🔄 Atualiza botão sair
@@ -1128,46 +1024,51 @@ window.addEventListener("load", async () => {
   // 🔄 Carrega anúncios
   await carregarAnuncios();
   // ===============================
-  // 🚫 BLOQUEIA EXECUÇÃO DUPLA DOS PARÂMETROS
+  // 🚫 CONTROLE DE PARÂMETROS
   // ===============================
   let acaoExecutada = false;
-if (!parametrosJaProcessados && window.location.search) {
-  const idDireto = params.get("a") || params.get("id");
-  const termoPesquisa = params.get("p") || params.get("pesquisar");
-  parametrosJaProcessados = true;
-  // 🔗 DETALHE
-  if (idDireto) {
-    const item = window.anunciosCarregados?.find(
-      a => a.postagem == idDireto
-    );
-    if (item) {
-      mostrarDetalhes(item);
+  if (!parametrosJaProcessados && window.location.search) {
+    parametrosJaProcessados = true;
+    const idDireto = params.get("a") || params.get("id");
+    const termoPesquisa = params.get("p") || params.get("pesquisar");
+    // 🔗 DETALHE
+    if (idDireto) {
+      const item = window.anunciosCarregados?.find(
+        a => a.postagem == idDireto
+      );
+      if (item) {
+        mostrarDetalhes(item);
+        acaoExecutada = true;
+      }
+    }
+    // 🔍 PESQUISA
+    if (termoPesquisa) {
+      const barra = document.getElementById("pesquisa");
+      if (barra) {
+        barra.value = termoPesquisa;
+        filtrarAnuncios();
+      }
+      renderizarBottomBar("lista");
       acaoExecutada = true;
     }
-  }
-  // 🔍 PESQUISA
-  if (termoPesquisa) {
-    const barra = document.getElementById("pesquisa");
-    if (barra) {
-      barra.value = termoPesquisa;
-      filtrarAnuncios();
+    // 📢 FORMULÁRIO (PROTEGIDO)
+    if (params.has("anunciar")) {
+      if (sessao) {
+        await mostrarFormulario();
+      } else {
+        alert("Faça login para anunciar.");
+        mostrarTelaLogin();
+      }
+      acaoExecutada = true;
     }
+    if (acaoExecutada) {
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }
+  // 🏠 PADRÃO
+  if (!acaoExecutada) {
     renderizarBottomBar("lista");
-    acaoExecutada = true;
   }
-  // ➕ FORMULÁRIO
-  if (params.has("anunciar")) {
-    await mostrarFormularioProtegido();
-    acaoExecutada = true;
-  }
-  if (acaoExecutada) {
-    window.history.replaceState({}, document.title, window.location.pathname);
-  }
-}
-// 🏠 PADRÃO
-if (!acaoExecutada) {
-  renderizarBottomBar("lista");
-}
   // ===============================
   // 🎧 EVENTOS
   // ===============================
@@ -1181,6 +1082,7 @@ if (!acaoExecutada) {
   document.getElementById("menu-overlay")
     .addEventListener("click", toggleMenu);
 });
+
 document.addEventListener("DOMContentLoaded", function () {
   const btnVoltar = document.getElementById("btnVoltar");
   if (btnVoltar) {
