@@ -259,8 +259,7 @@ async function carregarAnuncios() {
   const aviso = document.getElementById("semResultados");
   if (aviso) aviso.remove();
   // ⏳ LOADING
-  container.innerHTML = '<div class="loading">Carregando anúncios...</div>
-	  <div class="spinner"></div>';
+  container.innerHTML = '<div class="loading">Carregando anúncios...</div>';
   try {
     const resposta = await fetch(`${SCRIPT_SITE}?funcao=listarAnuncios`);
     if (!resposta.ok) {
