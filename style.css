@@ -419,7 +419,7 @@ button:active,
 
 .toast {
   position: fixed;
-  bottom: clamp(4rem, 12vw, 5.5rem);
+  bottom: clamp(5rem, 14vw, 6.5rem);
   left: 50%;
   transform: translateX(-50%);
   background: rgba(0, 0, 0, 0.85);
@@ -459,6 +459,19 @@ button:active,
 
 .like-animado {
   animation: popLike 0.3s ease;
+}
+
+@keyframes girar {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.icone-girando {
+  animation: girar 1s linear infinite;
 }
 
      .loading {
