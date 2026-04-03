@@ -474,6 +474,15 @@ button:active,
   animation: girar 1s linear infinite;
 }
 
+.spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-top: 3px solid #fff;
+  border-radius: 50%;
+  animation: girar 0.8s linear infinite;
+}
+
      .loading {
        text-align: center;
        padding: 2rem;
