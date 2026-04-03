@@ -462,9 +462,6 @@ button:active,
 }
 
 @keyframes girar {
-  from {
-    transform: rotate(0deg);
-  }
   to {
     transform: rotate(360deg);
   }
@@ -472,23 +469,40 @@ button:active,
 
 .icone-girando {
   animation: girar 1s linear infinite;
+  display: inline-block;
 }
 
+/* 🍩 Spinner moderno */
 .spinner {
-  width: 28px;
-  height: 28px;
-  border: 3px solid rgba(255, 255, 255, 0.2);
-  border-top: 3px solid #fff;
+  width: 1.8rem;
+  height: 1.8rem;
+  border: 0.2rem solid rgba(255, 255, 255, 0.2);
+  border-top: 0.2rem solid #fff;
   border-radius: 50%;
   animation: girar 0.8s linear infinite;
 }
 
-     .loading {
-       text-align: center;
-       padding: 2rem;
-       color: #888;
-       font-size: var(--font-base);
-     }
+/* 📦 Container loading */
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  width: 100%;
+  padding: 2rem 0;
+  color: #888;
+  font-size: var(--font-base);
+}
+
+.loading-texto {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
 
      #menu-overlay {
        display: none;
