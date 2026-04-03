@@ -861,7 +861,7 @@ https://wa.me/${item.whatsapp}`;
   // 🗑 Excluir
   if (window.podeExcluir) {
     criarBotao(
-      excluindoAnuncio ? "bi bi-arrow-repeat" : "bi bi-trash",
+      excluindoAnuncio ? "bi bi-arrow-repeat icone-girando" : "bi bi-trash",
       excluindoAnuncio ? "Excluindo..." : "Excluir",
       () => {
         if (!excluindoAnuncio) {
