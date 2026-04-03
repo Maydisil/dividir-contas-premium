@@ -474,10 +474,10 @@ button:active,
 
 /* 🍩 Spinner moderno */
 .spinner {
-  width: 1.8rem;
-  height: 1.8rem;
-  border: 0.2rem solid rgba(255, 255, 255, 0.2);
-  border-top: 0.2rem solid #fff;
+  width: 2.6rem;
+  height: 2.6rem;
+  border: 0.25rem solid rgba(0, 0, 0, 0.15);
+  border-top: 0.25rem solid #333;
   border-radius: 50%;
   animation: girar 0.8s linear infinite;
 }
