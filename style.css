@@ -346,19 +346,28 @@ backdrop-filter: blur(2px);
        min-width: 0;
      }
 
-     .info .titulo {
+.info .titulo {
        font-family: 'Barlow Condensed', sans-serif;
        font-weight: 700;
        letter-spacing: -0.2px;
        font-weight: bold;
        font-size: var(--font-base);
        color: #000;
-     }
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+}
 
      .info .valor {
-       color: #666;
-       margin-top: 0.25rem;
-       font-size: var(--font-small);
+font-family: 'Barlow Condensed', sans-serif;
+font-weight: 500;
+letter-spacing: -0.1px;
+color: #666;
+margin-top: 0.25rem;
+font-size: var(--font-base);
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
      }
 
  #bottomBar {
