@@ -196,6 +196,14 @@ function getUserIdentifier() {
   return getUserId().toString().trim();
 }
 
+function ehNovo(dataTexto) {
+  if (!dataTexto) return false;
+  const dataItem = new Date(dataTexto);
+  const agora = new Date();
+  const diffDias = (agora - dataItem) / (1000 * 60 * 60 * 24);
+  return diffDias <= 3;
+}
+
 function enviarFormulario(event) {
   event.preventDefault();
   const form = document.getElementById("formAnuncio");
@@ -522,12 +530,30 @@ function renderizarAnuncios(lista) {
     div.dataset.valor = item.valor || "";
     div.dataset.anunciante = item.anunciante || "";
     div.dataset.whatsapp = item.whatsapp || "";
+    // ===============================
+    // 🏷️ SEL0S (AQUI 👇)
+    // ===============================
+    let selos = "";
+    if (ehNovo(item.data)) {
+      selos += `<span class="selo novo">🔥</span>`;
+    }
+    if (item.streamingExtra) {
+      selos += `<span class="selo extra">➕</span>`;
+    }
+    if (item.oferta) {
+      selos += `<span class="selo oferta">⚡</span>`;
+    }
+    // ===============================
+    // 🧱 HTML
+    // ===============================
     div.innerHTML = `
       <img class="logo" src="${item.logo}" alt="Logo">
       <div class="info">
         <div class="titulo">${item.streaming}</div>
         <div class="valor">${item.valor}</div>
-        <div class="anunciante" style="display:none;">${item.anunciante}</div>
+      </div>
+      <div class="selos">
+        ${selos}
       </div>
     `;
     div.onclick = () => mostrarDetalhes(item);
@@ -939,14 +965,16 @@ function filtrarAnuncios() {
   anuncios.forEach(el => {
     const titulo = el.querySelector(".titulo").textContent.toLowerCase();
     const valor = el.querySelector(".valor").textContent.toLowerCase();
+    const streamingExtra = (el.dataset.streamingExtra || "").toLowerCase();
     const anuncianteOriginal = el.dataset.anunciante;
     const anunciante = anuncianteOriginal
       .replace(/^@/, "")
       .toLowerCase();
     const mostrar =
-      titulo.includes(termo) ||
-      valor.includes(termo) ||
-      anunciante.includes(termo);
+  titulo.includes(termo) ||
+  valor.includes(termo) ||
+  anunciante.includes(termo) ||
+  streamingExtra.includes(termo);
     el.style.display = mostrar ? "flex" : "none";
     if (mostrar) encontrou = true;
     if (termo && anunciante === termo.replace(/^@/, "")) {
