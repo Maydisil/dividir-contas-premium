@@ -535,13 +535,13 @@ function renderizarAnuncios(lista) {
     // ===============================
     let selos = "";
     if (ehNovo(item.data)) {
-      selos += `<span class="selo novo">🔥</span>`;
+      selos += `<span class="selo novo">✨</span>`;
     }
     if (item.streamingExtra) {
       selos += `<span class="selo extra">➕</span>`;
     }
     if (item.oferta) {
-      selos += `<span class="selo oferta">⚡</span>`;
+      selos += `<span class="selo oferta">🔥</span>`;
     }
     // ===============================
     // 🧱 HTML
