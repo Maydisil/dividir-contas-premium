@@ -198,10 +198,14 @@ function getUserIdentifier() {
 
 function ehNovo(dataTexto) {
   if (!dataTexto) return false;
-  const dataItem = new Date(dataTexto);
-  const agora = new Date();
-  const diffDias = (agora - dataItem) / (1000 * 60 * 60 * 24);
-  return diffDias <= 3;
+  const [dia, mes, ano] = dataTexto.split("/").map(Number);
+  const dataItem = new Date(ano, mes - 1, dia);
+  const hoje = new Date();
+  // 🔥 zera horário (muito importante)
+  dataItem.setHours(0,0,0,0);
+  hoje.setHours(0,0,0,0);
+  const diffDias = (hoje - dataItem) / (1000 * 60 * 60 * 24);
+  return diffDias >= 0 && diffDias <= 3;
 }
 
 function enviarFormulario(event) {
