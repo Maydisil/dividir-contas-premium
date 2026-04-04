@@ -294,18 +294,18 @@ backdrop-filter: blur(2px);
 
 /* cores */
 .selo.novo {
-  background: #e3f2fd;
-  color: #1976d2;
+  background: #2196F3;
+  color: #ffffff;
 }
 
 .selo.extra {
-  background: #fff3e0;
-  color: #f57c00;
+  background: #4CAF50;
+  color: #ffffff;
 }
 
 .selo.oferta {
-  background: #e8f5e9;
-  color: #2e7d32;
+  background: #1C1C1C;
+  color: #ffffff;
 }
 
      .lista-anuncios {
