@@ -217,19 +217,21 @@ function enviarFormulario(event) {
   btnEnviar.textContent = "Enviando...";
   btnCancelar.disabled = true;
   const dados = Object.fromEntries(new FormData(form).entries());
+  // 🧹 remove campos vazios
   Object.keys(dados).forEach(chave => {
     if (dados[chave].trim() === "") {
       delete dados[chave];
     }
   });
+  // ➕ extras
   const selecionados = Array.from(
     document.querySelectorAll('input[name="extra"]:checked')
   ).map(input => input.value);
   dados.extra = selecionados.join(", ");
   const token = localStorage.getItem("token");
-  // 🚨 SEM TOKEN = FORÇA LOGIN
+  // 🚨 sem token
   if (!token) {
-    alert("Sessão inválida. Faça login novamente.");
+    mostrarToast("Sessão inválida. Faça login.");
     limparSessao();
     mostrarTelaLogin();
     return;
@@ -242,19 +244,24 @@ function enviarFormulario(event) {
   fetch(`${SCRIPT_SITE}?${params}`)
     .then(res => res.text())
     .then(msg => {
-      // 🚨 TOKEN INVÁLIDO NO SERVIDOR
+      // 🚨 sessão inválida no servidor
       if (msg.includes("Sessão inválida")) {
-        alert("Sessão expirou. Faça login novamente.");
+        mostrarToast("Sessão expirou. Faça login.");
         limparSessao();
         mostrarTelaLogin();
         return;
       }
-      alert(msg);
+      // ✅ sucesso (UX melhorada)
+      mostrarToast("Anúncio enviado!");
       form.reset();
-      voltarParaLista(true);
+      voltarParaLista();
+      // 🔄 atualiza depois (sem travar usuário)
+      setTimeout(() => {
+        carregarAnuncios();
+      }, 5000);
     })
     .catch(() => {
-      alert("Erro ao enviar o formulário.");
+      mostrarToast("Erro ao enviar o formulário.");
     })
     .finally(() => {
       btnEnviar.disabled = false;
