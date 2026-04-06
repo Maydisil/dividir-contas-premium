@@ -251,14 +251,11 @@ function enviarFormulario(event) {
         mostrarTelaLogin();
         return;
       }
-      // ✅ sucesso (UX melhorada)
+// ✅ sucesso (UX melhorada)
       mostrarToast("Anúncio enviado!");
       form.reset();
       voltarParaLista();
-      // 🔄 atualiza depois (sem travar usuário)
-      setTimeout(() => {
-        carregarAnuncios();
-      }, 5000);
+      carregarAnuncios();
     })
     .catch(() => {
       mostrarToast("Erro ao enviar o formulário.");
