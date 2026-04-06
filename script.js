@@ -217,7 +217,7 @@ function enviarFormulario(event) {
   btnEnviar.textContent = "Enviando...";
   btnCancelar.disabled = true;
   const dados = Object.fromEntries(new FormData(form).entries());
-  // 🧹 remove campos vazios
+  // 🧹 remove vazios
   Object.keys(dados).forEach(chave => {
     if (dados[chave].trim() === "") {
       delete dados[chave];
@@ -244,18 +244,25 @@ function enviarFormulario(event) {
   fetch(`${SCRIPT_SITE}?${params}`)
     .then(res => res.text())
     .then(msg => {
-      // 🚨 sessão inválida no servidor
+      // 🚨 sessão inválida
       if (msg.includes("Sessão inválida")) {
         mostrarToast("Sessão expirou. Faça login.");
         limparSessao();
         mostrarTelaLogin();
         return;
       }
-// ✅ sucesso (UX melhorada)
+      // 🔥 pega linha retornada
+      const [status, linha] = msg.split("|");
+      // ✅ UX rápida
       mostrarToast("Anúncio enviado!");
       form.reset();
       voltarParaLista();
-      carregarAnuncios();
+      // 🚀 dispara bot SEM travar UI
+      fetch(`${SCRIPT_SITE}?funcao=dispararBot&linha=${linha}`);
+      // 🔄 atualiza depois (tempo do Telegram)
+      setTimeout(() => {
+        carregarAnuncios();
+      }, 8000);
     })
     .catch(() => {
       mostrarToast("Erro ao enviar o formulário.");
