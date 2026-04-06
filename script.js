@@ -251,15 +251,19 @@ function enviarFormulario(event) {
         mostrarTelaLogin();
         return;
       }
-      // 🔥 pega linha retornada
-      const [status, linha] = msg.split("|");
-      // ✅ UX rápida
+      // ❌ erro do backend (qualquer coisa diferente de OK|)
+      if (!msg.startsWith("OK|")) {
+        mostrarToast(msg);
+        return;
+      }
+      // ✅ sucesso real
+      const [, linha] = msg.split("|");
       mostrarToast("Anúncio enviado!");
       form.reset();
       voltarParaLista();
-      // 🚀 dispara bot SEM travar UI
+      // 🚀 dispara bot sem travar UI
       fetch(`${SCRIPT_SITE}?funcao=dispararBot&linha=${linha}`);
-      // 🔄 atualiza depois (tempo do Telegram)
+      // 🔄 atualiza depois
       setTimeout(() => {
         carregarAnuncios();
       }, 8000);
