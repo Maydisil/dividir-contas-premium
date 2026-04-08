@@ -18,7 +18,7 @@ let startX = 0;
 let endX = 0;
 
 const opcoesExtra = [
-  "Adrenalina Pura", "Apple TV+", "Belas Artes", "Box Brasil Play", "Canais ao Vivo", "Canais Globo", "Cindie", "Cine Brasil Já", "Combate",  "Crunchyroll", "CurtaOn", "Darkflix", "Disney+", "Eduk", "Edye", "ESPN", "F1 TV", "Gemini", "GloboPlay", "HBO Max", "Looke", "Lumine", "MGM+",  "MUBI", "NBA", "Netflix", "Nosso Futebol+", "NotebookLM", "Paramount+", "Premiere", "Prime Video", "Reaw Play", "Reserva Imovision", "Sexy Hot", "Sexy Play", "SportyNet+", "Sony One", "Spotify", "Telecine", "UFC Fight Pass", "Universal+", "VEO3", "YouTube"
+  "Adrenalina Pura", "Apple TV+", "Belas Artes", "Box Brasil Play", "Canais ao Vivo", "Canais Globo", "Cindie", "Cine Brasil Já", "Combate",  "Crunchyroll", "CurtaOn", "Darkflix", "Disney+", "Eduk", "Edye", "ESPN", "F1 TV", "Gemini", "GloboPlay", "HBO Max", "Looke", "Lumine", "MGM+",  "MUBI", "NBA", "Netflix", "Nosso Futebol+", "NotebookLM", "Paramount+", "Premiere", "Prime Video", "Reaw Play", "Reserva Imovision", "Sexy Hot", "Sexy Play", "Sony One", "Spotify", "SportyNet+", "Telecine", "UFC Fight Pass", "Universal+", "VEO3", "YouTube"
 ];
 
 function atualizarLikeVisual(idMensagem) {
@@ -892,7 +892,7 @@ if (tipo === "detalhes" && window.itemAtual) {
 `🖥 *${item.streaming}*${item.streamingExtra ? `\n➕ ${item.streamingExtra}` : ""}
 💵 ${item.valor}
 📌 ${item.vagas}
-🔐 ${item.login}${item.oferta ? `\n⏰ ${item.oferta}` : ""}
+🔐 ${item.login}${item.oferta ? `\n⏰ OFERTA - ${item.oferta}` : ""}
 -------------------------------------------
 👇 *VER ANÚNCIO COMPLETO*
 ${link}
@@ -964,7 +964,7 @@ function compartilharUsuarioWhatsapp() {
     }
   });
   texto += `\n-------------------------------------------\n`;
-  texto += `👤 *MEUS ANÚNCIOS*\nhttps://tinyurl.com/divcp01?pesquisar=${usuarioSemArroba}\n\n`;
+  texto += `👤 *MEUS ANÚNCIOS*\nhttps://tinyurl.com/divcp01?p=${usuarioSemArroba}\n\n`;
   texto += `📲 *CONTATO POR TELEGRAM*\nhttps://t.me/${usuarioSemArroba}`;
   if (whatsappUsuario) {
     texto += `\n\n📲 *CONTATO POR WHATSAPP*\nhttps://wa.me/${whatsappUsuario}`;
@@ -1143,3 +1143,4 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 });
+
