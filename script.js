@@ -889,21 +889,19 @@ if (tipo === "detalhes" && window.itemAtual) {
       `https://tinyurl.com/divcp01?a=${item.postagem}`;
 
     let mensagem =
-`🖥 *${item.streaming}*${item.streamingExtra ? `\n➕ ${item.streamingExtra}` : ""}
+`👤 *${item.anunciante}*
+${link}
+-------------------------------------------
+🖥 *${item.streaming}*${item.streamingExtra ? `\n➕ ${item.streamingExtra}` : ""}
 💵 ${item.valor}
 📌 ${item.vagas}
 🔐 ${item.login}${item.oferta ? `\n⏰ OFERTA - ${item.oferta}` : ""}
 -------------------------------------------
-👇 *VER ANÚNCIO COMPLETO*
-${link}
-👤 *MEUS ANÚNCIOS*
-https://tinyurl.com/divcp01?p=${item.anunciante.replace(/^@/, "")}
-📲 *CONTATO POR TELEGRAM*
-https://t.me/${item.anunciante.replace(/^@/, "")}`;
+*ENTRAR EM CONTATO*
+📲 https://t.me/${item.anunciante.replace(/^@/, "")}`;
     if (item.whatsapp) {
       mensagem += `
-📲 *CONTATO POR WHATSAPP*
-https://wa.me/${item.whatsapp}`;
+📲 https://wa.me/${item.whatsapp}`;
     }
     const url =      `https://api.whatsapp.com/send?text=${encodeURIComponent(mensagem)}`;
     window.open(url, "_blank");
@@ -945,8 +943,15 @@ function compartilharUsuarioWhatsapp() {
   let texto = "";
   let whatsappUsuario = "";
   const usuarioSemArroba = anunciante.replace("@", "");
-  anuncios.forEach((anuncio, index) => {
-    if (anuncio.dataset.anunciante !== anunciante) return;
+  // CABEÇALHO
+  texto += `👤 *${anunciante}*\n`;
+  texto += `https://tinyurl.com/divcp01?p=${usuarioSemArroba}\n`;
+  texto += `-------------------------------------------\n`;
+  let contador = 0;
+  const anunciosFiltrados = Array.from(anuncios).filter(
+    (anuncio) => anuncio.dataset.anunciante === anunciante
+  );
+  anunciosFiltrados.forEach((anuncio, index) => {
     const streaming = anuncio.dataset.streaming;
     const streamingExtra = anuncio.dataset.streamingExtra;
     const valor = anuncio.dataset.valor;
@@ -956,18 +961,20 @@ function compartilharUsuarioWhatsapp() {
       texto += `\n➕ ${streamingExtra}`;
     }
     texto += `\n💵 ${valor}`;
-    if (index < anuncios.length - 1) {
+    if (index < anunciosFiltrados.length - 1) {
       texto += `\n-------------------------------------------\n`;
     }
     if (!whatsappUsuario && anuncio.dataset.whatsapp) {
       whatsappUsuario = anuncio.dataset.whatsapp;
     }
+    contador++;
   });
+  // RODAPÉ CONTATO
   texto += `\n-------------------------------------------\n`;
-  texto += `👤 *MEUS ANÚNCIOS*\nhttps://tinyurl.com/divcp01?p=${usuarioSemArroba}\n\n`;
-  texto += `📲 *CONTATO POR TELEGRAM*\nhttps://t.me/${usuarioSemArroba}`;
+  texto += `*ENTRAR EM CONTATO*\n`;
+  texto += `📲 https://t.me/${usuarioSemArroba}`;
   if (whatsappUsuario) {
-    texto += `\n\n📲 *CONTATO POR WHATSAPP*\nhttps://wa.me/${whatsappUsuario}`;
+    texto += `\n📲 https://wa.me/${whatsappUsuario}`;
   }
   const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(texto)}`;
   window.open(url, "_blank");
@@ -1143,4 +1150,5 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 });
+
 
