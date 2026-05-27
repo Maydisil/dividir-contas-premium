@@ -1,164 +1,312 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <base target="_top">
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
+  <title>Dividir Contas Premium</title>
   <link rel="icon" href="https://i.imgur.com/NHZnler.png" type="image/png">
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-<link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="top-bar">
-  <div class="top-left">
-    <button id="btnVoltar" style="display:none;">
-      <i class="bi bi-arrow-left"></i>
+  <!-- TOPO -->
+  <header class="top-bar">
+    <div class="top-left">
+      <button id="btnVoltar" class="hidden">
+        <i class="bi bi-arrow-left"></i>
+      </button>
+    </div>
+    <img src="https://i.imgur.com/Mjhiicp.png" class="logo-site" alt="Logo site">
+    <div class="search-container" id="searchContainer">
+      <span class="icon">
+        <i class="bi bi-search"></i>
+      </span>
+      <input type="text" id="pesquisa" placeholder="Pesquisar...">
+    </div>
+    <div class="top-title" id="topTitle"></div>
+    <div class="menu-icon">
+      <i class="bi bi-list"></i>
+    </div>
+  </header>
+  <!-- APP -->
+  <main id="app">
+    <!-- ========================= -->
+    <!-- TELA LISTA -->
+    <!-- ========================= -->
+    <section id="anuncios" class="tela ativa">
+      <div class="lista-anuncios" id="listaAnuncios"></div>
+    </section>
+    <!-- ========================= -->
+    <!-- TELA DETALHES -->
+    <!-- ========================= -->
+    <section id="detalhes" class="tela">
+      <div id="conteudoDetalhes"></div>
+    </section>
+    <!-- ========================= -->
+    <!-- TELA LOGIN -->
+    <!-- ========================= -->
+    <section id="loginBox" class="tela">
+      <div id="conteudoLogin" class="login-box">
+        <h2 class="login-title">
+          FAZER LOGIN
+        </h2>
+        <div class="input-group">
+          <label>
+            Nome de Usuário
+          </label>
+          <div class="input-icon">
+            <i class="bi bi-person"></i>
+            <input type="text" id="loginUsuario" placeholder="@nome" oninput="formatarUsuario(this)" required>
+          </div>
+        </div>
+        <div class="input-group">
+          <label>
+            Senha
+          </label>
+          <div class="input-icon">
+            <i class="bi bi-lock"></i>
+            <input type="password" id="loginSenha" maxlength="4" inputmode="numeric" pattern="\d{4}" placeholder="****" required>
+          </div>
+        </div>
+        <p id="loginErro" class="login-erro"></p>
+        <button id="btnEntrar" class="btn-principal" onclick="fazerLogin()">
+          ENTRAR
+        </button>
+        <button class="btn-secundario" onclick="window.open('https://t.me/dividir_contas_premium/23511','_blank')">
+          REGISTRAR
+        </button>
+        <p class="login-link">
+          <a href="https://t.me/dividir_contas_premium/23511" target="_blank">
+            Esqueceu a senha?
+          </a>
+        </p>
+      </div>
+    </section>
+<!-- ========================= -->
+<!-- TELA DIVISÕES -->
+<!-- ========================= -->
+<section id="divisoes" class="tela">
+  <!-- TOPO -->
+  <div class="divisoes-topo">
+    <button type="button" class="mes-btn" id="mesAnterior">
+      <i class="bi bi-chevron-left"></i>
+    </button>
+    <div class="mes-centro">
+      <div class="mes-titulo" id="mesTitulo">
+        CARREGANDO…
+      </div>
+      <div class="mes-resumo">
+  <div class="resumo-item recebido" id="valorRecebido"></div>
+  <div class="resumo-item pendente" id="valorPendente"></div>
+    </div>
+    </div>
+    <button type="button" class="mes-btn" id="mesProximo">
+      <i class="bi bi-chevron-right"></i>
     </button>
   </div>
-  <img src="https://drive.google.com/thumbnail?id=1eVqeCg4y-NUEMc80LpF41smGc9pmHPKt&sz=w500" class="logo-site" alt="Logo do site">
-  <div class="search-container" id="searchContainer">
-    <span class="icon"><i class="bi bi-search"></i></span>
-    <input type="text" id="pesquisa" placeholder="Pesquisar...">
-  </div>
-  <div class="top-title" id="topTitle" style="display:none;"></div>
-  <div class="menu-icon">
-    <i class="bi bi-list"></i>
+  <!-- LISTA -->
+  <div class="lista-divisoes" id="listaDivisoes"></div>
+</section>
+<!-- ========================= -->
+<!-- MODAL DIVISÃO -->
+<!-- ========================= -->
+<div id="modalDivisao" class="modal-divisao hidden">
+  <div class="modal-overlay"></div>
+  <div class="modal-divisao-content">
+    <h3>
+      NOVA DIVISÃO
+    </h3>
+    <form id="formDivisao" autocomplete="off" onsubmit="salvarDivisao(event)">
+    <input type="hidden" id="divId" name="id">
+      <label>
+        👤 Pessoa
+        <input type="text" id="divPessoa" name="pessoa" required>
+      </label>
+      <label>
+        🖥️ Streaming
+        <select id="divStreaming" name="streaming" required>
+        </select>
+      </label>
+      <label>
+        🔐 Login:
+        <select id="divLogin" name="login" required>
+          <option value="Login">
+            🔑 Login e Senha
+          </option>
+          <option value="Convite">
+            📨 Convite por E-mail
+          </option>
+          <option value="Ativar">
+            📺 Ativar por Código
+          </option>
+        </select>
+      </label>
+      <label>
+        💵 Valor:
+        <input type="number" id="divValor" name="valor" min="0" step="0.01" inputmode="decimal" required>
+      </label>
+      <label>
+        📆 Dia:
+        <input type="number" id="divDia" name="dia" min="1" max="31" required>
+      </label>
+      <!-- BOTÕES -->
+      <div class="modal-botoes">
+        <button type="submit">
+          Salvar
+        </button>
+        <button type="button" id="cancelarDivisao">
+          Cancelar
+        </button>
+      </div>
+    </form>
   </div>
 </div>
-
-  <div class="lista-anuncios" id="anuncios"></div>
-  <div id="detalhes" style="display: none; padding: 20px;"></div>
-
-<div id="loginBox" class="form-container login-box" style="display:none;">
-  <h2 class="login-title">FAZER LOGIN</h2>
-  <div class="input-group">
-    <label>Nome de Usuário</label>
-    <div class="input-icon">
-      <i class="bi bi-person"></i>
-      <input  type="text"  id="loginUsuario" placeholder="@nome"  oninput="formatarUsuario(this)"  required>
+    <!-- ========================= -->
+    <!-- TELA FORMULÁRIO -->
+    <!-- ========================= -->
+    <section id="formulario" class="tela">
+      <div id="conteudoFormulario">
+        <h3>CRIAR ANÚNCIO</h3>
+        <form id="formAnuncio" onsubmit="enviarFormulario(event)">
+          <label>
+            Nome de Usuário
+            <input type="text" id="usuario" name="usuario" readonly required>
+          </label>
+          <label>
+            Qual o Streaming
+            <select name="streaming" id="selectStreaming" required></select>
+          </label>
+          <!-- EXTRAS -->
+          <div class="extras-area">
+            <label>
+              Assinatura Extra (opcional)
+            </label>
+            <div class="extras-container">
+              <div class="toggle-extras" onclick="toggleExtras()">
+                Mostrar extras ▼
+              </div>
+              <div id="containerExtras" class="checkbox-list hidden"></div>
+            </div>
+          </div>
+          <label>
+            Qual o Valor
+            <input type="number" name="valor" placeholder="Ex: 12.50" min="0" step="0.25" required>
+          </label>
+          <label>
+            Forma de Pagamento
+            <select name="pagamento" required>
+              <option>KOTAS</option>
+              <option>PIX - Mensal</option>
+              <option>PIX - Bimestral</option>
+              <option>PIX - Trimestral</option>
+              <option>PIX - Semestral</option>
+              <option>PIX - Anual</option>
+            </select>
+          </label>
+          <label>
+            Link do Grupo Kotas (opcional)
+            <input type="number" name="kotas" id="campoKotas" placeholder="Últimos 6 dígitos do link" min="0" step="1"  oninput="limitarKotas(this)">
+          </label>
+          <label>
+            Status da Conta
+            <select name="status" required>
+              <option>Assinado</option>
+              <option>Aguardando</option>
+              <option>Reservando</option>
+            </select>
+          </label>
+          <label>
+            Número de Vagas
+            <select name="vagas" required>
+              <option>1 Vaga</option>
+              <option>2 Vagas</option>
+              <option>3 Vagas</option>
+              <option>4 Vagas</option>
+              <option>5 Vagas</option>
+            </select>
+          </label>
+          <label>
+            Tipo de Acesso
+            <select name="acesso" required>
+              <option>Login e Senha</option>
+              <option>Ativar por Código</option>
+              <option>Convite por E-mail</option>
+            </select>
+          </label>
+          <label>
+            Número do WhatsApp
+            <input type="tel" name="whatsapp" id="whatsappInput" placeholder="Ex: 55XXXXXXXXXXX" pattern="\d{13}" maxlength="13" oninput="formatarWhatsapp(this)" required>
+          </label>
+          <label>
+            Tempo da Promoção (opcional)
+            <select name="oferta">
+              <option value="">Selecione</option>
+              <option value="1 Mês">1 Mês</option>
+              <option value="2 Meses">2 Meses</option>
+              <option value="3 Meses">3 Meses</option>
+              <option value="4 Meses">4 Meses</option>
+            </select>
+          </label>
+          <!-- BOTÕES -->
+<div class="botoes-formulario">
+  <button type="submit">ENVIAR</button>
+  <button type="button" onclick="voltarParaLista()">CANCELAR</button>
+</div>
+        </form>
+      </div>
+    </section>
+  </main>
+  <!-- MENU LATERAL -->
+  <aside id="painel-menu" class="painel-menu">
+    <div class="painel-item">
+      <i class="bi bi-question-circle"></i>
+      <a href="https://maydisil.github.io/perguntas-frequentes/" target="_blank">
+        Perguntas Frequentes
+      </a>
     </div>
-  </div>
-  <div class="input-group">
-    <label>Senha</label>
-    <div class="input-icon">
-      <i class="bi bi-lock"></i>
-      <input type="password"
-             id="loginSenha"
-             maxlength="4"
-             inputmode="numeric"
-             pattern="\d{4}"
-             placeholder="****"
-             required>
+    <div class="painel-item">
+      <i class="bi bi-tools"></i>
+      <a href="https://t.me/+EFx8SakIL5dkZTlh" target="_blank">
+        Assistência Técnica
+      </a>
     </div>
-  </div>
-  <p id="loginErro" class="login-erro"></p>
-  <button id="btnEntrar" class="btn-principal" onclick="fazerLogin()">
-    ENTRAR
-  </button>
-  <button class="btn-secundario"
-  onclick="window.open('https://t.me/dividir_contas_premium/23511','_blank')">
-    REGISTRAR
-  </button>
-  <p class="login-link">
-    <a href="https://t.me/dividir_contas_premium/23511" target="_blank">
-      Esqueceu a senha?
-    </a>
-  </p>
-</div>
-
-<div id="formulario" style="display:none; padding: 1rem;">
-  <h3>CRIAR ANÚNCIO</h3>
-  <form id="formAnuncio" onsubmit="enviarFormulario(event)">
-	<label>Nome de Usuário: 
-  <input type="text" id="usuario" name="usuario" required readonly>
-</label><br>
-	<label>Qual o Streaming:
-  	<select name="streaming" id="selectStreaming" required></select>
-	</label><br>
-<label>Assinatura Extra (opcional):</label>
-<div class="extras-container">
-  <div class="toggle-extras" onclick="toggleExtras()">Mostrar extras ▼</div>
-  <div id="containerExtras" class="checkbox-list hidden"></div>
-</div>
-	<label>Qual o Valor: <input type="number" placeholder="Ex: 12,50" min="0" step="0.25" name="valor" required></label><br>
-	<label>Forma de Pagamento:
-  	<select name="pagamento" required>
-    	<option>KOTAS</option>
-    	<option>PIX - Mensal</option>
-    	<option>PIX - Bimestral</option>
-    	<option>PIX - Trimestral</option>
-    	<option>PIX - Semestral</option>
-    	<option>PIX - Anual</option>
-  	</select>
-	</label><br>
-<label>Link do Grupo Kotas (opcional): 
-  <input type="number" placeholder="Últimos 6 dígitos do link" name="kotas" id="campoKotas" min="0" step="1" pattern="\d*" oninput="limitarKotas(this)">
-</label><br>
-	<label>Status da Conta:
-  	<select name="status" required>
-    	<option>Assinado</option>
-    	<option>Aguardando</option>
-    	<option>Reservando</option>
-  	</select>
-	</label><br>
-	<label>Número de Vagas:
-  	<select name="vagas" required>
-    	<option>1 Vaga</option>
-    	<option>2 Vagas</option>
-    	<option>3 Vagas</option>
-    	<option>4 Vagas</option>
-    	<option>5 Vagas</option>
-  	</select>
-	</label><br>
-	<label>Tipo de Acesso:
-  	<select name="acesso" required>
-    	<option>Login e Senha</option>
-         <option>Ativar por Código</option>
-    	<option>Convite por E-mail</option>
-  	</select>
-	</label><br>
-	<label>Número do WhatsApp: 
-  <input type="tel" name="whatsapp" id="whatsappInput" placeholder="Ex: 55XXXXXXXXXXX" pattern="\d{13}" maxlength="13" required oninput="formatarWhatsapp(this)">
-</label><br>
-<label>Tempo da Promoção (opcional):
-  <select name="oferta">
-    <option value="">Selecione</option>
-    <option value="1 Mês">1 Mês</option>
-    <option value="2 Meses">2 Meses</option>
-    <option value="3 Meses">3 Meses</option>
-    <option value="4 Meses">4 Meses</option>
-  </select>
-</label><br><br>
-	<button type="submit">Enviar</button>
-	<button type="button" onclick="voltarParaLista()">Cancelar</button>
-  </form>
-</div>
-  <div id="painel-menu" class="painel-menu">
-	<div class="painel-item">
-  	<i class="bi bi-question-circle"></i> <a href="https://maydisil.github.io/perguntas-frequentes/" target="_blank">Perguntas Frequentes</a>
-	</div>
-	<div class="painel-item">
-  	<i class="bi bi-tools"></i> <a href="https://t.me/+EFx8SakIL5dkZTlh" target="_blank">Assistência Tecnica</a>
-	</div>
-	<div class="painel-item">
-  	<i class="bi bi-people"></i> <a href="https://t.me/dividir_contas_premium" target="_blank">Visitar o Grupo</a>
-	</div>
-	<div class="painel-item">
-  	<i class="bi bi-check-square"></i> <a href="https://t.me/dividir_contas_premium/9304" target="_blank">Regras do Grupo</a>
-	</div>
-	<div class="painel-item">
-  	<i class="bi bi-person-add"></i> <a href="https://t.me/dividir_contas_premium/23511" target="_blank">Fazer Cadastro</a>
-	</div>
-	<div class="painel-item">
-  	<i class="bi bi-share"></i> <a href="https://api.whatsapp.com/send?text=%2AANUNCIE%20E%20COMPARTILHE%2A%0A_Seu%20Streaming%2C%20Nosso%20Espa%C3%A7o_%0A%0A%2ADIVIDIR%20CONTAS%20PREMIUM%2A%0Ahttps%3A%2F%2Ft.me%2Fdividir_contas_premium" target="_blank">Compartilhar Grupo</a>
-	</div>
-<div class="painel-item" id="menuSair" onclick="sair()" style="display:none;">
-  <i class="bi bi-box-arrow-right"></i> Sair
-</div>
-  </div>
-<div id="menu-overlay"></div>
-<div id="bottomBar"></div>
-<script src="script.js"></script>
+    <div class="painel-item">
+      <i class="bi bi-people"></i>
+      <a href="https://t.me/dividir_contas_premium" target="_blank">
+        Visitar o Grupo
+      </a>
+    </div>
+    <div class="painel-item">
+      <i class="bi bi-check-square"></i>
+      <a href="https://t.me/dividir_contas_premium/9304" target="_blank">
+        Regras do Grupo
+      </a>
+    </div>
+    <div class="painel-item">
+      <i class="bi bi-person-add"></i>
+      <a href="https://t.me/dividir_contas_premium/23511" target="_blank">
+        Fazer Cadastro
+      </a>
+    </div>
+    <div class="painel-item">
+      <i class="bi bi-share"></i>
+      <a href="https://api.whatsapp.com/send?text=%2AANUNCIE%20E%20COMPARTILHE%2A%0A_Seu%20Streaming%2C%20Nosso%20Espa%C3%A7o_%0A%0A%2ADIVIDIR%20CONTAS%20PREMIUM%2A%0Ahttps%3A%2F%2Ft.me%2Fdividir_contas_premium" target="_blank">
+        Compartilhar Grupo
+      </a>
+    </div>
+    <div class="painel-item" id="menuSair" onclick="sair()" style="display:none;">
+      <i class="bi bi-box-arrow-right"></i>
+      Sair
+    </div>
+  </aside>
+  <!-- OVERLAY -->
+  <div id="menu-overlay"></div>
+  <!-- BARRA INFERIOR -->
+  <div id="bottomBar"></div>
+  <!-- SCRIPT -->
+  <script src="script.js"></script>
 </body>
 </html>
