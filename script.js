@@ -21,6 +21,15 @@ const opcoesExtra = [
   "Adrenalina Pura", "Apple TV+", "Belas Artes", "Box Brasil Play", "Canais ao Vivo", "Canais Globo", "Cindie", "Cine Brasil Já", "Combate",  "Crunchyroll", "CurtaOn", "Darkflix", "Disney+", "Eduk", "Edye", "ESPN", "F1 TV", "Gemini", "GloboPlay", "HBO Max", "Looke", "Lumine", "MGM+",  "MUBI", "NBA", "Netflix", "Nosso Futebol+", "NotebookLM", "Paramount+", "Premiere", "Prime Video", "Reaw Play", "Reserva Imovision", "Sexy Hot", "Sexy Play", "Sony One", "Spotify", "SportyNet+", "Telecine", "UFC Fight Pass", "Universal+", "VEO3", "YouTube"
 ];
 
+function abrirTela(id){
+  document
+    .querySelectorAll('.tela')
+    .forEach(t => t.classList.remove('ativa'));
+  document
+    .getElementById(id)
+    .classList.add('ativa');
+}
+
 function atualizarLikeVisual(idMensagem) {
   if (!window.itemAtual) return;
   if (window.itemAtual.postagem != idMensagem) return;
@@ -281,7 +290,7 @@ function enviarFormulario(event) {
 async function carregarAnuncios() {
   if (carregandoAnuncios) return;
   carregandoAnuncios = true;
-  const container = document.getElementById("anuncios");
+  const container = document.getElementById("listaAnuncios");
   // 🔥 limpa aviso de busca (se existir)
   const aviso = document.getElementById("semResultados");
   if (aviso) aviso.remove();
@@ -315,8 +324,7 @@ async function carregarAnuncios() {
   }
 });
     modoLista();
-    esconderTodasTelas();
-    container.style.display = "flex";
+    abrirTela("anuncios");
     renderizarAnuncios(anuncios);
   } catch (erro) {
     console.error("Erro ao carregar anúncios:", erro);
@@ -451,11 +459,9 @@ function ativarBloqueioLogin() {
 }
 
 function mostrarTelaLogin() {
-  modoLogin();
-  esconderTodasTelas();
-  const login = document.getElementById("loginBox");
-  if (login) login.style.display = "block";
-  renderizarBottomBar("login");
+modoLogin();
+abrirTela("loginBox");
+renderizarBottomBar("login");
 }
 
 async function mostrarFormulario() {
@@ -466,8 +472,7 @@ async function mostrarFormulario() {
     return;
   }
   modoFormulario();
-  esconderTodasTelas();
-  document.getElementById("formulario").style.display = "block";
+  abrirTela("formulario");
   const campoUsuario = document.getElementById("usuario");
   if (campoUsuario) {
     campoUsuario.value = sessao.nome;
@@ -516,6 +521,16 @@ fetch(`${SCRIPT_SITE}?funcao=buscarWhatsapp&nome=${encodeURIComponent(sessao.nom
   renderizarBottomBar("formulario");
 }
 
+function formatarUsuario(input) {
+  let valor = input.value
+    .replace(/\s/g, "") // remove espaços
+    .replace(/@+/g, ""); // remove @ duplicados
+  if (valor) {
+    valor = "@" + valor;
+  }
+  input.value = valor;
+}
+
 function formatarWhatsapp(input) {
   // Remove tudo que não for número
   let valor = input.value.replace(/\D/g, '');
@@ -537,7 +552,7 @@ function limitarKotas(input) {
 }
 
 function renderizarAnuncios(lista) {
-  const container = document.getElementById("anuncios");
+  const container = document.getElementById("listaAnuncios");
   container.innerHTML = "";
   lista.forEach((item) => {
     const div = document.createElement("div");
@@ -612,34 +627,60 @@ function getUserId() {
   return userId;
 }
 
+function atualizarTopo(modo, tituloTexto = "") {
+  const btnVoltar = document.getElementById("btnVoltar");
+  const search = document.getElementById("searchContainer");
+  const titulo = document.getElementById("topTitle");
+  const logo = document.querySelector(".logo-site");
+  // RESET
+  btnVoltar?.classList.add("hidden");
+  search?.classList.add("hidden");
+  titulo?.classList.add("hidden");
+  // LOGO visível por padrão
+  if (logo) logo.style.display = "block";
+  // LISTA
+if (modo === "lista") {
+  search.classList.remove("hidden");
+}
+else if (modo === "perfil") {
+  titulo.classList.remove("hidden");
+  titulo.innerText = tituloTexto;
+}
+  // OUTRAS TELAS
+  else {
+    btnVoltar?.classList.remove("hidden");
+    titulo?.classList.remove("hidden");
+    if (titulo) {
+      titulo.innerText = tituloTexto;
+    }
+    if (logo) {
+      logo.style.display = "none";
+    }
+  }
+}
+
 function modoLista() {
-  document.getElementById("btnVoltar").style.display = "none";
-  document.getElementById("searchContainer").style.display = "flex";
-  document.getElementById("topTitle").style.display = "none";
+  atualizarTopo("lista");
 }
 
 function modoDetalhes() {
-  document.getElementById("btnVoltar").style.display = "block";
-  document.getElementById("searchContainer").style.display = "none";
-  const titulo = document.getElementById("topTitle");
-  titulo.style.display = "block";
-  titulo.innerText = "DETALHES";
+  atualizarTopo("detalhes", "DETALHES");
 }
 
 function modoFormulario() {
-  document.getElementById("btnVoltar").style.display = "block";
-  document.getElementById("searchContainer").style.display = "none";
-  const titulo = document.getElementById("topTitle");
-  titulo.style.display = "block";
-  titulo.innerText = "ANUNCIAR";
+  atualizarTopo("formulario", "ANUNCIAR");
 }
 
 function modoLogin() {
-document.getElementById("btnVoltar").style.display = "block";
-document.getElementById("searchContainer").style.display = "none";
-  const titulo = document.getElementById("topTitle");
-  titulo.style.display = "block";
-  titulo.innerText = "LOGIN";
+  atualizarTopo("login", "LOGIN");
+}
+
+function modoPerfil(usuario) {
+  atualizarTopo("perfil", usuario);
+}
+
+function modoDivisoes() {
+  atualizarTopo("divisoes", "DIVISÕES");
 }
 
 function mostrarDetalhes(item) {
@@ -650,8 +691,7 @@ function mostrarDetalhes(item) {
   );
   window.listaVisivelDetalhes = anunciosVisiveis;
   modoDetalhes();
-  esconderTodasTelas();
-  document.getElementById("detalhes").style.display = "block";
+  abrirTela("detalhes");
   window.itemAtual = item;
   window.podeExcluir = false;
   const sessao = obterSessao();
@@ -693,7 +733,7 @@ function mostrarDetalhes(item) {
   // =========================
   // HTML DETALHES
   // =========================
-  document.getElementById("detalhes").innerHTML = `
+  document.getElementById("conteudoDetalhes").innerHTML = `
     <div class="detalhes-box">
       <a href="${item.linkStreaming}" target="_blank">
         <img src="https://drive.google.com/thumbnail?id=${item.logo2}&sz=w1000">
@@ -837,24 +877,66 @@ function renderizarBottomBar(tipo) {
   criarBotao("bi bi-house", "Home", () => {
     document.getElementById("pesquisa").value = "";
     filtrarAnuncios();
-    renderizarBottomBar("lista");
   });
-  // 🔐 Se NÃO estiver logado → botão LOGIN
+  // 🔴 Se NÃO estiver logado → botão LOGIN
   if (!sessao) {
     criarBotao("bi bi-box-arrow-in-right", "Login", mostrarTelaLogin);
   }
-  // 📢 Se estiver logado → botão ANUNCIAR
+  // 🟢 Se estiver logado → botão ANUNCIAR, DIVISÕES E PERFIL
   if (sessao) {
+// 📢 Anunciar
     criarBotao("bi bi-megaphone", "Anunciar", mostrarFormulario);
-    // 👤 Perfil
+ // 👥 Divisões
+  criarBotao("bi bi-people", "Divisões", abrirTelaDivisoes);
+ // 👤 Perfil
     criarBotao("bi bi-person", "Perfil", () => {
   const barra = document.getElementById("pesquisa");
   barra.value = sessao.nome.replace(/^@/, "");
   filtrarAnuncios();
-  renderizarBottomBar("lista");
 });
   }
-  // 📲 Compartilhar
+ }
+// ===============================
+// 👥 DIVISÕES
+// ===============================
+if (tipo === "divisoes") {
+  // Home
+  criarBotao("bi bi-house", "Home", voltarParaLista);
+  const sessao = obterSessao();
+  // Nova divisão
+  if (sessao) {
+    criarBotao("bi bi-plus-circle", "Novo", abrirFormularioDivisao);
+  }
+}
+// ===============================
+// 👤 PERFIL
+// ===============================
+if (tipo === "perfil") {
+  const sessao = obterSessao();
+  // HOME
+  criarBotao("bi bi-house", "Home", () => {
+    document.getElementById("pesquisa").value = "";
+    anunciantePesquisaValido = null;
+    filtrarAnuncios();
+    modoLista();
+  });
+  // LOGIN
+  if (!sessao) {
+    criarBotao(
+      "bi bi-box-arrow-in-right",
+      "Login",
+      mostrarTelaLogin
+    );
+  }
+  // PERFIL
+  if (sessao) {
+    criarBotao("bi bi-person", "Perfil", () => {
+      const barra = document.getElementById("pesquisa");
+      barra.value = sessao.nome.replace(/^@/, "");
+      filtrarAnuncios();
+    });
+  }
+  // ENVIAR
   if (anunciantePesquisaValido) {
     criarBotao("bi bi-send", "Enviar", compartilharUsuarioWhatsapp);
   }
@@ -984,7 +1066,7 @@ function filtrarAnuncios() {
   const termo = document.getElementById("pesquisa")
     .value.trim()
     .toLowerCase();
-  const container = document.getElementById("anuncios");
+  const container = document.getElementById("listaAnuncios");
   const anuncios = container.querySelectorAll(".anuncio");
   anunciantePesquisaValido = null;
   let encontrou = false;
@@ -1006,6 +1088,13 @@ function filtrarAnuncios() {
     if (termo && anunciante === termo.replace(/^@/, "")) {
       anunciantePesquisaValido = anuncianteOriginal;
     }
+if (anunciantePesquisaValido) {
+  modoPerfil(anunciantePesquisaValido);
+  renderizarBottomBar("perfil");
+} else {
+  modoLista();
+  renderizarBottomBar("lista");
+}
   });
   // ===============================
   // 🔍 SEM RESULTADO (USANDO loading)
@@ -1026,8 +1115,7 @@ function filtrarAnuncios() {
 
 async function voltarParaLista(recarregar = false) {
   modoLista();
-  esconderTodasTelas();
-  document.getElementById("anuncios").style.display = "flex";
+  abrirTela("anuncios");
   if (recarregar) {
     await carregarAnuncios();
   }
@@ -1035,13 +1123,749 @@ async function voltarParaLista(recarregar = false) {
   renderizarBottomBar("lista");
 }
 
-function esconderTodasTelas() {
-  ["anuncios", "detalhes", "formulario", "loginBox"]
-    .forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.style.display = "none";
-    });
+let divisaoEditando = null;
+let divisoesCarregadas = [];
+
+// ===============================
+// 📅 CONTROLE DE MESES
+// ===============================
+const NOMES_MESES = [
+  "janeiro",
+  "fevereiro",
+  "marco",
+  "abril",
+  "maio",
+  "junho",
+  "julho",
+  "agosto",
+  "setembro",
+  "outubro",
+  "novembro",
+  "dezembro"
+];
+
+const NOMES_MESES_UI = [
+  "JANEIRO",
+  "FEVEREIRO",
+  "MARÇO",
+  "ABRIL",
+  "MAIO",
+  "JUNHO",
+  "JULHO",
+  "AGOSTO",
+  "SETEMBRO",
+  "OUTUBRO",
+  "NOVEMBRO",
+  "DEZEMBRO"
+];
+
+const hojeDivisoes = new Date();
+let indiceMesVisualAtual = hojeDivisoes.getMonth();
+
+// ===============================
+// 👥 ABRIR TELA DIVISÕES
+// ===============================
+async function abrirTelaDivisoes() {
+  modoDivisoes();
+  abrirTela("divisoes");
+  renderizarBottomBar("divisoes");
+  // 🔥 mostra loading imediatamente
+  const container =
+    document.getElementById("listaDivisoes");
+  container.innerHTML = `
+    <div class="loading">
+      <div class="loading-texto">
+        Carregando divisões...
+      </div>
+      <div class="spinner"></div>
+    </div>
+  `;
+  await carregarDivisoes();
 }
+
+// ===============================
+// 📥 CARREGAR DIVISÕES
+// ===============================
+async function carregarDivisoes() {
+  const container = document.getElementById("listaDivisoes");
+  container.innerHTML = `
+    <div class="loading">
+      <div class="loading-texto">
+        Carregando divisões...
+      </div>
+      <div class="spinner"></div>
+    </div>
+  `;
+  const token = localStorage.getItem("token");
+  // 🚫 sem sessão
+  if (!token) {
+    mostrarToast("Faça login.");
+    mostrarTelaLogin();
+    return;
+  }
+  try {
+    const resposta = await fetch(
+      `${SCRIPT_SITE}?funcao=listarDivisoes`
+      + `&token=${encodeURIComponent(token)}`
+    );
+    const dados = await resposta.json();
+    // 🚫 sessão inválida
+    if (dados.status !== "ok") {
+      if (dados.mensagem?.includes("Sessão")) {
+        limparSessao();
+        mostrarTelaLogin();
+      }
+      container.innerHTML = `
+        <div class="loading">
+          Erro ao carregar divisões.
+        </div>
+      `;
+      return;
+    }
+    // 💾 salva global
+    divisoesCarregadas = dados.divisoes || [];
+    // 🎨 renderiza
+    renderizarDivisoes();
+  } catch (erro) {
+    console.error(erro);
+    container.innerHTML = `
+      <div class="loading">
+        Erro ao carregar divisões.
+      </div>
+    `;
+  }
+}
+
+// ===============================
+// 🎨 RENDERIZAR DIVISÕES
+// ===============================
+function renderizarDivisoes() {
+  const container =
+    document.getElementById("listaDivisoes");
+  container.innerHTML = "";
+  // ===============================
+  // 📅 MÊS VISUAL
+  // ===============================
+  const mesNome =
+    NOMES_MESES[indiceMesVisualAtual];
+  const anoVisual =
+    obterAnoDoMes(indiceMesVisualAtual);
+  const mesTitulo =
+    document.getElementById("mesTitulo");
+  mesTitulo.innerText =
+    `${NOMES_MESES_UI[indiceMesVisualAtual]} ${anoVisual}`;
+  // ===============================
+  // 💰 RESUMO
+  // ===============================
+  let recebido = 0;
+  let pendente = 0;
+  // ===============================
+  // 🚫 SEM DIVISÕES
+  // ===============================
+  if (!divisoesCarregadas.length) {
+    container.innerHTML = `
+      <div class="loading">
+        Nenhuma divisão cadastrada.
+      </div>
+    `;
+    atualizarResumo(recebido, pendente);
+    return;
+  }
+  // ===============================
+  // 🔄 LOOP
+  // ===============================
+  divisoesCarregadas.forEach(item => {
+    const pago =
+  String(item[mesNome] || "")
+    .trim()
+    .toLowerCase() === "pago";
+const hoje = new Date();
+const mesAtual =
+  hoje.getMonth();
+const anoAtual =
+  hoje.getFullYear();
+const anoVisual =
+  obterAnoDoMes(indiceMesVisualAtual);
+const diaPagamento =
+  parseInt(item.dia, 10) || 1;
+// atraso somente se:
+// - NÃO está pago
+// - mês visual é o atual
+// - ano visual é o atual
+// - dia já passou
+const dataVisual =
+  new Date(anoVisual, indiceMesVisualAtual, diaPagamento);
+const dataHoje =
+  new Date(
+    hoje.getFullYear(),
+    hoje.getMonth(),
+    hoje.getDate()
+  );
+const atrasado =
+  !pago &&
+  dataHoje > dataVisual;
+    const valor =
+  parseFloat(
+    String(item.valor || 0)
+      .replace(",", ".")
+  ) || 0;
+    if (pago) {
+      recebido += valor;
+    } else {
+      pendente += valor;
+    }
+    const card = document.createElement("div");
+    card.className =
+  `card-divisao
+   ${pago ? "pago" : "pendente"}
+   ${atrasado ? "atrasado" : ""}`;
+    card.innerHTML = `
+  <div class="card-divisao-logo-area">
+    <img
+      class="card-divisao-logo"
+      src="${item.logo || "https://i.imgur.com/NHZnler.png"}"
+    >
+  </div>
+  <div class="card-divisao-conteudo">
+    <!-- LINHA 1 -->
+    <div class="card-divisao-linha">      
+      <div class="card-divisao-pessoa">
+        ${item.pessoa}
+      </div>
+      <div class="card-divisao-direita">        
+        <div class="card-divisao-dia">
+          ${obterEmojiLogin(item.login)}
+          Dia ${item.dia}
+        </div>
+        <button
+          class="card-divisao-menu-btn"
+          onclick="toggleMenuDivisao(event, '${item.id}')"
+        >
+          <i class="bi bi-three-dots-vertical"></i>
+        </button>
+      </div>
+    </div>
+    <!-- LINHA 2 -->
+    <div class="card-divisao-linha">
+      <div class="card-divisao-streaming">
+        ${item.streaming}
+      </div>
+      <div class="card-divisao-direita">
+        <div class="card-divisao-valor">
+          R$ ${Number(valor)
+            .toFixed(2)
+            .replace(".", ",")}
+        </div>
+        <button
+          class="card-divisao-check ${pago ? "ativo" : ""}"
+          onclick="togglePagamentoDivisao('${item.id}')"
+        >
+          <i class="bi ${
+            pago
+              ? "bi-check-circle-fill"
+              : "bi-circle"
+          }"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- MENU FLUTUANTE -->
+  <div
+    class="menu-divisao hidden"
+    id="menuDivisao-${item.id}"
+  >
+    <button onclick="editarDivisao('${item.id}')">
+  <i class="bi bi-pencil-square"></i>
+  Editar
+</button>
+<button onclick="excluirDivisao('${item.id}')">
+  <i class="bi bi-trash3"></i>
+  Excluir
+</button>
+  </div>
+`;
+    container.appendChild(card);
+  });
+  atualizarResumo(recebido, pendente);
+}
+
+// ===============================
+// ⋮ MENU DIVISÃO
+// ===============================
+function toggleMenuDivisao(event, id) {
+  event.stopPropagation();
+  // fecha todos
+  document
+    .querySelectorAll(".menu-divisao")
+    .forEach(menu => {
+      menu.classList.add("hidden");
+    });
+  const menu =
+    document.getElementById(
+      `menuDivisao-${id}`
+    );
+  if (menu) {
+    menu.classList.toggle("hidden");
+  }
+}
+// ===============================
+// ❌ FECHAR MENUS AO CLICAR FORA
+// ===============================
+document.addEventListener("click", event => {
+  // ignora clique dentro do menu
+  if (
+    event.target.closest(".menu-divisao") ||
+    event.target.closest(".card-divisao-menu-btn")
+  ) {
+    return;
+  }
+  document
+    .querySelectorAll(".menu-divisao")
+    .forEach(menu => {
+      menu.classList.add("hidden");
+    });
+});
+
+function obterEmojiLogin(tipo) {
+  tipo = String(tipo || "")
+    .toLowerCase();
+  if (tipo.includes("login")) {
+    return "🔑";
+  }
+  if (tipo.includes("convite")) {
+    return "📨";
+  }
+  if (tipo.includes("ativar")) {
+    return "📺";
+  }
+  return "🔐";
+}
+
+// ===============================
+// 💰 ATUALIZAR RESUMO
+// ===============================
+function atualizarResumo(recebido, pendente) {
+  const recebidoEl =
+    document.getElementById("valorRecebido");
+  const pendenteEl =
+    document.getElementById("valorPendente");
+  recebidoEl.innerHTML =
+    `💰 R$ ${recebido.toFixed(2).replace(".", ",")}`;
+  pendenteEl.innerHTML =
+    `💸 R$ ${pendente.toFixed(2).replace(".", ",")}`;
+}
+
+// ===============================
+// 💰 TOGGLE PAGAMENTO
+// ===============================
+async function togglePagamentoDivisao(id) {
+  const token =
+    localStorage.getItem("token");
+  if (!token) {
+    mostrarTelaLogin();
+    return;
+  }
+  const mes =
+    NOMES_MESES[indiceMesVisualAtual];
+  const ano =
+    obterAnoDoMes(indiceMesVisualAtual);
+  const item =
+    divisoesCarregadas.find(
+      d => String(d.id) === String(id)
+    );
+  if (!item) return;
+  // ✅ estado atual
+  const pagoAtual =
+    String(item[mes] || "")
+      .trim()
+      .toLowerCase() === "pago";
+  // ⚡ muda IMEDIATAMENTE
+  item[mes] = pagoAtual ? "" : "Pago";
+  renderizarDivisoes();
+  try {
+    const resposta = await fetch(
+      `${SCRIPT_SITE}?funcao=togglePagamentoDivisao`
+      + `&token=${encodeURIComponent(token)}`
+      + `&id=${encodeURIComponent(id)}`
+      + `&mes=${encodeURIComponent(mes)}`
+      + `&ano=${encodeURIComponent(ano)}`
+    );
+    const dados = await resposta.json();
+    if (dados.status !== "ok") {
+      // ❌ volta estado anterior
+      item[mes] = pagoAtual
+        ? "Pago"
+        : "";
+      renderizarDivisoes();
+      mostrarToast(
+        dados.mensagem || "Erro."
+      );
+      return;
+    }
+  } catch (erro) {
+    console.error(erro);
+    // ❌ volta estado anterior
+    item[mes] = pagoAtual
+      ? "Pago"
+      : "";
+    renderizarDivisoes();
+    mostrarToast(
+      "Erro ao alterar pagamento."
+    );
+  }
+}
+
+// ===============================
+// 📅 RETORNA ANO DO MÊS FIXO
+// ===============================
+function obterAnoDoMes(indiceMes) {
+  const hoje = new Date();
+  const mesAtual = hoje.getMonth();
+  const anoAtual = hoje.getFullYear();
+  // diferença do mês fixo para o atual
+  let diff = indiceMes - mesAtual;
+  // ajuste circular
+  if (diff > 8) {
+    diff -= 12;
+  }
+  if (diff < -3) {
+    diff += 12;
+  }
+  return anoAtual + (
+    indiceMes < mesAtual && diff > 0 ? 1 :
+    indiceMes > mesAtual && diff < 0 ? -1 :
+    0
+  );
+}
+
+// ===============================
+// ✏️ EDITAR DIVISÃO
+// ===============================
+function editarDivisao(id) {
+  const item =
+    divisoesCarregadas.find(
+      d => String(d.id) === String(id)
+    );
+  if (!item) {
+    mostrarToast("Divisão não encontrada.");
+    return;
+  }
+  // fecha menus
+  document
+    .querySelectorAll(".menu-divisao")
+    .forEach(menu => {
+      menu.classList.add("hidden");
+    });
+  abrirFormularioDivisao(item);
+}
+
+// ===============================
+// 🗑 EXCLUIR DIVISÃO
+// ===============================
+async function excluirDivisao(id) {
+  // fecha menus
+  document
+    .querySelectorAll(".menu-divisao")
+    .forEach(menu => {
+      menu.classList.add("hidden");
+    });
+  // confirmação
+  const confirmar = confirm(
+    "Deseja excluir esta divisão?"
+  );
+  if (!confirmar) {
+    return;
+  }
+  const token =
+    localStorage.getItem("token");
+  // 🚫 sem sessão
+  if (!token) {
+    mostrarTelaLogin();
+    return;
+  }
+  try {
+    const resposta = await fetch(
+      `${SCRIPT_SITE}?funcao=excluirDivisao`
+      + `&token=${encodeURIComponent(token)}`
+      + `&id=${encodeURIComponent(id)}`
+    );
+    const dados = await resposta.json();
+    // 🚫 erro
+    if (dados.status !== "ok") {
+      // sessão inválida
+      if (dados.mensagem?.includes("Sessão")) {
+        limparSessao();
+        mostrarTelaLogin();
+        return;
+      }
+      mostrarToast(
+        dados.mensagem || "Erro ao excluir."
+      );
+      return;
+    }
+    // remove da lista local
+    divisoesCarregadas =
+      divisoesCarregadas.filter(
+        item =>
+          String(item.id) !== String(id)
+      );
+    // renderiza novamente
+    renderizarDivisoes();
+    mostrarToast(
+      "Divisão excluída."
+    );
+  } catch (erro) {
+    console.error(erro);
+    mostrarToast(
+      "Erro ao excluir divisão."
+    );
+  }
+}
+
+// ===============================
+// ➕ ABRIR FORMULÁRIO DIVISÃO
+// ===============================
+async function abrirFormularioDivisao(divisao = null) {
+  console.log(divisao);
+  const modal =
+    document.getElementById("modalDivisao");
+  const titulo =
+    modal.querySelector("h3");
+  const form =
+    document.getElementById("formDivisao");
+  // 🧹 limpa estado antigo
+  divisaoEditando = null;
+  form.reset();
+  document.getElementById("divId").value = "";
+  // ✅ agora define a divisão atual
+  divisaoEditando = divisao || null;
+// abre imediatamente
+modal.classList.remove("hidden");
+// carrega streamings em paralelo
+carregarStreamingsDivisao(
+  divisaoEditando?.streaming || ""
+);
+  // ✏️ edição
+  if (divisaoEditando && divisaoEditando.id) {
+    titulo.innerText =
+      "EDITAR DIVISÃO";
+    document.getElementById("divId").value =
+      divisaoEditando.id || "";
+    document.getElementById("divPessoa").value =
+      divisaoEditando.pessoa || "";
+    document.getElementById("divStreaming").value =
+      divisaoEditando.streaming || "";
+    document.getElementById("divLogin").value =
+      divisaoEditando.login || "";
+    document.getElementById("divValor").value =
+      divisaoEditando.valor || "";
+    document.getElementById("divDia").value =
+      divisaoEditando.dia || "";
+  } else {
+    titulo.innerText =
+      "NOVA DIVISÃO";
+  }
+}
+
+// ===============================
+// ❌ FECHAR MODAL
+// ===============================
+function fecharFormularioDivisao() {
+  const modal =
+    document.getElementById("modalDivisao");
+  modal.classList.add("hidden");
+  divisaoEditando = null;
+}
+
+// ===============================
+// 📺 CARREGAR STREAMINGS
+// ===============================
+async function carregarStreamingsDivisao(streamingAtual = "") {
+  const select =
+    document.getElementById("divStreaming");
+  try {
+    const resposta = await fetch(
+      `${SCRIPT_SITE}?funcao=listarOpcoesStreaming`
+    );
+    const dados = await resposta.json();
+    select.innerHTML = "";
+    dados.forEach(item => {
+      const option =
+        document.createElement("option");
+      option.value = item;
+      option.textContent = item;
+      // ✅ mantém streaming original
+      if (item === streamingAtual) {
+        option.selected = true;
+      }
+      select.appendChild(option);
+    });
+  } catch (erro) {
+    console.error(
+      "Erro ao carregar streamings:",
+      erro
+    );
+  }
+}
+
+// ===============================
+// 💾 SALVAR DIVISÃO
+// ===============================
+async function salvarDivisao(event) {
+  event.preventDefault();
+  const btnSalvar =
+    event.submitter;
+  const textoOriginal =
+    btnSalvar.innerText;
+  // 🔒 trava botão
+  btnSalvar.disabled = true;
+  btnSalvar.innerText = "Enviando...";
+  const token =
+    localStorage.getItem("token");
+  if (!token) {
+    mostrarTelaLogin();
+    return;
+  }
+  const id =
+    document.getElementById("divId").value;
+  const pessoa =
+    document.getElementById("divPessoa")
+      .value
+      .trim();
+  const streaming =
+    document.getElementById("divStreaming")
+      .value;
+  const login =
+    document.getElementById("divLogin")
+      .value;
+  const valor =
+    document.getElementById("divValor")
+      .value;
+  const dia =
+    document.getElementById("divDia")
+      .value;
+  try {
+    const funcao =
+      id
+        ? "editarDivisao"
+        : "salvarDivisao";
+    const resposta = await fetch(
+      `${SCRIPT_SITE}?funcao=${funcao}`
+      + `&token=${encodeURIComponent(token)}`
+      + `&id=${encodeURIComponent(id)}`
+      + `&pessoa=${encodeURIComponent(pessoa)}`
+      + `&streaming=${encodeURIComponent(streaming)}`
+      + `&login=${encodeURIComponent(login)}`
+      + `&valor=${encodeURIComponent(valor)}`
+      + `&dia=${encodeURIComponent(dia)}`
+    );
+    const dados =
+      await resposta.json();
+    if (dados.status !== "ok") {
+      mostrarToast(
+        dados.mensagem || "Erro ao salvar."
+      );
+      return;
+    }
+    fecharFormularioDivisao();
+    mostrarToast(
+      id
+        ? "Divisão atualizada."
+        : "Divisão criada."
+    );
+    await carregarDivisoes();
+  } catch (erro) {
+    console.error(erro);
+    mostrarToast(
+      "Erro ao salvar divisão."
+    );
+  } finally {
+    // 🔓 libera botão SEMPRE
+    btnSalvar.disabled = false;
+    btnSalvar.innerText =
+      textoOriginal;
+  }
+}
+
+// ===============================
+// 🎧 EVENTOS MODAL
+// ===============================
+document.addEventListener("DOMContentLoaded", () => {
+  const cancelar =
+    document.getElementById("cancelarDivisao");
+  if (cancelar) {
+    cancelar.addEventListener(
+      "click",
+      fecharFormularioDivisao
+    );
+  }
+  const overlay =
+    document.querySelector(".modal-overlay");
+  if (overlay) {
+    overlay.addEventListener(
+      "click",
+      fecharFormularioDivisao
+    );
+  }
+});
+
+// ===============================
+// 🎧 EVENTOS DIVISÕES
+// ===============================
+document.addEventListener("DOMContentLoaded", () => {
+  const btnAnterior =
+    document.getElementById("mesAnterior");
+  const btnProximo =
+    document.getElementById("mesProximo");
+  // ===============================
+  // ⬅️ MÊS ANTERIOR
+  // ===============================
+  if (btnAnterior) {
+    btnAnterior.addEventListener("click", () => {
+      let novo =
+        indiceMesVisualAtual - 1;
+      if (novo < 0) {
+        novo = 11;
+      }
+      // 🚫 limite 3 meses atrás
+      const hoje = new Date();
+      let diff =
+        novo - hoje.getMonth();
+      if (diff > 8) {
+        diff -= 12;
+      }
+      if (diff < -3) {
+        return;
+      }
+      indiceMesVisualAtual = novo;
+      renderizarDivisoes();
+    });
+  }
+  // ===============================
+  // ➡️ PRÓXIMO MÊS
+  // ===============================
+  if (btnProximo) {
+    btnProximo.addEventListener("click", () => {
+      let novo =
+        indiceMesVisualAtual + 1;
+      if (novo > 11) {
+        novo = 0;
+      }
+      // 🚫 limite 8 meses frente
+      const hoje = new Date();
+      let diff =
+        novo - hoje.getMonth();
+      if (diff < -3) {
+        diff += 12;
+      }
+      if (diff > 8) {
+        return;
+      }
+      indiceMesVisualAtual = novo;
+      renderizarDivisoes();
+    });
+  }
+});
 
 window.addEventListener("load", async () => {
   const params = new URLSearchParams(window.location.search);
@@ -1107,7 +1931,6 @@ window.addEventListener("load", async () => {
         barra.value = termoPesquisa;
         filtrarAnuncios();
       }
-      renderizarBottomBar("lista");
       acaoExecutada = true;
     }
     // 📢 FORMULÁRIO (PROTEGIDO)
@@ -1134,7 +1957,6 @@ window.addEventListener("load", async () => {
   document.getElementById("pesquisa")
     .addEventListener("input", () => {
       filtrarAnuncios();
-      renderizarBottomBar("lista");
     });
   document.querySelector(".menu-icon")
     .addEventListener("click", toggleMenu);
@@ -1150,5 +1972,3 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 });
-
-
