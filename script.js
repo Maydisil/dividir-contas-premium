@@ -391,7 +391,7 @@ async function fazerLogin() {
   // 🔒 DESABILITA BOTÃO
   btn.disabled = true;
   btn.innerText = "Entrando...";
-  if (!usuario || senha.length !== 4) {
+  if (!usuario || senha.length !== 6) {
     erro.innerText = "Preencha corretamente.";
     erro.style.display = "block";
     // 🔓 REABILITA SE DER ERRO
