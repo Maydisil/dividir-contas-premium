@@ -1333,8 +1333,7 @@ text-overflow: ellipsis;
 
 .lista-anuncios {
   max-width: 90vw;
-  margin: 1rem auto;
-  padding: var(--padding);
+  padding: 3vw;
 }
 
 .login-box {
