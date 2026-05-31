@@ -1332,8 +1332,9 @@ text-overflow: ellipsis;
 }
 
 .lista-anuncios {
-  width: 100%;
-  padding: 3vw;
+  max-width: 90vw;
+  margin: 1rem auto;
+  padding: var(--padding);
 }
 
 .login-box {
