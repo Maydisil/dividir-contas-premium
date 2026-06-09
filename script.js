@@ -568,15 +568,22 @@ function renderizarAnuncios(lista) {
     // 🏷️ SEL0S (AQUI 👇)
     // ===============================
     let selos = "";
-    if (ehNovo(item.data)) {
-      selos += `<span class="selo novo">✨</span>`;
-    }
-    if (item.streamingExtra) {
-      selos += `<span class="selo extra">➕</span>`;
-    }
-    if (item.oferta) {
-      selos += `<span class="selo oferta">🔥</span>`;
-    }
+const emojisLogin = {
+  "Login e Senha": "🔐",
+  "Convite por E-mail": "📩",
+  "Ativar por Código": "🔑"
+};
+if (ehNovo(item.data)) {
+  selos += `<span class="selo novo">✨</span>`;
+} else if (item.login && emojisLogin[item.login]) {
+  selos += `<span class="selo novo">${emojisLogin[item.login]}</span>`;
+}
+if (item.streamingExtra) {
+  selos += `<span class="selo extra">➕</span>`;
+}
+if (item.oferta) {
+  selos += `<span class="selo oferta">🔥</span>`;
+}
     // ===============================
     // 🧱 HTML
     // ===============================
@@ -733,6 +740,12 @@ function mostrarDetalhes(item) {
   // =========================
   // HTML DETALHES
   // =========================
+const emojisLogin = {
+  "Login e Senha": "🔐",
+  "Convite por E-mail": "📩",
+  "Ativar por Código": "🔑"
+};
+const emojiLogin = emojisLogin[item.login] || "🔐";
   document.getElementById("conteudoDetalhes").innerHTML = `
     <div class="detalhes-box">
       <a href="${item.linkStreaming}" target="_blank">
@@ -743,8 +756,8 @@ function mostrarDetalhes(item) {
       ${item.streamingExtra ? `<p><strong>➕ ${item.streamingExtra}</strong></p>` : ""}
       <p><strong>💵 ${item.valor}</strong></p>
       <p><strong>📌 ${item.vagas}</strong></p>
-      <p><strong>🔐 ${item.login}</strong></p>
-      ${item.oferta ? `<p><strong>⏰ OFERTA - ${item.oferta}</strong></p>` : ""}
+      <p><strong>${emojiLogin} ${item.login}</strong></p>
+      ${item.oferta ? `<p><strong>🔥 OFERTA - ${item.oferta}</strong></p>` : ""}
       <hr>
       <p><strong>Postado em: ${item.data}</strong></p>
       <hr>
@@ -968,7 +981,7 @@ if (tipo === "detalhes" && window.itemAtual) {
   // 📲 Compartilhar
   criarBotao("bi bi-send", "Enviar", () => {
     const link =
-      `https://tinyurl.com/divcp01?a=${item.postagem}`;
+      `https://divizo.pages.dev/?a=${item.postagem}`;
 
     let mensagem =
 `👤 *${item.anunciante}*
@@ -977,7 +990,7 @@ ${link}
 🖥 *${item.streaming}*${item.streamingExtra ? `\n➕ ${item.streamingExtra}` : ""}
 💵 ${item.valor}
 📌 ${item.vagas}
-🔐 ${item.login}${item.oferta ? `\n⏰ OFERTA - ${item.oferta}` : ""}
+🔐 ${item.login}${item.oferta ? `\n🔥 OFERTA - ${item.oferta}` : ""}
 -------------------------------------------
 *ENTRAR EM CONTATO*
 📲 https://t.me/${item.anunciante.replace(/^@/, "")}`;
@@ -1027,7 +1040,7 @@ function compartilharUsuarioWhatsapp() {
   const usuarioSemArroba = anunciante.replace("@", "");
   // CABEÇALHO
   texto += `👤 *${anunciante}*\n`;
-  texto += `https://tinyurl.com/divcp01?p=${usuarioSemArroba}\n`;
+  texto += `https://divizo.pages.dev/?p=${usuarioSemArroba}\n`;
   texto += `-------------------------------------------\n`;
   let contador = 0;
   const anunciosFiltrados = Array.from(anuncios).filter(
@@ -1430,13 +1443,13 @@ function obterEmojiLogin(tipo) {
   tipo = String(tipo || "")
     .toLowerCase();
   if (tipo.includes("login")) {
-    return "🔑";
+    return "🔐";
   }
   if (tipo.includes("convite")) {
-    return "📨";
+    return "📩";
   }
   if (tipo.includes("ativar")) {
-    return "📺";
+    return "🔑";
   }
   return "🔐";
 }
