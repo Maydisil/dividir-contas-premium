@@ -9,6 +9,7 @@ const DURACAO_SESSAO = 30 * 24 * 60 * 60 * 1000; // 30 dias
 // VARIÁVEIS GLOBAIS
 // ===============================
 let anunciantePesquisaValido = null;
+let perfilForcado = null;
 let carregandoAnuncios = false;
 let parametrosJaProcessados = false;
 let tentativasLogin = 0;
@@ -360,7 +361,8 @@ function limparSessao() {
 }
 
 async function sair() {
-  const token = localStorage.getItem("token");
+perfilForcado = null; 
+ const token = localStorage.getItem("token");
   if (token) {
     try {
       await fetch(
@@ -1027,6 +1029,7 @@ function renderizarBottomBar(tipo) {
  // 👤 Perfil
     criarBotao("bi bi-person", "Perfil", () => {
   const barra = document.getElementById("pesquisa");
+  perfilForcado = sessao.nome;
   barra.value = sessao.nome.replace(/^@/, "");
   filtrarAnuncios();
 });
@@ -1050,12 +1053,11 @@ if (tipo === "divisoes") {
 if (tipo === "perfil") {
   const sessao = obterSessao();
   // HOME
-  criarBotao("bi bi-house", "Home", () => {
-    document.getElementById("pesquisa").value = "";
-    anunciantePesquisaValido = null;
-    filtrarAnuncios();
-    modoLista();
-  });
+ criarBotao(
+  "bi bi-house",
+  "Home",
+  voltarParaLista
+);
   // LOGIN
   if (!sessao) {
     criarBotao(
@@ -1067,15 +1069,18 @@ if (tipo === "perfil") {
   // PERFIL
   if (sessao) {
     criarBotao("bi bi-person", "Perfil", () => {
-      const barra = document.getElementById("pesquisa");
-      barra.value = sessao.nome.replace(/^@/, "");
-      filtrarAnuncios();
-    });
+  const barra = document.getElementById("pesquisa");
+  perfilForcado = sessao.nome;
+  barra.value = sessao.nome.replace(/^@/, "");
+  filtrarAnuncios();
+});
   }
+const usuarioPerfil =
+  anunciantePesquisaValido || perfilForcado;
 const perfilEhMeu =
   sessao &&
-  anunciantePesquisaValido &&
-  anunciantePesquisaValido.replace(/^@/, "") ===
+  usuarioPerfil &&
+  usuarioPerfil.replace(/^@/, "") ===
     sessao.nome.replace(/^@/, "");
 // HISTÓRICO 
 if (perfilEhMeu) {
@@ -1217,6 +1222,14 @@ function filtrarAnuncios() {
     .toLowerCase();
   const termoUsuario =
     termo.replace(/^@/, "");
+const sessao = obterSessao();
+if (
+  !sessao ||
+  termoUsuario !==
+    sessao.nome.replace(/^@/, "").toLowerCase()
+) {
+  perfilForcado = null;
+}
   const container =
     document.getElementById("listaAnuncios");
   const anuncios =
@@ -1262,13 +1275,15 @@ function filtrarAnuncios() {
   // ===============================
   // 👤 PERFIL OU LISTA
   // ===============================
-  if (anunciantePesquisaValido) {
-    modoPerfil(anunciantePesquisaValido);
-    renderizarBottomBar("perfil");
-  } else {
-    modoLista();
-    renderizarBottomBar("lista");
-  }
+  const usuarioPerfil =
+  anunciantePesquisaValido || perfilForcado;
+if (usuarioPerfil) {
+  modoPerfil(usuarioPerfil);
+  renderizarBottomBar("perfil");
+} else {
+  modoLista();
+  renderizarBottomBar("lista");
+}
   // ===============================
   // 🔍 SEM RESULTADO
   // ===============================
@@ -1294,6 +1309,12 @@ function filtrarAnuncios() {
 }
 
 async function voltarParaLista(recarregar = false) {
+  perfilForcado = null;
+  anunciantePesquisaValido = null;
+  const pesquisa = document.getElementById("pesquisa");
+  if (pesquisa) {
+    pesquisa.value = "";
+  }
   modoLista();
   abrirTela("anuncios");
   if (recarregar) {
