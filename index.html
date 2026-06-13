@@ -164,6 +164,29 @@
     </form>
   </div>
 </div>
+<!-- ========================= -->
+<!-- MODAL HISTÓRICO -->
+<!-- ========================= -->
+<div id="modalHistorico"
+     class="modal-overlay hidden">
+  <div class="modal-box">
+    <h3>HISTÓRICO</h3>
+    <div id="listaHistorico"></div>
+    <div class="modal-botoes">
+      <button
+  type="button"
+  class="btn-primario"
+  id="btnReenviarHistorico"
+  onclick="reenviarSelecionado()">
+  Reenviar
+</button>
+      <button type="button"
+              onclick="fecharHistorico()">
+        Cancelar
+      </button>
+    </div>
+  </div>
+</div>
     <!-- ========================= -->
     <!-- TELA FORMULÁRIO -->
     <!-- ========================= -->
@@ -310,3 +333,4 @@
   <script src="script.js"></script>
 </body>
 </html>
+
