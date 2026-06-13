@@ -869,6 +869,129 @@ function resetarPosicao() {
   box.style.transform = "translateX(0) scale(1)";
 }
 
+async function abrirHistorico() {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    mostrarTelaLogin();
+    return;
+  }
+  const modal = document.getElementById("modalHistorico");
+  const lista = document.getElementById("listaHistorico");
+  if (!modal || !lista) {
+  console.error("Modal Histórico não encontrado.");
+  return;
+}
+modal.classList.remove("hidden");
+  lista.innerHTML = `
+    <div class="loading">
+      <div class="loading-texto">
+        Carregando histórico...
+      </div>
+      <div class="spinner"></div>
+    </div>
+  `;
+  try {
+    const resposta = await fetch(
+      `${SCRIPT_SITE}?funcao=listarHistorico`
+      + `&token=${encodeURIComponent(token)}`
+    );
+    const dados = await resposta.json();
+    if (dados.status !== "ok") {
+      lista.innerHTML = "Erro ao carregar histórico.";
+      return;
+    }
+    renderizarHistorico(dados.historico || []);
+  } catch (erro) {
+    console.error(erro);
+    lista.innerHTML =
+      "Erro ao carregar histórico.";
+  }
+}
+
+function renderizarHistorico(anuncios) {
+  const lista =
+    document.getElementById("listaHistorico");
+  if (!anuncios.length) {
+    lista.innerHTML = `
+      <div class="loading">
+        Nenhum anúncio encontrado.
+      </div>
+    `;
+    return;
+  }
+  lista.innerHTML = "";
+  anuncios.forEach(item => {
+    const div = document.createElement("label");
+    div.className = "item-historico";
+    div.innerHTML = `
+  <span class="historico-texto">
+    ${item.resumo}
+  </span>
+  <input
+    type="radio"
+    name="historico"
+    value="${item.linha}">
+`;
+    lista.appendChild(div);
+  });
+}
+
+async function reenviarSelecionado() {
+  const selecionado =
+    document.querySelector(
+      'input[name="historico"]:checked'
+    );
+  if (!selecionado) {
+    mostrarToast("Selecione um anúncio.");
+    return;
+  }
+  const btn =
+    document.getElementById(
+      "btnReenviarHistorico"
+    );
+  const textoOriginal =
+    btn.innerText;
+  btn.disabled = true;
+  btn.innerText = "Enviando...";
+  const token =
+    localStorage.getItem("token");
+  try {
+    const resposta = await fetch(
+      `${SCRIPT_SITE}?funcao=reenviarAnuncio`
+      + `&token=${encodeURIComponent(token)}`
+      + `&linha=${encodeURIComponent(selecionado.value)}`
+    );
+    const dados =
+      await resposta.json();
+    if (dados.status !== "ok") {
+      mostrarToast(
+        dados.mensagem ||
+        "Erro ao reenviar."
+      );
+      return;
+    }
+    mostrarToast(
+      "Anúncio reenviado."
+    );
+    fecharHistorico();
+  } catch (erro) {
+    console.error(erro);
+    mostrarToast(
+      "Erro ao reenviar."
+    );
+  } finally {
+    btn.disabled = false;
+    btn.innerText =
+      textoOriginal;
+  }
+}
+
+function fecharHistorico() {
+  document
+    .getElementById("modalHistorico")
+    .classList.add("hidden");
+}
+
 function renderizarBottomBar(tipo) {
   const bar = document.getElementById("bottomBar");
   bar.innerHTML = "";
@@ -949,6 +1072,19 @@ if (tipo === "perfil") {
       filtrarAnuncios();
     });
   }
+const perfilEhMeu =
+  sessao &&
+  anunciantePesquisaValido &&
+  anunciantePesquisaValido.replace(/^@/, "") ===
+    sessao.nome.replace(/^@/, "");
+// HISTÓRICO 
+if (perfilEhMeu) {
+  criarBotao(
+    "bi bi-clock-history",
+    "Histórico",
+    abrirHistorico
+  );
+}
   // ENVIAR
   if (anunciantePesquisaValido) {
     criarBotao("bi bi-send", "Enviar", compartilharUsuarioWhatsapp);
@@ -1079,50 +1215,81 @@ function filtrarAnuncios() {
   const termo = document.getElementById("pesquisa")
     .value.trim()
     .toLowerCase();
-  const container = document.getElementById("listaAnuncios");
-  const anuncios = container.querySelectorAll(".anuncio");
+  const termoUsuario =
+    termo.replace(/^@/, "");
+  const container =
+    document.getElementById("listaAnuncios");
+  const anuncios =
+    container.querySelectorAll(".anuncio");
   anunciantePesquisaValido = null;
   let encontrou = false;
   anuncios.forEach(el => {
-    const titulo = el.querySelector(".titulo").textContent.toLowerCase();
-    const valor = el.querySelector(".valor").textContent.toLowerCase();
-    const streamingExtra = (el.dataset.streamingExtra || "").toLowerCase();
-    const anuncianteOriginal = el.dataset.anunciante;
-    const anunciante = anuncianteOriginal
-      .replace(/^@/, "")
-      .toLowerCase();
+    const titulo =
+      el.querySelector(".titulo")
+        .textContent
+        .toLowerCase();
+    const valor =
+      el.querySelector(".valor")
+        .textContent
+        .toLowerCase();
+    const streamingExtra =
+      (el.dataset.streamingExtra || "")
+        .toLowerCase();
+    const anuncianteOriginal =
+      el.dataset.anunciante;
+    const anunciante =
+      anuncianteOriginal
+        .replace(/^@/, "")
+        .toLowerCase();
     const mostrar =
-  titulo.includes(termo) ||
-  valor.includes(termo) ||
-  anunciante.includes(termo) ||
-  streamingExtra.includes(termo);
-    el.style.display = mostrar ? "flex" : "none";
-    if (mostrar) encontrou = true;
-    if (termo && anunciante === termo.replace(/^@/, "")) {
-      anunciantePesquisaValido = anuncianteOriginal;
+      titulo.includes(termo) ||
+      valor.includes(termo) ||
+      anunciante.includes(termoUsuario) ||
+      streamingExtra.includes(termo);
+    el.style.display =
+      mostrar ? "flex" : "none";
+    if (mostrar) {
+      encontrou = true;
     }
-if (anunciantePesquisaValido) {
-  modoPerfil(anunciantePesquisaValido);
-  renderizarBottomBar("perfil");
-} else {
-  modoLista();
-  renderizarBottomBar("lista");
-}
+    if (
+      termoUsuario &&
+      anunciante === termoUsuario
+    ) {
+      anunciantePesquisaValido =
+        anuncianteOriginal;
+    }
   });
   // ===============================
-  // 🔍 SEM RESULTADO (USANDO loading)
+  // 👤 PERFIL OU LISTA
   // ===============================
-  let aviso = document.getElementById("semResultados");
+  if (anunciantePesquisaValido) {
+    modoPerfil(anunciantePesquisaValido);
+    renderizarBottomBar("perfil");
+  } else {
+    modoLista();
+    renderizarBottomBar("lista");
+  }
+  // ===============================
+  // 🔍 SEM RESULTADO
+  // ===============================
+  let aviso =
+    document.getElementById(
+      "semResultados"
+    );
   if (!encontrou && termo) {
     if (!aviso) {
-      aviso = document.createElement("div");
+      aviso =
+        document.createElement("div");
       aviso.id = "semResultados";
-      aviso.className = "loading"; 
-      aviso.innerText = "Nenhum anúncio encontrado.";
+      aviso.className = "loading";
+      aviso.innerText =
+        "Nenhum anúncio encontrado.";
       container.appendChild(aviso);
     }
   } else {
-    if (aviso) aviso.remove();
+    if (aviso) {
+      aviso.remove();
+    }
   }
 }
 
@@ -1985,3 +2152,17 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+  const modalHistorico =
+    document.getElementById("modalHistorico");
+  if (modalHistorico) {
+    modalHistorico.addEventListener("click", e => {
+      if (e.target === modalHistorico) {
+        fecharHistorico();
+      }
+    });
+  }
+});
+
+
