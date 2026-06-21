@@ -1115,7 +1115,7 @@ if (tipo === "detalhes" && window.itemAtual) {
   // 💬 Ver Postagem no Telegram
   criarBotao("bi bi-chat", "Postagem", () => {
     window.open(
-      `https://t.me/dividir_contas_premium/${item.postagem}`,
+      `https://t.me/divizobr/${item.postagem}`,
       "_blank"
     );
   });
