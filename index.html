@@ -37,6 +37,7 @@
     <!-- TELA LISTA -->
     <!-- ========================= -->
     <section id="anuncios" class="tela ativa">
+   <div id="cabecalhoPerfil"></div>
       <div class="lista-anuncios" id="listaAnuncios"></div>
     </section>
     <!-- ========================= -->
@@ -162,6 +163,41 @@
         </button>
       </div>
     </form>
+  </div>
+</div>
+<!-- ========================= -->
+<!-- MODAL EDITAR PERFIL -->
+<!-- ========================= -->
+<div id="modalPerfil"
+     class="modal-divisao hidden">
+  <div class="modal-overlay"></div>
+  <div class="modal-divisao-content">
+    <h3>EDITAR PERFIL</h3>
+    <label for="perfilNomeInput">
+  <i class="bi bi-person"></i> Nome de usuário
+</label>
+<input
+  id="perfilNomeInput"
+  class="perfil-input"
+  maxlength="20">
+    <div id="listaAvatares"
+         class="lista-avatares">
+    </div>
+    <div class="modal-botoes">
+  <button
+    id="btnSalvarPerfil"
+    type="button"
+    class="btn-primario"
+    onclick="salvarPerfil()">
+    Salvar
+  </button>
+  <button
+    type="button"
+    class="btn-secundario"
+    onclick="fecharEditarPerfil()">
+    Cancelar
+  </button>
+</div>
   </div>
 </div>
 <!-- ========================= -->
