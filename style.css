@@ -32,7 +32,8 @@
 
 #anuncios.tela.ativa{
   display:flex;
-  justify-content:center;
+  flex-direction: column;
+  align-items: center;
   width:100%;
 }
 
@@ -194,6 +195,297 @@ margin-right: 0.3rem;
      .hidden {
        display: none;
      }
+
+/* ===================================== */
+/* 👤 PERFIL */
+/* ===================================== */
+
+#cabecalhoPerfil{
+  width: 100%;
+  max-width: 500px;
+  padding: 0 var(--padding);
+  box-sizing: border-box;
+}
+
+.perfil-cabecalho{
+  position: relative;
+  background: #fff;
+  border-radius: 1rem;
+  margin: 0;
+  padding: var(--padding);
+  box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.1);
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.perfil-menu{
+  position: absolute;
+  top: .5rem;
+  right: .5rem;
+  border: none;
+  background: transparent;
+  font-size: 1.6rem;
+  cursor: pointer;
+  padding: .5rem;
+}
+
+.perfil-menu i{
+  color: #555;
+}
+
+.perfil-avatar{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 4.5rem;
+  line-height: 1;
+}
+
+.perfil-avatar img{
+  width: 5.5rem;
+  height: 5.5rem;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #eee;
+}
+
+.perfil-nome{
+  margin-top: 0.75rem;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #000;
+  overflow-wrap: break-word;
+}
+
+#modalPerfil label{
+  display: block !important;
+  margin-bottom: .15rem;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 700 !important;
+  color: #222;
+  letter-spacing: .3px;
+}
+
+#modalPerfil label i{
+  color: #007bff;
+  margin-right: .4rem;
+}
+
+#modalPerfil .btn-primario{
+  background: #007bff;
+  color: #fff;
+}
+
+#modalPerfil .btn-primario:hover{
+  background: #0056b3;
+}
+
+#modalPerfil .btn-secundario{
+  background: #ccc;
+  color: #000;
+}
+
+#modalPerfil .btn-secundario:hover{
+  background: #999;
+}
+
+#modalPerfil .modal-botoes{
+  gap: .4rem;
+  margin-top: .5rem;
+}
+
+#modalPerfil .modal-botoes button{
+  margin: 0;
+  padding: .85rem 1rem;
+}
+
+.perfil-input{
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: .5rem;
+  padding: .9rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: .75rem;
+  background: #fafafa;
+  font-size: var(--font-base);
+  transition: border-color .3s, box-shadow .3s;
+}
+
+.perfil-input:focus{
+  border-color: #007bff;
+  box-shadow: 0 0 0 .15rem rgba(0,123,255,.25);
+  outline: none;
+}
+
+.perfil-pontos{
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 1rem;
+}
+
+.perfil-pontos div{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .25rem;
+  font-size: 1.6rem;
+}
+
+.perfil-pontos span{
+  font-size: 1rem;
+  font-weight: 700;
+  color: #333;
+}
+
+.perfil-contatos{
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+  }
+
+.perfil-btn{
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  padding: .75rem 1rem;
+  border-radius: .75rem;
+  text-decoration: none;
+  color: #fff;
+  font-size: var(--font-small);
+  font-weight: 600;
+  transition: transform .15s ease;
+}
+
+.perfil-btn:active{
+  transform: scale(.95);
+}
+
+.perfil-btn i{
+  font-size: 1.2rem;
+}
+
+.telegram{
+  background: #2AABEE;
+}
+
+.whatsapp{
+  background: #25D366;
+}
+
+.perfil-pontos i{
+  font-size: 1.6rem;
+  color: #333;
+}
+
+.lista-avatares{
+  display: grid;
+  grid-template-columns: repeat(5,1fr);
+  gap: 1rem;
+  margin: 1rem 0;
+  padding: .25rem .75rem .25rem .25rem;
+  max-height: 45vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+.avatar-item{
+  position:relative;
+  cursor:pointer;
+}
+
+.avatar-item img{
+  display:block;
+  width:100%;
+  aspect-ratio:1;
+  border-radius:50%;
+  object-fit:cover;
+  border:3px solid transparent;
+}
+
+.avatar-item.selecionado img{
+  border-color:#28a745;
+}
+
+.avatar-item.selecionado::after{
+  content:'';
+  position:absolute;
+  width:1rem;
+  height:1rem;
+  background:#28a745;
+  border:2px solid #fff;
+  border-radius:50%;
+  right:0;
+  bottom:0;
+}
+
+@media (orientation: portrait) {
+  .perfil-pontos i{
+    font-size: 7vw;
+  }
+
+  .perfil-contatos {
+    width: 100%;
+  }
+
+#cabecalhoPerfil{
+  padding: 3vw;
+  max-width: none;
+}
+
+.perfil-avatar{
+  font-size: 18vw;
+}
+
+.perfil-avatar img{
+  width: 24vw;
+  height: 24vw;
+}
+
+.perfil-nome{
+  font-size: 7vw;
+}
+
+.perfil-pontos{
+  gap: 8vw;
+}
+
+.perfil-pontos div{
+  font-size: 7vw;
+}
+
+.perfil-pontos span{
+  font-size: 4vw;
+}
+
+#modalPerfil label{
+  font-size: var(--font-base);
+}
+
+.perfil-btn{
+  flex: 1;
+  padding: 3vw 4vw;
+  font-size: 4vw;
+}
+
+  .perfil-btn i{
+    font-size: 4.5vw;
+  }
+
+}
+
+@media (orientation: landscape) {
+  #cabecalhoPerfil:not(:empty) {
+    margin-top: 1rem;
+  }
+}
 
      .checkbox-list {
        margin-top: 0.75rem;
