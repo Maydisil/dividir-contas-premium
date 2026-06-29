@@ -1216,6 +1216,193 @@ function compartilharUsuarioWhatsapp() {
   window.open(url, "_blank");
 }
 
+function mostrarCabecalhoPerfil(usuario) {
+const sessao = obterSessao();
+const ehDono =
+  sessao &&
+  sessao.nome.replace(/^@/, "") ===
+  usuario.replace(/^@/, "");
+  const cabecalho =
+    document.getElementById("cabecalhoPerfil");
+  if (!cabecalho) return;
+  const itemPerfil = window.anunciosCarregados?.find(
+    a => a.anunciante === usuario
+  );
+  if (!itemPerfil) {
+    cabecalho.innerHTML = "";
+    return;
+  }
+  let botoesContato = "";
+  // Telegram
+botoesContato += `
+  <a href="https://t.me/${usuario.replace(/^@/, "")}"
+     target="_blank"
+     class="perfil-btn telegram">
+    <i class="bi bi-telegram"></i>
+    Telegram
+  </a>
+`;
+// WhatsApp
+if (itemPerfil.whatsapp) {
+  botoesContato += `
+    <a href="https://wa.me/${itemPerfil.whatsapp}"
+       target="_blank"
+       class="perfil-btn whatsapp">
+      <i class="bi bi-whatsapp"></i>
+      WhatsApp
+    </a>
+  `;
+}
+  cabecalho.innerHTML = `
+<div class="perfil-cabecalho">
+  ${
+    ehDono ? `
+      <button class="perfil-menu"
+              onclick="abrirEditarPerfil()">
+        <i class="bi bi-three-dots-vertical"></i>
+      </button>
+    ` : ""
+  }
+  <div class="perfil-avatar">
+        ${
+          itemPerfil.avatar
+            ? `<img src="${itemPerfil.avatar}">`
+            : `<img src="https://imgur.com/SojKEmv.jpeg">`
+        }
+      </div>
+      <div class="perfil-nome">
+        ${itemPerfil.nomePerfil}
+      </div>
+      <div class="perfil-pontos">
+        <div>
+          <i class="bi bi-heart"></i>
+          <span>${itemPerfil.pontos?.coracao || 0}</span>
+        </div>
+        <div>
+          <i class="bi bi-chat"></i>
+          <span>${itemPerfil.pontos?.balao || 0}</span>
+        </div>
+        <div>
+          <i class="bi bi-megaphone"></i>
+          <span>${itemPerfil.pontos?.megafone || 0}</span>
+        </div>
+      </div>
+      <div class="perfil-contatos">
+        ${botoesContato}
+      </div>
+    </div>
+  `;
+}
+
+function esconderCabecalhoPerfil() {
+  const cabecalho =
+    document.getElementById("cabecalhoPerfil");
+  if (cabecalho) {
+    cabecalho.innerHTML = "";
+  }
+}
+
+let avatarSelecionado = "";
+
+function selecionarAvatar(id,el){
+  avatarSelecionado=id;
+  document
+    .querySelectorAll(".avatar-item")
+    .forEach(a=>
+      a.classList.remove("selecionado")
+    );
+  el.classList.add("selecionado");
+}
+
+async function abrirEditarPerfil(){
+  const sessao = obterSessao();
+  if(!sessao) return;
+  const usuario = sessao.nome;
+  const perfil =
+    window.anunciosCarregados.find(
+      a=>a.anunciante===usuario
+    );
+  document.getElementById(
+    "perfilNomeInput"
+  ).value = perfil.nomePerfil || "";
+  avatarSelecionado =
+    perfil.avatarId || "";
+  const resposta =
+    await fetch(
+      SCRIPT_SITE +
+      "?funcao=listarAvatares"
+    );
+  const avatares =
+    await resposta.json();
+  const lista =
+    document.getElementById(
+      "listaAvatares"
+    );
+  lista.innerHTML="";
+  avatares.forEach(avatar=>{
+    lista.innerHTML += `
+      <div class="avatar-item
+      ${avatar.id===perfil.avatarId
+        ?"selecionado":""
+      }"
+      onclick="
+      selecionarAvatar(
+      '${avatar.id}',this)">
+        <img src="${avatar.imagem}">
+      </div>
+    `;
+  });
+  document
+    .getElementById("modalPerfil")
+    .classList.remove("hidden");
+}
+
+function fecharEditarPerfil(){
+  document
+    .getElementById("modalPerfil")
+    .classList.add("hidden");
+}
+
+async function salvarPerfil() {
+  const nome = document
+    .getElementById("perfilNomeInput")
+    .value.trim();
+  if (!nome) {
+    mostrarToast("Informe um nome.");
+    return;
+  }
+  const btn = document.getElementById("btnSalvarPerfil");
+  const textoOriginal = btn.innerText;
+  btn.disabled = true;
+  btn.innerText = "Salvando...";
+  try {
+    const sessao = obterSessao();
+    const token = localStorage.getItem("token");
+    const url =
+      SCRIPT_SITE +
+      "?funcao=salvarPerfil" +
+      "&token=" + encodeURIComponent(token) +
+      "&nome=" + encodeURIComponent(nome) +
+      "&avatar=" + encodeURIComponent(avatarSelecionado);
+    const resposta = await fetch(url);
+    const texto = await resposta.text();
+    if (texto === "OK") {
+      fecharEditarPerfil();
+      await carregarAnuncios();
+      filtrarAnuncios();
+      mostrarToast("Perfil atualizado.");
+    } else {
+      mostrarToast(texto || "Erro ao salvar perfil.");
+    }
+  } catch (erro) {
+    console.error(erro);
+    mostrarToast("Erro ao salvar perfil.");
+  } finally {
+    btn.disabled = false;
+    btn.innerText = textoOriginal;
+  }
+}
+
 function filtrarAnuncios() {
   const termo = document.getElementById("pesquisa")
     .value.trim()
@@ -1279,8 +1466,10 @@ if (
   anunciantePesquisaValido || perfilForcado;
 if (usuarioPerfil) {
   modoPerfil(usuarioPerfil);
+  mostrarCabecalhoPerfil(usuarioPerfil);
   renderizarBottomBar("perfil");
 } else {
+  esconderCabecalhoPerfil();
   modoLista();
   renderizarBottomBar("lista");
 }
@@ -1311,17 +1500,18 @@ if (usuarioPerfil) {
 async function voltarParaLista(recarregar = false) {
   perfilForcado = null;
   anunciantePesquisaValido = null;
+  esconderCabecalhoPerfil();
   const pesquisa = document.getElementById("pesquisa");
   if (pesquisa) {
     pesquisa.value = "";
   }
   modoLista();
   abrirTela("anuncios");
+  renderizarBottomBar("lista");
   if (recarregar) {
     await carregarAnuncios();
   }
   filtrarAnuncios();
-  renderizarBottomBar("lista");
 }
 
 let divisaoEditando = null;
