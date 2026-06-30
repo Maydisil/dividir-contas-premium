@@ -490,20 +490,23 @@ margin-right: 0.3rem;
 /* ======================================
    ÍCONES DOS FORMULÁRIOS
 ====================================== */
+
 #conteudoFormulario label i,
 #conteudoLogin label i,
 .modal-divisao-content label i {
   display: inline-block;
-  width: 20px;
-  margin-right: 8px;
-  color: #57b7ff;
-  text-shadow:
-    0 0 4px rgba(87,183,255,.8),
-    0 0 10px rgba(87,183,255,.45);
-  font-size: 17px;
-  text-align: center;
+  width: 18px;
+  margin-right: 6px;
+  color: #69bfff;
+  font-size: 16px;
+  line-height: 1;
   vertical-align: middle;
+  text-align: center;
+  text-shadow:
+    0 0 2px rgba(105,191,255,.45),
+    0 0 5px rgba(105,191,255,.20);
 }
+
 
 
      .checkbox-list {
