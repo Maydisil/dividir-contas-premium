@@ -123,34 +123,34 @@
     <form id="formDivisao" autocomplete="off" onsubmit="salvarDivisao(event)">
     <input type="hidden" id="divId" name="id">
       <label>
-        👤 Pessoa
+        <i class="bi bi-person"></i> Pessoa
         <input type="text" id="divPessoa" name="pessoa" required>
       </label>
       <label>
-        🖥️ Streaming
+        <i class="bi bi-tv"></i> Streaming
         <select id="divStreaming" name="streaming" required>
         </select>
       </label>
       <label>
-        🔒 Login:
+        <i class="bi bi-lock"></i> Login:
         <select id="divLogin" name="login" required>
           <option value="Login">
-            🔐 Login e Senha
+            <i class="bi bi-unlock2"></i> Login e Senha
           </option>
           <option value="Convite">
-            📩 Convite por E-mail
+            <i class="bi bi-envelope-at"></i> Convite por E-mail
           </option>
           <option value="Ativar">
-            🔑 Ativar por Código
+            <i class="bi bi-key"></i> Ativar por Código
           </option>
         </select>
       </label>
       <label>
-        💵 Valor:
+        <i class="bi bi-currency-dollar"></i> Valor:
         <input type="number" id="divValor" name="valor" min="0" step="0.01" inputmode="decimal" required>
       </label>
       <label>
-        📆 Dia:
+        <i class="bi bi-calendar-check"></i> Dia:
         <input type="number" id="divDia" name="dia" min="1" max="31" required>
       </label>
       <!-- BOTÕES -->
@@ -231,17 +231,17 @@
         <h3>CRIAR ANÚNCIO</h3>
         <form id="formAnuncio" onsubmit="enviarFormulario(event)">
           <label>
-           👤 Nome de Usuário
+           <i class="bi bi-person"></i> Nome de Usuário
             <input type="text" id="usuario" name="usuario" readonly required>
           </label>
           <label>
-           🖥️ Qual o Streaming
+           <i class="bi bi-tv"></i> Qual o Streaming
             <select name="streaming" id="selectStreaming" required></select>
           </label>
           <!-- EXTRAS -->
           <div class="extras-area">
             <label>
-             ➕ Assinatura Extra (opcional)
+             <i class="bi bi-plus-lg"></i> Assinatura Extra (opcional)
             </label>
             <div class="extras-container">
               <div class="toggle-extras" onclick="toggleExtras()">
@@ -251,11 +251,11 @@
             </div>
           </div>
           <label>
-           💵 Qual o Valor
+           <i class="bi bi-currency-dollar"></i> Qual o Valor
             <input type="number" name="valor" placeholder="Ex: 12.50" min="0" step="0.25" required>
           </label>
           <label>
-           💲 Forma de Pagamento
+           <i class="bi bi-credit-card"></i> Forma de Pagamento
             <select name="pagamento" required>
               <option>KOTAS</option>
               <option>PIX - Mensal</option>
@@ -266,11 +266,11 @@
             </select>
           </label>
           <label>
-          🔗  Link do Grupo Kotas (opcional)
+          <i class="bi bi-link-45deg"></i> Link do Grupo Kotas (opcional)
             <input type="number" name="kotas" id="campoKotas" placeholder="Últimos 6 dígitos do link" min="0" step="1"  oninput="limitarKotas(this)">
           </label>
           <label>
-          📌  Status da Conta
+          <i class="bi bi-pin-angle"></i> Status da Conta
             <select name="status" required>
               <option>Assinado</option>
               <option>Aguardando</option>
@@ -278,7 +278,7 @@
             </select>
           </label>
           <label>
-          👥  Número de Vagas
+          <i class="bi bi-people"></i> Número de Vagas
             <select name="vagas" required>
               <option>1 Vaga</option>
               <option>2 Vagas</option>
@@ -288,7 +288,7 @@
             </select>
           </label>
           <label>
-           🔐 Tipo de Acesso
+           <i class="bi bi-lock"></i> Tipo de Acesso
             <select name="acesso" required>
               <option>Login e Senha</option>
               <option>Ativar por Código</option>
@@ -296,11 +296,11 @@
             </select>
           </label>
           <label>
-          📲  Número do WhatsApp
+          <i class="bi bi-whatsapp"></i> Número do WhatsApp
             <input type="tel" name="whatsapp" id="whatsappInput" placeholder="Ex: 55XXXXXXXXXXX" pattern="\d{13}" maxlength="13" oninput="formatarWhatsapp(this)" required>
           </label>
           <label>
-           🔥 Tempo da Promoção (opcional)
+           <i class="bi bi-fire"></i> Tempo da Promoção (opcional)
             <select name="oferta">
               <option value="">Selecione</option>
               <option value="1 Mês">1 Mês</option>
@@ -369,4 +369,3 @@
   <script src="script.js"></script>
 </body>
 </html>
-
