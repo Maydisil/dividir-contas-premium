@@ -494,20 +494,13 @@ margin-right: 0.3rem;
 #conteudoFormulario label i,
 #conteudoLogin label i,
 .modal-divisao-content label i {
-  display: inline-block;
-  width: 18px;
-  margin-right: 6px;
+  display: inline;
+  margin-right: .35rem;
   color: #69bfff;
-  font-size: 16px;
-  line-height: 1;
-  vertical-align: middle;
-  text-align: center;
-  text-shadow:
-    0 0 2px rgba(105,191,255,.45),
-    0 0 5px rgba(105,191,255,.20);
+  font-size: .95em;
+  vertical-align: -0.05em;
+  text-shadow: 0 0 2px rgba(105,191,255,.18);
 }
-
-
 
      .checkbox-list {
        margin-top: 0.75rem;
@@ -580,12 +573,20 @@ margin-right: 0.3rem;
   display: block;
 }
 
-     #conteudoFormulario label {
-       display: flex;
-       flex-direction: column;
-       font-weight: bold;
-       color: #333;
-     }
+    #conteudoFormulario label {
+  display: block;
+  font-weight: bold;
+  color: #333;
+  line-height: 1.4;
+}
+
+#conteudoFormulario label input,
+#conteudoFormulario label select {
+  display: block;
+  width: 100%;
+  margin-top: .35rem;
+}
+
 
      #conteudoFormulario input,
      #conteudoFormulario select {
