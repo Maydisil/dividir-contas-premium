@@ -307,13 +307,17 @@ async function carregarAnuncios() {
     if (!resposta.ok) {
       throw new Error('Resposta HTTP ' + resposta.status);
     }
-    const anuncios = await resposta.json();
-       // 🔴 Se vier inválido (erro silencioso)
-    if (!Array.isArray(anuncios)) {
-      container.innerHTML = '<div class="loading">Erro ao carregar anúncios.</div>';
-      return;
-    }
-    window.anunciosCarregados = anuncios;
+const dados = await resposta.json();
+const anuncios = dados.anuncios || [];
+const perfis = dados.perfis || [];
+// 🔴 Se vier inválido
+if (!Array.isArray(anuncios)) {
+  container.innerHTML =
+    '<div class="loading">Erro ao carregar anúncios.</div>';
+  return;
+}
+window.anunciosCarregados = anuncios;
+window.perfisCarregados = perfis;
     // 🔥 RESETA OS LIKES
     likesDados = {};
     const userId = getUserIdentifier() || "";
@@ -1225,13 +1229,20 @@ const ehDono =
   const cabecalho =
     document.getElementById("cabecalhoPerfil");
   if (!cabecalho) return;
-  const itemPerfil = window.anunciosCarregados?.find(
-    a => a.anunciante === usuario
+  let itemPerfil = window.anunciosCarregados?.find(
+  a => a.anunciante === usuario
+);
+// se não encontrou nos anúncios,
+// procura na lista completa de perfis
+if (!itemPerfil) {
+  itemPerfil = window.perfisCarregados?.find(
+    p => p.usuario === usuario
   );
-  if (!itemPerfil) {
-    cabecalho.innerHTML = "";
-    return;
-  }
+}
+if (!itemPerfil) {
+  cabecalho.innerHTML = "";
+  return;
+}
   let botoesContato = "";
   // Telegram
 botoesContato += `
@@ -1318,10 +1329,16 @@ async function abrirEditarPerfil(){
   const sessao = obterSessao();
   if(!sessao) return;
   const usuario = sessao.nome;
-  const perfil =
-    window.anunciosCarregados.find(
-      a=>a.anunciante===usuario
+  let perfil =
+  window.anunciosCarregados.find(
+    a => a.anunciante === usuario
+  );
+if (!perfil) {
+  perfil =
+    window.perfisCarregados.find(
+      p => p.usuario === usuario
     );
+}
   document.getElementById(
     "perfilNomeInput"
   ).value = perfil.nomePerfil || "";
@@ -1407,16 +1424,16 @@ function filtrarAnuncios() {
   const termo = document.getElementById("pesquisa")
     .value.trim()
     .toLowerCase();
-  const termoUsuario =
-    termo.replace(/^@/, "");
-const sessao = obterSessao();
-if (
-  !sessao ||
-  termoUsuario !==
-    sessao.nome.replace(/^@/, "").toLowerCase()
-) {
-  perfilForcado = null;
-}
+  const termoUsuario = termo.replace(/^@/, "");
+  const sessao = obterSessao();
+  // Se não estiver procurando o próprio perfil, limpa o perfil forçado
+  if (
+    !sessao ||
+    termoUsuario !==
+      sessao.nome.replace(/^@/, "").toLowerCase()
+  ) {
+    perfilForcado = null;
+  }
   const container =
     document.getElementById("listaAnuncios");
   const anuncios =
@@ -1436,7 +1453,7 @@ if (
       (el.dataset.streamingExtra || "")
         .toLowerCase();
     const anuncianteOriginal =
-      el.dataset.anunciante;
+      el.dataset.anunciante || "";
     const anunciante =
       anuncianteOriginal
         .replace(/^@/, "")
@@ -1451,6 +1468,7 @@ if (
     if (mostrar) {
       encontrou = true;
     }
+    // Encontrou anúncio do usuário
     if (
       termoUsuario &&
       anunciante === termoUsuario
@@ -1459,28 +1477,50 @@ if (
         anuncianteOriginal;
     }
   });
-  // ===============================
+  // ==================================
+  // 🔍 PROCURA TAMBÉM NOS PERFIS
+  // ==================================
+  if (
+    !anunciantePesquisaValido &&
+    termoUsuario &&
+    window.perfisCarregados
+  ) {
+    const perfil = window.perfisCarregados.find(p =>
+      p.usuario
+        .replace(/^@/, "")
+        .toLowerCase() === termoUsuario
+    );
+    if (perfil) {
+      anunciantePesquisaValido =
+        perfil.usuario;
+    }
+  }
+  // ==================================
   // 👤 PERFIL OU LISTA
-  // ===============================
+  // ==================================
   const usuarioPerfil =
-  anunciantePesquisaValido || perfilForcado;
-if (usuarioPerfil) {
-  modoPerfil(usuarioPerfil);
-  mostrarCabecalhoPerfil(usuarioPerfil);
-  renderizarBottomBar("perfil");
-} else {
-  esconderCabecalhoPerfil();
-  modoLista();
-  renderizarBottomBar("lista");
-}
-  // ===============================
+    anunciantePesquisaValido ||
+    perfilForcado;
+  if (usuarioPerfil) {
+    modoPerfil(usuarioPerfil);
+    mostrarCabecalhoPerfil(usuarioPerfil);
+    renderizarBottomBar("perfil");
+  } else {
+    esconderCabecalhoPerfil();
+    modoLista();
+    renderizarBottomBar("lista");
+  }
+  // ==================================
   // 🔍 SEM RESULTADO
-  // ===============================
+  // ==================================
   let aviso =
     document.getElementById(
       "semResultados"
     );
-  if (!encontrou && termo) {
+  // Se existir perfil válido, não mostra aviso
+  const temPerfil =
+    !!usuarioPerfil;
+  if (!encontrou && termo && !temPerfil) {
     if (!aviso) {
       aviso =
         document.createElement("div");
