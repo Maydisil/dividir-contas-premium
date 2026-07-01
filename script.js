@@ -767,7 +767,7 @@ const emojiLogin = emojisLogin[item.login] || "🔐";
       <hr>
       <p><strong>Postado em: ${item.data}</strong></p>
       <hr>
-      <p><strong>👤 ${item.anunciante}</strong></p>
+      <p><strong>👤 <span class="link-anunciante" onclick="abrirPerfilAnunciante('${item.anunciante}')">${item.anunciante}</span></strong></p>
       <p><strong id="contadorPontos">
   ❤️ ${item.pontos?.coracao ?? 0}
   💬 ${item.pontos?.balao ?? 0}
@@ -1218,6 +1218,14 @@ function compartilharUsuarioWhatsapp() {
   }
   const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(texto)}`;
   window.open(url, "_blank");
+}
+
+function abrirPerfilAnunciante(usuario) {
+  const pesquisa = document.getElementById("pesquisa");
+  perfilForcado = usuario;
+  pesquisa.value = usuario;
+  abrirTela("anuncios");
+  filtrarAnuncios();
 }
 
 function mostrarCabecalhoPerfil(usuario) {
