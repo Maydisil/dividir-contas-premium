@@ -574,21 +574,21 @@ function renderizarAnuncios(lista) {
     // 🏷️ SEL0S (AQUI 👇)
     // ===============================
     let selos = "";
-const emojisLogin = {
-  "Login e Senha": "🔐",
-  "Convite por E-mail": "📩",
-  "Ativar por Código": "🔑"
+const iconesLogin = {
+  "Login e Senha": '<i class="bi bi-unlock2"></i>',
+  "Convite por E-mail": '<i class="bi bi-envelope-at"></i>',
+  "Ativar por Código": '<i class="bi bi-key"></i>'
 };
 if (ehNovo(item.data)) {
-  selos += `<span class="selo novo">✨</span>`;
-} else if (item.login && emojisLogin[item.login]) {
-  selos += `<span class="selo novo">${emojisLogin[item.login]}</span>`;
+  selos += `<span class="selo novo"><i class="bi bi-stars"></i></span>`;
+} else if (item.login && iconesLogin[item.login]) {
+  selos += `<span class="selo novo">${iconesLogin[item.login]}</span>`;
 }
 if (item.streamingExtra) {
-  selos += `<span class="selo extra">➕</span>`;
+  selos += `<span class="selo extra"><i class="bi bi-plus-lg"></i></span>`;
 }
 if (item.oferta) {
-  selos += `<span class="selo oferta">🔥</span>`;
+  selos += `<span class="selo oferta"><i class="bi bi-fire"></i></span>`;
 }
     // ===============================
     // 🧱 HTML
@@ -2415,5 +2415,3 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
-
-
