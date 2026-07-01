@@ -200,6 +200,21 @@ margin-right: 0.3rem;
 /* 👤 PERFIL */
 /* ===================================== */
 
+.link-anunciante{
+  color:#007bff;
+  cursor:pointer;
+  font-weight:600;
+  transition: all .2s ease;
+}
+
+.link-anunciante:hover{
+  color:#0056b3;
+}
+
+.link-anunciante:active{
+  transform:scale(.96);
+}
+
 #cabecalhoPerfil{
   width: 100%;
   max-width: 500px;
@@ -1421,7 +1436,7 @@ text-overflow: ellipsis;
      }
 
      .painel-item:hover {
-       color: #888;
+       color: #007bff;
      }
 
      .painel-item a {
@@ -1431,7 +1446,7 @@ text-overflow: ellipsis;
      }
 
      .painel-item a:hover {
-       color: #888;
+       color: #007bff;
      }
 
      .painel-item i {
