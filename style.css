@@ -487,19 +487,20 @@ margin-right: 0.3rem;
   }
 }
 
-/* ======================================
-   ÍCONES DOS FORMULÁRIOS
-====================================== */
+.label-titulo {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  margin-bottom: .35rem;
+  font-weight: bold;
+  color: #333;
+}
 
-#conteudoFormulario label i,
-#conteudoLogin label i,
-.modal-divisao-content label i {
-  display: inline;
-  margin-right: .35rem;
-  color: #69bfff;
+.label-titulo i {
+  color: #007bff;
   font-size: .95em;
-  vertical-align: -0.05em;
-  text-shadow: 0 0 2px rgba(105,191,255,.18);
+  text-shadow: 0 0 2px rgba(105,191,255,.15);
+  flex-shrink: 0;
 }
 
      .checkbox-list {
@@ -573,20 +574,12 @@ margin-right: 0.3rem;
   display: block;
 }
 
-    #conteudoFormulario label {
-  display: block;
+#conteudoFormulario label {
+  display: flex;
+  flex-direction: column;
   font-weight: bold;
   color: #333;
-  line-height: 1.4;
 }
-
-#conteudoFormulario label input,
-#conteudoFormulario label select {
-  display: block;
-  width: 100%;
-  margin-top: .35rem;
-}
-
 
      #conteudoFormulario input,
      #conteudoFormulario select {
