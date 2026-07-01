@@ -1267,17 +1267,17 @@ backdrop-filter: blur(2px);
 /* cores */
 .selo.novo {
   background: #C9A0DC;
-  color: #ffffff;
+  color: #000000;
 }
 
 .selo.extra {
   background: #FFEE8C;
-  color: #ffffff;
+  color: #000000;
 }
 
 .selo.oferta {
   background: #AAE5FC;
-  color: #ffffff;
+  color: #000000;
 }
 
 .lista-anuncios {
