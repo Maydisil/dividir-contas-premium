@@ -1640,6 +1640,7 @@ text-overflow: ellipsis;
 }
 
 .login-title {
+  font-family: 'Barlow Condensed', sans-serif;
   text-align: center;
   margin-bottom: 1.8rem;
   font-weight: 600;
