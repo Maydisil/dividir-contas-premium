@@ -224,7 +224,7 @@ function enviarFormulario(event) {
   const btnEnviar = form.querySelector('button[type="submit"]');
   const btnCancelar = form.querySelector('button[type="button"]');
   btnEnviar.disabled = true;
-  btnEnviar.textContent = "Enviando...";
+  btnEnviar.textContent = "ENVIANDO...";
   btnCancelar.disabled = true;
   const dados = Object.fromEntries(new FormData(form).entries());
   // 🧹 remove vazios
@@ -396,7 +396,7 @@ async function fazerLogin() {
   const btn = document.getElementById("btnEntrar");
   // 🔒 DESABILITA BOTÃO
   btn.disabled = true;
-  btn.innerText = "Entrando...";
+  btn.innerText = "ENTRANDO...";
   if (!usuario || senha.length !== 6) {
     erro.innerText = "Preencha corretamente.";
     erro.style.display = "block";
@@ -958,7 +958,7 @@ async function reenviarSelecionado() {
   const textoOriginal =
     btn.innerText;
   btn.disabled = true;
-  btn.innerText = "Enviando...";
+  btn.innerText = "ENVIANDO...";
   const token =
     localStorage.getItem("token");
   try {
@@ -1399,7 +1399,7 @@ async function salvarPerfil() {
   const btn = document.getElementById("btnSalvarPerfil");
   const textoOriginal = btn.innerText;
   btn.disabled = true;
-  btn.innerText = "Salvando...";
+  btn.innerText = "SALVANDO...";
   try {
     const sessao = obterSessao();
     const token = localStorage.getItem("token");
@@ -2158,7 +2158,7 @@ async function salvarDivisao(event) {
     btnSalvar.innerText;
   // 🔒 trava botão
   btnSalvar.disabled = true;
-  btnSalvar.innerText = "Enviando...";
+  btnSalvar.innerText = "ENVIANDO...";
   const token =
     localStorage.getItem("token");
   if (!token) {
