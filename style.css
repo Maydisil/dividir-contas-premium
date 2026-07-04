@@ -426,7 +426,7 @@ margin-right: 0.3rem;
 }
 
 .avatar-item.selecionado img{
-  border-color:#28a745;
+  border-color:#007bff;
 }
 
 .avatar-item.selecionado::after{
@@ -434,7 +434,7 @@ margin-right: 0.3rem;
   position:absolute;
   width:1rem;
   height:1rem;
-  background:#28a745;
+  background:#007bff;
   border:2px solid #fff;
   border-radius:50%;
   right:0;
@@ -816,7 +816,7 @@ margin-right: 0.3rem;
 }
 
 .card-divisao-check.ativo {
-  color: #22c55e;
+  color: #007bff;
 }
 
 .card-divisao-menu-btn {
@@ -1107,18 +1107,19 @@ transform: scale(1);
 }
 
 .item-historico input[type="radio"]::before {
-  content: "✓";
+  font-family: "bootstrap-icons"; 
+  content: "\f26e"; 
   color: #fff;
-  font-size: 1rem;
+  font-size: 1.7rem;
   font-weight: bold;
-line-height: 1;
+  display: inline-block;
   opacity: 0;
   transition: opacity .2s ease;
 }
 
 .item-historico input[type="radio"]:checked {
-  background: #22c55e;
-  border-color: #22c55e;
+  background: #007bff;
+  border-color: #007bff;
 }
 
 .item-historico input[type="radio"]:checked::before {
