@@ -1229,49 +1229,50 @@ function abrirPerfilAnunciante(usuario) {
 }
 
 function mostrarCabecalhoPerfil(usuario) {
-const sessao = obterSessao();
-const ehDono =
-  sessao &&
-  sessao.nome.replace(/^@/, "") ===
-  usuario.replace(/^@/, "");
+  const sessao = obterSessao();
+  const ehDono =
+    sessao &&
+    sessao.nome.replace(/^@/, "") ===
+    usuario.replace(/^@/, "");
   const cabecalho =
     document.getElementById("cabecalhoPerfil");
   if (!cabecalho) return;
   let itemPerfil = window.anunciosCarregados?.find(
-  a => a.anunciante === usuario
-);
-// se não encontrou nos anúncios,
-// procura na lista completa de perfis
-if (!itemPerfil) {
-  itemPerfil = window.perfisCarregados?.find(
-    p => p.usuario === usuario
+    a => a.anunciante === usuario
   );
-}
-if (!itemPerfil) {
-  cabecalho.innerHTML = "";
-  return;
-}
-  let botoesContato = "";
+  if (!itemPerfil) {
+    itemPerfil = window.perfisCarregados?.find(
+      p => p.usuario === usuario
+    );
+  }
+  if (!itemPerfil) {
+    cabecalho.innerHTML = "";
+    return;
+  }  
+   let botoesContato = "";  
+  const comandoFetch = `fetch(\`\${SCRIPT_SITE}?funcao=compraAnunciante&n=\${encodeURIComponent('${usuario}')}\`).catch(()=>{})`;  
   // Telegram
-botoesContato += `
-  <a href="https://t.me/${usuario.replace(/^@/, "")}"
-     target="_blank"
-     class="perfil-btn telegram">
-    <i class="bi bi-telegram"></i>
-    Telegram
-  </a>
-`;
-// WhatsApp
-if (itemPerfil.whatsapp) {
   botoesContato += `
-    <a href="https://wa.me/${itemPerfil.whatsapp}"
+    <a href="https://t.me/${usuario.replace(/^@/, "")}"
        target="_blank"
-       class="perfil-btn whatsapp">
-      <i class="bi bi-whatsapp"></i>
-      WhatsApp
+       class="perfil-btn telegram"
+       onclick="${comandoFetch}">
+      <i class="bi bi-telegram"></i>
+      Telegram
     </a>
-  `;
-}
+  `;  
+  // WhatsApp
+  if (itemPerfil.whatsapp) {
+    botoesContato += `
+      <a href="https://wa.me/${itemPerfil.whatsapp}"
+         target="_blank"
+         class="perfil-btn whatsapp"
+         onclick="${comandoFetch}">
+        <i class="bi bi-whatsapp"></i>
+        WhatsApp
+      </a>
+    `;
+  }
   cabecalho.innerHTML = `
 <div class="perfil-cabecalho">
   ${
