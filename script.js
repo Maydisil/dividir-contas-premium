@@ -574,21 +574,33 @@ function renderizarAnuncios(lista) {
     // 🏷️ SEL0S (AQUI 👇)
     // ===============================
     let selos = "";
-const emojisLogin = {
-  "Login e Senha": "🔐",
-  "Convite por E-mail": "📩",
-  "Ativar por Código": "🔑"
+const iconesLogin = {
+  "Login e Senha": "bi bi-lock-fill",
+  "Convite por E-mail": "bi-envelope-paper-fill",
+  "Ativar por Código": "bi-key-fill"
 };
 if (ehNovo(item.data)) {
-  selos += `<span class="selo novo">✨</span>`;
-} else if (item.login && emojisLogin[item.login]) {
-  selos += `<span class="selo novo">${emojisLogin[item.login]}</span>`;
+  selos += `
+    <span class="selo novo" title="Novo anúncio">
+      <i class="bi bi-stars"></i>
+    </span>`;
+} else if (item.login && iconesLogin[item.login]) {
+  selos += `
+    <span class="selo login" title="${item.login}">
+      <i class="bi ${iconesLogin[item.login]}"></i>
+    </span>`;
 }
 if (item.streamingExtra) {
-  selos += `<span class="selo extra">➕</span>`;
+  selos += `
+    <span class="selo extra" title="Possui extras">
+      <span class="selo-plus">✚</span>
+    </span>`;
 }
 if (item.oferta) {
-  selos += `<span class="selo oferta">🔥</span>`;
+  selos += `
+    <span class="selo oferta" title="Oferta">
+      <i class="bi bi-fire"></i>
+    </span>`;
 }
     // ===============================
     // 🧱 HTML
@@ -746,32 +758,45 @@ function mostrarDetalhes(item) {
   // =========================
   // HTML DETALHES
   // =========================
-const emojisLogin = {
-  "Login e Senha": "🔐",
-  "Convite por E-mail": "📩",
-  "Ativar por Código": "🔑"
+const iconesLogin = {
+  "Login e Senha": "bi bi-lock",
+  "Convite por E-mail": "bi-envelope-paper",
+  "Ativar por Código": "bi-key"
 };
-const emojiLogin = emojisLogin[item.login] || "🔐";
+const iconeLogin = iconesLogin[item.login] || "bi bi-lock-fill";
   document.getElementById("conteudoDetalhes").innerHTML = `
     <div class="detalhes-box">
       <a href="${item.linkStreaming}" target="_blank">
         <img src="https://drive.google.com/thumbnail?id=${item.logo2}&sz=w1000">
       </a>
       <hr>
-      <p><strong>🖥 ${item.streaming}</strong></p>
-      ${item.streamingExtra ? `<p><strong>➕ ${item.streamingExtra}</strong></p>` : ""}
-      <p><strong>💵 ${item.valor}</strong></p>
-      <p><strong>📌 ${item.vagas}</strong></p>
-      <p><strong>${emojiLogin} ${item.login}</strong></p>
-      ${item.oferta ? `<p><strong>🔥 OFERTA - ${item.oferta}</strong></p>` : ""}
-      <hr>
-      <p><strong>Postado em: ${item.data}</strong></p>
-      <hr>
-      <p><strong>👤 <span class="link-anunciante" onclick="abrirPerfilAnunciante('${item.anunciante}')">${item.anunciante}</span></strong></p>
-      <p><strong id="contadorPontos">
-  ❤️ ${item.pontos?.coracao ?? 0}
-  💬 ${item.pontos?.balao ?? 0}
-  📢 ${item.pontos?.megafone ?? 0}
+      <p><strong><i class="bi bi-tv detalhes-icon"></i> ${item.streaming}</strong></p>
+${item.streamingExtra ? `
+<p><strong><i class="bi bi-plus-lg detalhes-icon"></i> ${item.streamingExtra}</strong></p>
+` : ""}
+<p><strong><i class="bi bi-currency-dollar detalhes-icon"></i> ${item.valor}</strong></p>
+<p><strong><i class="bi bi-pin-angle detalhes-icon"></i> ${item.vagas}</strong></p>
+<p><strong><i class="bi ${iconeLogin} detalhes-icon"></i> 
+${item.login}</strong></p>
+${item.oferta ? `
+<p><strong><i class="bi bi-fire detalhes-icon"></i> OFERTA - ${item.oferta}</strong></p>
+` : ""}
+<hr>
+<p><strong><i class="bi bi-calendar-event detalhes-icon"></i> CRIADO EM: ${item.data}</strong></p>
+<hr>
+<p><strong>
+<i class="bi bi-person detalhes-icon"></i>
+<span class="link-anunciante"
+onclick="abrirPerfilAnunciante('${item.anunciante}')">
+${item.anunciante}
+</span>
+</strong></p>
+<p><strong id="contadorPontos">
+<i class="bi bi-heart-fill detalhes-icon-pontos"></i> ${item.pontos?.coracao ?? 0}
+&nbsp;&nbsp;
+<i class="bi bi-chat-fill detalhes-icon-pontos"></i> ${item.pontos?.balao ?? 0}
+&nbsp;&nbsp;
+<i class="bi bi-megaphone-fill detalhes-icon-pontos"></i> ${item.pontos?.megafone ?? 0}
 </strong></p>
       <div class="botoes-contato">
         ${botoesContato}
@@ -2424,5 +2449,3 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
-
-
