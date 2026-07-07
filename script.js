@@ -615,7 +615,14 @@ if (item.oferta) {
         ${selos}
       </div>
     `;
-    div.onclick = () => mostrarDetalhes(item);
+div.onclick = () => {
+      mostrarDetalhes(item);
+      const sessao = obterSessao();
+      const ehDono = sessao && sessao.nome.replace(/^@/, "").toLowerCase() === item.anunciante.replace(/^@/, "").toLowerCase();
+      if (!ehDono && item.anunciante) {
+fetch(`${SCRIPT_SITE}?funcao=visualizacaoAnunciante&n=${encodeURIComponent(item.anunciante)}`).catch(()=>{});
+      }
+    };
     container.appendChild(div);
   });
 }
@@ -1259,6 +1266,8 @@ function mostrarCabecalhoPerfil(usuario) {
     sessao &&
     sessao.nome.replace(/^@/, "") ===
     usuario.replace(/^@/, "");
+if (!ehDono) { fetch(`${SCRIPT_SITE}?funcao=visualizacaoAnunciante&n=${encodeURIComponent(usuario)}`).catch(()=>{}); 
+} 
   const cabecalho =
     document.getElementById("cabecalhoPerfil");
   if (!cabecalho) return;
@@ -2386,6 +2395,10 @@ window.addEventListener("load", async () => {
       );
       if (item) {
         mostrarDetalhes(item);
+        const ehDono = sessao && sessao.nome.replace(/^@/, "").toLowerCase() === item.anunciante.replace(/^@/, "").toLowerCase();
+        if (!ehDono && item.anunciante) {
+fetch(`${SCRIPT_SITE}?funcao=visualizacaoAnunciante&n=${encodeURIComponent(item.anunciante)}`).catch(()=>{});
+        }
         acaoExecutada = true;
       }
     }
