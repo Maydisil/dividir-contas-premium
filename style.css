@@ -1263,13 +1263,42 @@ animation: subirModalMobile 0.42s cubic-bezier(.22,.61,.36,1);
 
 }
 
-.selos{
-    margin-left:auto;
-    display:flex;
-    flex-direction:column;
-    gap:.45rem;
-    align-items:flex-end;
-    flex-shrink:0;
+.anuncio {
+     position: relative;
+     background-color: #fff;
+     border-radius: 0.75rem;
+     padding: var(--padding); 
+     box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
+     transition: background-color 0.2s;
+     display: flex;
+     align-items: center; 
+     gap: 1rem;
+     box-sizing: border-box;
+}
+
+.anuncio:hover .selo{
+    transform:scale(1.08);
+}
+
+.selos {
+     position: absolute;
+     right: 1rem;
+     top: 50%;
+     transform: translateY(-50%);
+     display: flex;
+     flex-direction: column;
+     gap: 0.25rem;
+     align-items: flex-end;
+     z-index: 10;
+     flex-shrink: 0;
+}
+
+.info {
+     display: flex;
+     flex-direction: column;
+     flex: 1;
+     min-width: 0;
+     margin-right: 2.5rem;
 }
 
 .selo{
@@ -1289,10 +1318,6 @@ animation: subirModalMobile 0.42s cubic-bezier(.22,.61,.36,1);
 
 .selo i{
     font-size:.9rem;
-}
-
-.anuncio:hover .selo{
-    transform:scale(1.08);
 }
 
 .selo.novo{
@@ -1331,17 +1356,6 @@ animation: subirModalMobile 0.42s cubic-bezier(.22,.61,.36,1);
   box-sizing: border-box;
 }
 
-     .anuncio {
-       background-color: #fff;
-       border-radius: 0.75rem;
-       padding: var(--padding);
-       box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
-       transition: background-color 0.2s;
-       display: flex;
-       align-items: center;
-       gap: 1rem;
-     }
-
      .anuncio:hover {
        background-color: #eaeaea;
        cursor: pointer;
@@ -1353,13 +1367,6 @@ animation: subirModalMobile 0.42s cubic-bezier(.22,.61,.36,1);
        object-fit: contain;
        border-radius: 50%;
        background-color: #eee;
-     }
-
-     .info {
-       display: flex;
-       flex-direction: column;
-       flex: 1;
-       min-width: 0;
      }
 
      .info .titulo {
@@ -1600,16 +1607,15 @@ text-overflow: ellipsis;
 }
 
 .detalhes-box p {
-font-family: 'Barlow Condensed', sans-serif;
-font-weight: 500;
-white-space: nowrap;
-overflow: hidden;
-text-overflow: ellipsis;
-color: #333;
-margin: 0.4rem 0;
-line-height: 1.3;
-font-size: var(--font-base);
-text-align: left;
+     font-family: 'Barlow Condensed', sans-serif;
+     font-weight: 500;
+     color: #333;
+     margin: 0.4rem 0;
+     line-height: 1.3;
+     font-size: var(--font-base);
+     text-align: left;
+     white-space: normal; 
+     overflow-wrap: break-word; 
 }
 
      .detalhes-box hr {
