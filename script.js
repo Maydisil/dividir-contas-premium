@@ -1307,8 +1307,18 @@ if (!ehDono) { fetch(`${SCRIPT_SITE}?funcao=visualizacaoAnunciante&n=${encodeURI
       </a>
     `;
   }
-  cabecalho.innerHTML = `
+   cabecalho.innerHTML = `
 <div class="perfil-cabecalho">
+  <div class="perfil-badges-topo">
+    <div class="badge-discreto">
+      <i class="bi bi-eye"></i>
+      <span>${itemPerfil.views || 0}</span>
+    </div>
+    <div class="badge-discreto">
+      <i class="bi bi-hourglass-split"></i>
+      <span>${itemPerfil.tempoCadastro || '0m'}</span>
+    </div>
+  </div>
   ${
     ehDono ? `
       <button class="perfil-menu"
