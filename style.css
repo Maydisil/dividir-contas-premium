@@ -505,6 +505,36 @@ margin-right: 0.3rem;
   flex-shrink: 0;
 }
 
+.perfil-badges-topo {
+     position: absolute;
+     top: 0.75rem;
+     left: 0.75rem;
+     display: flex;
+     flex-direction: column;
+     gap: 0.35rem;
+     z-index: 10;
+}
+
+.badge-discreto {
+     background-color: #e5e5e5;
+     color: #333;
+     padding: 0.2rem 0.5rem;
+     border-radius: 0.5rem;
+     display: flex;
+     align-items: center;
+     gap: 0.3rem;
+     font-size: var(--font-small);
+     font-weight: bold;
+     box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+     width: fit-content;
+}
+
+.badge-discreto i {
+     font-size: 0.9em;
+     display: flex;
+     align-items: center;
+}
+
      .checkbox-list {
        margin-top: 0.75rem;
        padding: 0.75rem;
