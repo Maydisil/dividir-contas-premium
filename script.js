@@ -1315,7 +1315,7 @@ if (!ehDono) { fetch(`${SCRIPT_SITE}?funcao=visualizacaoAnunciante&n=${encodeURI
       <span>${itemPerfil.views || 0}</span>
     </div>
     <div class="badge-discreto">
-      <i class="bi bi-hourglass-split"></i>
+      <i class="bi bi-calendar"></i>
       <span>${itemPerfil.tempoCadastro || '0m'}</span>
     </div>
   </div>
