@@ -451,6 +451,7 @@ margin-right: 0.3rem;
 }
 
 .perfil-nome{
+  margin-top: 0.4rem;
   font-size: 7vw;
 }
 
@@ -508,8 +509,8 @@ margin-right: 0.3rem;
 
 .perfil-badges-topo {
      position: absolute;
-     top: 0.75rem;
-     left: 0.75rem;
+     top: 0.85rem;
+     left: -0.4rem;
      display: flex;
      flex-direction: column;
      gap: 0.35rem;
@@ -517,10 +518,10 @@ margin-right: 0.3rem;
 }
 
 .badge-discreto {
-     background-color: #e5e5e5;
-     color: #1a1a1a; 
-     padding: 0.2rem 0.5rem;
-     border-radius: 0.5rem;
+     background-color: #333333;
+     color: #ffffff; 
+     padding: 0.5rem 0.8rem;
+     border-radius: 0.4rem 1rem 1rem 0.4rem;
      display: flex;
      align-items: center;
      gap: 0.3rem;
