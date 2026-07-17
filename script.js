@@ -70,14 +70,14 @@ function atualizarLikeVisual(idMensagem) {
   // ===============================
   // 📊 ATUALIZA PONTOS DO ANUNCIANTE
   // ===============================
-  const contador = document.getElementById("contadorPontos");
-  if (contador) {
-    contador.innerHTML = `
-      ❤️ ${window.itemAtual.pontos.coracao ?? 0}
-      💬 ${window.itemAtual.pontos?.balao ?? 0}
-      📢 ${window.itemAtual.pontos?.megafone ?? 0}
-    `;
-  }
+const contador = document.getElementById("contadorPontos");
+if (contador) {
+  contador.innerHTML = `
+    <i class="bi bi-heart-fill detalhes-icon-pontos"></i> ${window.itemAtual.pontos.coracao ?? 0}&nbsp;&nbsp;&nbsp;
+    <i class="bi bi-chat-fill detalhes-icon-pontos"></i> ${window.itemAtual.pontos?.balao ?? 0}&nbsp;&nbsp;&nbsp;
+    <i class="bi bi-megaphone-fill detalhes-icon-pontos"></i> ${window.itemAtual.pontos?.megafone ?? 0}
+  `;
+}
   // ===============================
   // 🔄 FORÇA ATUALIZAR BOTÃO (ÍCONE ❤️)
   // ===============================
