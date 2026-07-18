@@ -207,15 +207,18 @@ margin-right: 0.3rem;
   box-sizing: border-box;
 }
 
-.perfil-cabecalho{
+.perfil-cabecalho {
   position: relative;
   background: #fff;
   border-radius: 1rem;
   margin: 0;
   padding: var(--padding);
   box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.1);
-  text-align: center;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+  text-align: center;
 }
 
 .perfil-menu{
@@ -233,30 +236,32 @@ margin-right: 0.3rem;
   color: #555;
 }
 
-.perfil-avatar{
+.perfil-avatar {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 4.5rem;
-  line-height: 1;
   height: 5.5rem; 
+  width: 5.5rem;
+  margin-top: 0.2rem;
 }
 
-.perfil-avatar img{
-  width: 5.5rem;
-  height: 5.5rem;
+.perfil-avatar img {
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
   object-fit: cover;
   background: #eee;
 }
 
-.perfil-nome{
-  margin-top: 0.35rem;
+.perfil-nome {
+  margin-top: 0.3rem;
   font-family: 'Barlow Condensed', sans-serif;
   font-size: 1.8rem;
   font-weight: 700;
   color: #000;
+  line-height: 1.2;
   overflow-wrap: break-word;
+  width: 100%;
 }
 
 #modalPerfil label{
@@ -441,22 +446,22 @@ margin-right: 0.3rem;
   max-width: none;
 }
 
-.perfil-avatar{
-  font-size: 18vw;
-}
+ .perfil-avatar {
+    width: 24vw;
+    height: 24vw;
+  }
 
-.perfil-avatar img{
-  width: 24vw;
-  height: 24vw;
-}
+  .perfil-avatar img {
+    width: 100%;
+    height: 100%;
+  }
 
-.perfil-nome{
-  margin-top: 0.4rem;
-  font-size: 7vw;
-}
+  .perfil-nome {
+    font-size: 7vw;
+  }
 
 .perfil-pontos{
-  gap: 8vw;
+  gap: 9vw;
 }
 
 .perfil-pontos div{
@@ -509,7 +514,7 @@ margin-right: 0.3rem;
 
 .perfil-badges-topo {
      position: absolute;
-     top: 0.85rem;
+     top: 1.3rem;
      left: -0.4rem;
      display: flex;
      flex-direction: column;
@@ -1617,6 +1622,16 @@ text-overflow: ellipsis;
        z-index: 400;
      }
 
+.slide-esquerda {
+  transform: translateX(-100%) scale(0.98);
+  opacity: 0;
+}
+
+.slide-direita {
+  transform: translateX(100%) scale(0.98);
+  opacity: 0;
+}
+
      .detalhes-box {
        width: 100%;
        max-width: 500px;
@@ -1628,16 +1643,6 @@ text-overflow: ellipsis;
        box-sizing: border-box;
        transition: transform 0.28s cubic-bezier(.4,0,.2,1), opacity 0.2s ease;
      }
-
-.slide-esquerda {
-  transform: translateX(-100%) scale(0.98);
-  opacity: 0;
-}
-
-.slide-direita {
-  transform: translateX(100%) scale(0.98);
-  opacity: 0;
-}
 
 .detalhes-box p {
      font-family: 'Barlow Condensed', sans-serif;
@@ -1660,7 +1665,9 @@ text-overflow: ellipsis;
 
 .detalhes-box > a img {
   width: 100%;
-  height: auto;
+  aspect-ratio: 1000 / 437.5;
+  object-fit: cover;
+  object-position: top center;
   display: block;
   margin: 0 auto 1rem auto;
   border-radius: 0.75rem;
@@ -1706,7 +1713,7 @@ text-overflow: ellipsis;
   width: 100%;
   height: auto;
   display: block;
-  border-radius: 12px;
+  border-radius: 1.5rem;
 }
 
 .botoes-contato img:hover {
