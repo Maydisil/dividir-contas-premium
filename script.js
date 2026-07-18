@@ -740,7 +740,7 @@ function mostrarDetalhes(item) {
       <a href="https://t.me/${usuarioLimpo}"
          target="_blank"
          onclick="registrarCompra('${item.postagem}')">
-        <img src="https://drive.google.com/thumbnail?id=1qXoQt7RBq3gXbeEelRQbawl5Ni2oUxdl&sz=w1000">
+        <img src="https://i.imgur.com/q28dgRA.png">
       </a>
     `;
   }
@@ -749,7 +749,7 @@ function mostrarDetalhes(item) {
       <a href="https://wa.me/${item.whatsapp}"
          target="_blank"
          onclick="registrarCompra('${item.postagem}')">
-        <img src="https://drive.google.com/thumbnail?id=1zdhXAhIUNrZfurE_7_i56Hj7TZkJhjN_&sz=w1000">
+        <img src="https://i.imgur.com/us2gREZ.png">
       </a>
     `;
   }
@@ -758,7 +758,7 @@ function mostrarDetalhes(item) {
       <a href="https://app.kotas.com.br/grupo/${item.kotas}"
          target="_blank"
          onclick="registrarCompra('${item.postagem}')">
-        <img src="https://drive.google.com/thumbnail?id=1aPf9zlL3M85F5kXxhbvzhq6iKpyK5lXb&sz=w1000">
+        <img src="https://i.imgur.com/AOaLPY5.png">
       </a>
     `;
   }
@@ -1594,9 +1594,11 @@ async function voltarParaLista(recarregar = false) {
   perfilForcado = null;
   anunciantePesquisaValido = null;
   esconderCabecalhoPerfil();
-  const pesquisa = document.getElementById("pesquisa");
-  if (pesquisa) {
-    pesquisa.value = "";
+  if (recarregar) {
+    const pesquisa = document.getElementById("pesquisa");
+    if (pesquisa) {
+      pesquisa.value = "";
+    }
   }
   modoLista();
   abrirTela("anuncios");
