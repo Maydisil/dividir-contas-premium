@@ -571,37 +571,62 @@ function renderizarAnuncios(lista) {
     div.dataset.anunciante = item.anunciante || "";
     div.dataset.whatsapp = item.whatsapp || "";
     // ===============================
-    // 🏷️ SEL0S (AQUI 👇)
+    // ⏳ ALERTA DE VENCIMENTO
+    // ===============================
+    const sessao = obterSessao();
+    const ehDono =
+      sessao &&
+      sessao.nome.replace(/^@/, "").toLowerCase() ===
+      item.anunciante.replace(/^@/, "").toLowerCase();
+    if (ehDono && item.data) {
+      const partes = item.data.split("/");
+      const dataCriacao = new Date(
+        Number(partes[2]),
+        Number(partes[1]) - 1,
+        Number(partes[0])
+      );
+      const hoje = new Date();
+      hoje.setHours(0, 0, 0, 0);
+      dataCriacao.setHours(0, 0, 0, 0);
+      const diasCriado = Math.floor(
+        (hoje - dataCriacao) / (1000 * 60 * 60 * 24)
+      );
+      if (diasCriado >= 25) {
+        div.classList.add("anuncio-vencendo");
+      }
+    }
+    // ===============================
+    // 🏷️ SELOS
     // ===============================
     let selos = "";
-const iconesLogin = {
-  "Login e Senha": "bi bi-lock-fill",
-  "Convite por E-mail": "bi-envelope-paper-fill",
-  "Ativar por Código": "bi-key-fill"
-};
-if (ehNovo(item.data)) {
-  selos += `
-    <span class="selo novo" title="Novo anúncio">
-      <i class="bi bi-stars"></i>
-    </span>`;
-} else if (item.login && iconesLogin[item.login]) {
-  selos += `
-    <span class="selo login" title="${item.login}">
-      <i class="bi ${iconesLogin[item.login]}"></i>
-    </span>`;
-}
-if (item.streamingExtra) {
-  selos += `
-    <span class="selo extra" title="Possui extras">
-      <span class="selo-plus">✚</span>
-    </span>`;
-}
-if (item.oferta) {
-  selos += `
-    <span class="selo oferta" title="Oferta">
-      <i class="bi bi-fire"></i>
-    </span>`;
-}
+    const iconesLogin = {
+      "Login e Senha": "bi bi-lock-fill",
+      "Convite por E-mail": "bi-envelope-paper-fill",
+      "Ativar por Código": "bi-key-fill"
+    };
+    if (ehNovo(item.data)) {
+      selos += `
+        <span class="selo novo" title="Novo anúncio">
+          <i class="bi bi-stars"></i>
+        </span>`;
+    } else if (item.login && iconesLogin[item.login]) {
+      selos += `
+        <span class="selo login" title="${item.login}">
+          <i class="bi ${iconesLogin[item.login]}"></i>
+        </span>`;
+    }
+    if (item.streamingExtra) {
+      selos += `
+        <span class="selo extra" title="Possui extras">
+          <span class="selo-plus">✚</span>
+        </span>`;
+    }
+    if (item.oferta) {
+      selos += `
+        <span class="selo oferta" title="Oferta">
+          <i class="bi bi-fire"></i>
+        </span>`;
+    }
     // ===============================
     // 🧱 HTML
     // ===============================
@@ -615,12 +640,16 @@ if (item.oferta) {
         ${selos}
       </div>
     `;
-div.onclick = () => {
+    div.onclick = () => {
       mostrarDetalhes(item);
       const sessao = obterSessao();
-      const ehDono = sessao && sessao.nome.replace(/^@/, "").toLowerCase() === item.anunciante.replace(/^@/, "").toLowerCase();
+      const ehDono =
+        sessao &&
+        sessao.nome.replace(/^@/, "").toLowerCase() ===
+        item.anunciante.replace(/^@/, "").toLowerCase();
       if (!ehDono && item.anunciante) {
-fetch(`${SCRIPT_SITE}?funcao=visualizacaoAnunciante&n=${encodeURIComponent(item.anunciante)}`).catch(()=>{});
+        fetch(        `${SCRIPT_SITE}?funcao=visualizacaoAnunciante&n=${encodeURIComponent(item.anunciante)}`
+        ).catch(() => {});
       }
     };
     container.appendChild(div);
