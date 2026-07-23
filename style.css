@@ -1301,6 +1301,19 @@ animation: subirModalMobile 0.42s cubic-bezier(.22,.61,.36,1);
 
 }
 
+/* ===================================== */
+/* ⏳ ANÚNCIO PRÓXIMO DO VENCIMENTO */
+/* ===================================== */
+
+.anuncio.anuncio-vencendo {
+    background: #fff1f1;
+    border: 1px solid #ffb8b8;
+}
+
+.anuncio.anuncio-vencendo:hover {
+    background: #ffe6e6;
+}
+
 .anuncio {
      position: relative;
      background-color: #fff;
