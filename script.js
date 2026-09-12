@@ -794,12 +794,16 @@ function mostrarDetalhes(item) {
   // =========================
   // HTML DETALHES
   // =========================
-const iconesLogin = {
-  "Login e Senha": "bi bi-lock",
-  "Convite por E-mail": "bi-envelope-paper",
-  "Ativar por Código": "bi-key"
-};
-const iconeLogin = iconesLogin[item.login] || "bi bi-lock-fill";
+  const iconesLogin = {
+    "Login e Senha": "bi bi-lock",
+    "Convite por E-mail": "bi-envelope-paper",
+    "Ativar por Código": "bi-key"
+  };
+  const iconeLogin = iconesLogin[item.login] || "bi bi-lock-fill";
+  // Check do selo de verificado
+  const seloVerificado = (item.verificado && item.verificado.toString().toUpperCase() === "SIM")
+    ? '<i class="bi bi-patch-check-fill ms-1" style="color: #1da1f2;" title="Verificado"></i>'
+    : '';
   document.getElementById("conteudoDetalhes").innerHTML = `
     <div class="detalhes-box">
       <a href="${item.linkStreaming}" target="_blank">
@@ -824,7 +828,7 @@ ${item.oferta ? `
 <i class="bi bi-person detalhes-icon"></i>
 <span class="link-anunciante"
 onclick="abrirPerfilAnunciante('${item.anunciante}')">
-${item.anunciante}
+${item.anunciante}${seloVerificado}
 </span>
 </strong></p>
 <p><strong id="contadorPontos">
@@ -841,7 +845,7 @@ ${item.anunciante}
   `;
   // 👉 Renderizar barra inferior
   renderizarBottomBar("detalhes");
-ativarSwipeDetalhes();
+  ativarSwipeDetalhes();
 }
 
 function ativarSwipeDetalhes() {
@@ -1295,11 +1299,10 @@ function mostrarCabecalhoPerfil(usuario) {
     sessao &&
     sessao.nome.replace(/^@/, "") ===
     usuario.replace(/^@/, "");
-if (!ehDono) { fetch(`${SCRIPT_SITE}?funcao=visualizacaoAnunciante&n=${encodeURIComponent(usuario)}`).catch(()=>{}); 
-} 
-  const cabecalho =
-    document.getElementById("cabecalhoPerfil");
-  if (!cabecalho) return;
+  if (!ehDono) {     fetch(`${SCRIPT_SITE}?funcao=visualizacaoAnunciante&n=${encodeURIComponent(usuario)}`).catch(()=>{}); 
+  } 
+  const cabecalho = document.getElementById("cabecalhoPerfil");
+  if (!cabecalho) return;  
   let itemPerfil = window.anunciosCarregados?.find(
     a => a.anunciante === usuario
   );
@@ -1311,9 +1314,9 @@ if (!ehDono) { fetch(`${SCRIPT_SITE}?funcao=visualizacaoAnunciante&n=${encodeURI
   if (!itemPerfil) {
     cabecalho.innerHTML = "";
     return;
-  }  
-   let botoesContato = "";  
-  const comandoFetch = `fetch(\`\${SCRIPT_SITE}?funcao=compraAnunciante&n=\${encodeURIComponent('${usuario}')}\`).catch(()=>{})`;  
+  }    
+  let botoesContato = "";  
+  const comandoFetch = `fetch(\`\${SCRIPT_SITE}?funcao=compraAnunciante&n=\${encodeURIComponent('${usuario}')}\`).catch(()=>{})`;    
   // Telegram
   botoesContato += `
     <a href="https://t.me/${usuario.replace(/^@/, "")}"
@@ -1323,7 +1326,7 @@ if (!ehDono) { fetch(`${SCRIPT_SITE}?funcao=visualizacaoAnunciante&n=${encodeURI
       <i class="bi bi-telegram"></i>
       Telegram
     </a>
-  `;  
+  `;    
   // WhatsApp
   if (itemPerfil.whatsapp) {
     botoesContato += `
@@ -1336,7 +1339,11 @@ if (!ehDono) { fetch(`${SCRIPT_SITE}?funcao=visualizacaoAnunciante&n=${encodeURI
       </a>
     `;
   }
-   cabecalho.innerHTML = `
+// Check do selo de verificado
+  const seloVerificado = (itemPerfil.verificado && itemPerfil.verificado.toString().toUpperCase() === "SIM")
+    ? '<i class="bi bi-patch-check-fill ms-1" style="color: #1da1f2;" title="Verificado"></i>'
+    : '';
+  cabecalho.innerHTML = `
 <div class="perfil-cabecalho">
   <div class="perfil-badges-topo">
     <div class="badge-discreto">
@@ -1364,7 +1371,7 @@ if (!ehDono) { fetch(`${SCRIPT_SITE}?funcao=visualizacaoAnunciante&n=${encodeURI
         }
       </div>
       <div class="perfil-nome">
-        ${itemPerfil.nomePerfil}
+        ${itemPerfil.nomePerfil}${seloVerificado}
       </div>
       <div class="perfil-pontos">
         <div>
