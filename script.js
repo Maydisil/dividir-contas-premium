@@ -802,7 +802,7 @@ function mostrarDetalhes(item) {
   const iconeLogin = iconesLogin[item.login] || "bi bi-lock-fill";
   // Check do selo de verificado
   const seloVerificado = (item.verificado && item.verificado.toString().toUpperCase() === "SIM")
-    ? '<i class="bi bi-patch-check-fill ms-1" style="color: #1da1f2;" title="Verificado"></i>'
+    ? '<i class="bi bi-patch-check-fill" style="color: #1da1f2;" title="Verificado"></i>'
     : '';
   document.getElementById("conteudoDetalhes").innerHTML = `
     <div class="detalhes-box">
@@ -828,7 +828,7 @@ ${item.oferta ? `
 <i class="bi bi-person detalhes-icon"></i>
 <span class="link-anunciante"
 onclick="abrirPerfilAnunciante('${item.anunciante}')">
-${item.anunciante}${seloVerificado}
+${item.anunciante} ${seloVerificado}
 </span>
 </strong></p>
 <p><strong id="contadorPontos">
@@ -1341,7 +1341,7 @@ function mostrarCabecalhoPerfil(usuario) {
   }
 // Check do selo de verificado
   const seloVerificado = (itemPerfil.verificado && itemPerfil.verificado.toString().toUpperCase() === "SIM")
-    ? '<i class="bi bi-patch-check-fill ms-1" style="color: #1da1f2;" title="Verificado"></i>'
+    ? '<i class="bi bi-patch-check-fill" style="color: #1da1f2;" title="Verificado"></i>'
     : '';
   cabecalho.innerHTML = `
 <div class="perfil-cabecalho">
@@ -1371,7 +1371,7 @@ function mostrarCabecalhoPerfil(usuario) {
         }
       </div>
       <div class="perfil-nome">
-        ${itemPerfil.nomePerfil}${seloVerificado}
+        ${itemPerfil.nomePerfil} ${seloVerificado}
       </div>
       <div class="perfil-pontos">
         <div>
