@@ -2390,6 +2390,15 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 window.addEventListener("load", async () => {
+// 🚀 REGISTRO DO SERVICE WORKER (PWA)
+  if ('serviceWorker' in navigator) {
+    try {
+      const reg = await navigator.serviceWorker.register('/sw.js');
+      console.log('Service Worker registrado com sucesso!', reg);
+    } catch (err) {
+      console.warn('Falha ao registrar o Service Worker:', err);
+    }
+  }
   const params = new URLSearchParams(window.location.search);
   let sessao = obterSessao();
   // ===============================
