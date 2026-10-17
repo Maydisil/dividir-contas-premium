@@ -32,12 +32,13 @@ function abrirTela(id){
 }
 
 function ativarNotificacoesDoMenu(e) {
-  e.preventDefault();
-  window.OneSignalDeferred = window.OneSignalDeferred.push(async function(OneSignal) {
+  e.preventDefault();  
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  window.OneSignalDeferred.push(async function(OneSignal) {
     try {
-      await OneSignal.Notifications.requestPermission();
+      await OneSignal.Slidedown.promptPush({ force: true });
     } catch (err) {
-      console.error("Erro ao solicitar permissão de notificação:", err);
+      console.error("Erro ao abrir o prompt de notificações:", err);
     }
   });
 }
@@ -2508,8 +2509,28 @@ fetch(`${SCRIPT_SITE}?funcao=visualizacaoAnunciante&n=${encodeURIComponent(item.
     .addEventListener("click", toggleMenu);
   document.getElementById("menu-overlay")
     .addEventListener("click", toggleMenu);
+ // ===============================
+  // 🔔 VERIFICAÇÃO DE NOTIFICAÇÃO ONESIGNAL
+  // ===============================
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  window.OneSignalDeferred.push(async function(OneSignal) {
+    try {
+      const permissaoConcedida = OneSignal.Notifications.permission;
+      const botaoMenuAlertas = document.getElementById("menuAtivarAlertas");      
+      if (botaoMenuAlertas) {
+        if (!permissaoConcedida) {
+          // Se ainda não aceitou, mostra o botão no menu
+          botaoMenuAlertas.style.display = "flex"; 
+        } else {
+          // Se já aceitou, esconde o botão do menu
+          botaoMenuAlertas.style.display = "none";
+        }
+      }
+    } catch (e) {
+      console.warn("Erro ao verificar permissão do OneSignal:", e);
+    }
+  });
 });
-
 document.addEventListener("DOMContentLoaded", function () {
   const btnVoltar = document.getElementById("btnVoltar");
   if (btnVoltar) {
