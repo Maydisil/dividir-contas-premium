@@ -32,13 +32,12 @@ function abrirTela(id){
 }
 
 function ativarNotificacoesDoMenu(e) {
-  e.preventDefault(); // Evita que a página suba para o topo  
-  window.OneSignalDeferred = window.OneSignalDeferred || [];
-  window.OneSignalDeferred.push(async function(OneSignal) {
+  e.preventDefault();
+  window.OneSignalDeferred = window.OneSignalDeferred.push(async function(OneSignal) {
     try {
-      await OneSignal.Slidedown.promptPush();
+      await OneSignal.Notifications.requestPermission();
     } catch (err) {
-      console.log("Erro ao abrir prompt de notificações: ", err);
+      console.error("Erro ao solicitar permissão de notificação:", err);
     }
   });
 }
