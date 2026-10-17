@@ -31,6 +31,18 @@ function abrirTela(id){
     .classList.add('ativa');
 }
 
+function ativarNotificacoesDoMenu(e) {
+  e.preventDefault(); // Evita que a página suba para o topo  
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  window.OneSignalDeferred.push(async function(OneSignal) {
+    try {
+      await OneSignal.Slidedown.promptPush();
+    } catch (err) {
+      console.log("Erro ao abrir prompt de notificações: ", err);
+    }
+  });
+}
+
 function atualizarLikeVisual(idMensagem) {
   if (!window.itemAtual) return;
   if (window.itemAtual.postagem != idMensagem) return;
