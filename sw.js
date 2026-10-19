@@ -1,4 +1,6 @@
-﻿self.addEventListener('install', (e) => {
+importScripts('https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js'); 
+
+self.addEventListener('install', (e) => {
   e.waitUntil(
     caches.open('meu-app-cache').then((cache) => {
       return cache.addAll([
