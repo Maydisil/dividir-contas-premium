@@ -2402,7 +2402,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 window.addEventListener("load", async () => {
-// 🚀 REGISTRO DO SERVICE WORKER (PWA)
+  // 🚀 REGISTRO DO SERVICE WORKER (PWA)
   if ('serviceWorker' in navigator) {
     try {
       const reg = await navigator.serviceWorker.register('/sw.js');
@@ -2413,32 +2413,43 @@ window.addEventListener("load", async () => {
   }
   const params = new URLSearchParams(window.location.search);
   let sessao = obterSessao();
-  // ===============================
-  // 🔄 TENTA LOGIN AUTOMÁTICO TELEGRAM (SEMPRE)
-  // ===============================
-  if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
-    const user = Telegram.WebApp.initDataUnsafe.user;
-    const nome = user.username ? "@" + user.username : user.first_name;
-    try {
-      const res = await fetch(
-        `${SCRIPT_SITE}?funcao=loginTelegram`
-        + `&id=${encodeURIComponent(user.id)}`
-        + `&usuario=${encodeURIComponent(nome)}`
-      );
-      const dados = await res.json();
+// ===============================
+// 🔄 REGISTRO / AUTENTICAÇÃO VIA TELEGRAM WEBAPP
+// ===============================
+if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
+  const user = Telegram.WebApp.initDataUnsafe.user;  
+  // Monta o nome completo (first_name + last_name se houver)
+  const nomeCompleto = user.first_name + (user.last_name ? " " + user.last_name : "");
+  const username = user.username ? "@" + user.username : "";
+  const fotoUrl = user.photo_url || ""; // Captura a URL da foto oficial do Telegram
+  try {
+    fetch(
+      `${SCRIPT_SITE}?funcao=sincronizarUsuarioTelegram`
+      + `&id=${encodeURIComponent(user.id)}`
+      + `&nome=${encodeURIComponent(nomeCompleto)}`
+      + `&username=${encodeURIComponent(username)}`
+      + `&foto=${encodeURIComponent(fotoUrl)}`
+    ).catch(() => {});
+    const nomeLogin = username || nomeCompleto;
+    const res = await fetch(
+      `${SCRIPT_SITE}?funcao=loginTelegram`
+      + `&id=${encodeURIComponent(user.id)}`
+      + `&usuario=${encodeURIComponent(nomeLogin)}`
+    );
+    const dados = await res.json();
       if (dados.status === "ok") {
         salvarSessao(dados.nome, dados.id, dados.token);
         sessao = { nome: dados.nome, id: dados.id };
       } else {
-        // ❌ TRATAMENTO DE ERROS (ANTES ERA DA FUNÇÃO REMOVIDA)
+        // ❌ TRATAMENTO DE ERROS
         if (dados.status === "nome_diferente") {
-          alert("⚠️ Seu nome do Telegram mudou.\nRefaça o cadastro no grupo.");
+          alert("⚠️ Seu nome do Telegram mudou.\nAtualize o cadastro no grupo.");
         }
         else if (dados.status === "bloqueado") {
           alert("⛔ Seu acesso está bloqueado.\nFale com um administrador.");
         }
         else if (dados.status === "nao_cadastrado") {
-          alert("🚫 Você não está cadastrado.\nFaça o cadastro no grupo.");
+          alert("🚫 Você não está cadastrado.\nFaça o cadastro se quiser anunciar.");
         }
       }
     } catch (e) {
