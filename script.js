@@ -1406,14 +1406,6 @@ function mostrarCabecalhoPerfil(usuario) {
   `;
 }
 
-function esconderCabecalhoPerfil() {
-  const cabecalho =
-    document.getElementById("cabecalhoPerfil");
-  if (cabecalho) {
-    cabecalho.innerHTML = "";
-  }
-}
-
 let avatarSelecionado = "";
 
 function selecionarAvatar(id,el){
@@ -1521,19 +1513,32 @@ async function salvarPerfil() {
   }
 }
 
+function esconderCabecalhoPerfil() {
+  const cabecalho =
+    document.getElementById("cabecalhoPerfil");
+  if (cabecalho) {
+	cabecalho.innerHTML = "";
+  }
+  // Remove a seção de comentários ao sair do perfil
+  const secaoComentarios = document.getElementById("secaoComentariosPerfil");
+  if (secaoComentarios) {
+	secaoComentarios.remove();
+  }
+}
+
 function filtrarAnuncios() {
   const termo = document.getElementById("pesquisa")
-    .value.trim()
-    .toLowerCase();
+	.value.trim()
+	.toLowerCase();
   const termoUsuario = termo.replace(/^@/, "");
   const sessao = obterSessao();
   // Se não estiver procurando o próprio perfil, limpa o perfil forçado
   if (
-    !sessao ||
-    termoUsuario !==
-      sessao.nome.replace(/^@/, "").toLowerCase()
+	!sessao ||
+	termoUsuario !==
+  	sessao.nome.replace(/^@/, "").toLowerCase()
   ) {
-    perfilForcado = null;
+	perfilForcado = null;
   }
   const container =
     document.getElementById("listaAnuncios");
@@ -1542,99 +1547,265 @@ function filtrarAnuncios() {
   anunciantePesquisaValido = null;
   let encontrou = false;
   anuncios.forEach(el => {
-    const titulo =
+	const titulo =
       el.querySelector(".titulo")
-        .textContent
-        .toLowerCase();
-    const valor =
+    	.textContent
+    	.toLowerCase();
+	const valor =
       el.querySelector(".valor")
-        .textContent
-        .toLowerCase();
-    const streamingExtra =
-      (el.dataset.streamingExtra || "")
-        .toLowerCase();
-    const anuncianteOriginal =
-      el.dataset.anunciante || "";
-    const anunciante =
-      anuncianteOriginal
-        .replace(/^@/, "")
-        .toLowerCase();
-    const mostrar =
-      titulo.includes(termo) ||
-      valor.includes(termo) ||
+    	.textContent
+    	.toLowerCase();
+	const streamingExtra =
+  	(el.dataset.streamingExtra || "")
+    	.toLowerCase();
+	const anuncianteOriginal =
+  	el.dataset.anunciante || "";
+	const anunciante =
+  	anuncianteOriginal
+    	.replace(/^@/, "")
+    	.toLowerCase();
+	const mostrar =
+  	titulo.includes(termo) ||
+  	valor.includes(termo) ||
       anunciante.includes(termoUsuario) ||
       streamingExtra.includes(termo);
-    el.style.display =
-      mostrar ? "flex" : "none";
-    if (mostrar) {
-      encontrou = true;
-    }
-    // Encontrou anúncio do usuário
-    if (
-      termoUsuario &&
-      anunciante === termoUsuario
-    ) {
-      anunciantePesquisaValido =
-        anuncianteOriginal;
-    }
+	el.style.display =
+  	mostrar ? "flex" : "none";
+	if (mostrar) {
+  	encontrou = true;
+	}
+	// Encontrou anúncio do usuário
+	if (
+  	termoUsuario &&
+  	anunciante === termoUsuario
+	) {
+  	anunciantePesquisaValido =
+    	anuncianteOriginal;
+	}
   });
   // ==================================
   // 🔍 PROCURA TAMBÉM NOS PERFIS
   // ==================================
   if (
-    !anunciantePesquisaValido &&
-    termoUsuario &&
-    window.perfisCarregados
+	!anunciantePesquisaValido &&
+	termoUsuario &&
+	window.perfisCarregados
   ) {
-    const perfil = window.perfisCarregados.find(p =>
-      p.usuario
-        .replace(/^@/, "")
-        .toLowerCase() === termoUsuario
-    );
-    if (perfil) {
-      anunciantePesquisaValido =
-        perfil.usuario;
-    }
+	const perfil = window.perfisCarregados.find(p =>
+  	p.usuario
+    	.replace(/^@/, "")
+    	.toLowerCase() === termoUsuario
+	);
+	if (perfil) {
+  	anunciantePesquisaValido =
+    	perfil.usuario;
+	}
   }
   // ==================================
   // 👤 PERFIL OU LISTA
   // ==================================
   const usuarioPerfil =
-    anunciantePesquisaValido ||
-    perfilForcado;
+	anunciantePesquisaValido ||
+	perfilForcado;
   if (usuarioPerfil) {
-    modoPerfil(usuarioPerfil);
+	modoPerfil(usuarioPerfil);
     mostrarCabecalhoPerfil(usuarioPerfil);
     renderizarBottomBar("perfil");
+	
+	// 💬 INSERE OS COMENTÁRIOS LOGO ABAIXO DA LISTA DE ANÚNCIOS DO PERFIL
+    gerenciarSecaoComentariosPerfil(usuarioPerfil);
   } else {
-    esconderCabecalhoPerfil();
-    modoLista();
+	esconderCabecalhoPerfil();
+	modoLista();
     renderizarBottomBar("lista");
   }
   // ==================================
   // 🔍 SEM RESULTADO
   // ==================================
   let aviso =
-    document.getElementById(
-      "semResultados"
-    );
+	document.getElementById(
+  	"semResultados"
+	);
   // Se existir perfil válido, não mostra aviso
   const temPerfil =
-    !!usuarioPerfil;
+	!!usuarioPerfil;
   if (!encontrou && termo && !temPerfil) {
-    if (!aviso) {
-      aviso =
-        document.createElement("div");
-      aviso.id = "semResultados";
-      aviso.className = "loading";
-      aviso.innerText =
-        "Nenhum anúncio encontrado.";
+	if (!aviso) {
+  	aviso =
+    	document.createElement("div");
+  	aviso.id = "semResultados";
+  	aviso.className = "loading";
+  	aviso.innerText =
+    	"Nenhum anúncio encontrado.";
       container.appendChild(aviso);
-    }
+	}
   } else {
-    if (aviso) {
-      aviso.remove();
+	if (aviso) {
+  	aviso.remove();
+	}
+  }
+}
+
+let comentarioTemLike = false;
+let comentariosCarregadosAtuais = [];
+let mostrandoTodosComentarios = false;
+
+function toggleLikeComentario() {
+  comentarioTemLike = !comentarioTemLike;
+  const btn = document.getElementById("btnToggleLikeComentario");
+  if (comentarioTemLike) {
+    btn.classList.add("ativo");
+  } else {
+    btn.classList.remove("ativo");
+  }
+}
+
+// Verifica se o usuário atual está rodando dentro do Telegram WebApp
+function usuarioEstaNoTelegram() {
+  return !!(window.Telegram?.WebApp?.initDataUnsafe?.user?.id);
+}
+
+// 💬 GERA E INSERI A SEÇÃO DE COMENTÁRIOS ABAIXO DA LISTA DE ANÚNCIOS
+async function gerenciarSecaoComentariosPerfil(usuarioPerfil) {
+  let secao = document.getElementById("secaoComentariosPerfil");
+  const containerListaAnuncios = document.getElementById("listaAnuncios");
+  if (!usuarioPerfil || !containerListaAnuncios) return;
+  // Se a seção ainda não existir no DOM, cria ela e insere logo após a lista de anúncios
+  if (!secao) {
+    secao = document.createElement("div");
+    secao.id = "secaoComentariosPerfil";
+    secao.className = "comentarios-container";
+    secao.innerHTML = `
+      <h3>COMENTÁRIOS</h3>
+      <div id="blocoInteracaoComentario"></div>
+      <div id="listaComentariosPerfil"></div>
+      <button id="btnMostrarMaisComentarios" class="comentario-btn-mais" style="display: none;" onclick="expandirComentarios()">
+        Mostrar mais... ⬇️
+      </button>
+    `;
+    containerListaAnuncios.after(secao);
+  }
+  secao.style.display = "block";
+  const blocoInteracao = document.getElementById("blocoInteracaoComentario");
+  // 🔒 REGRA: Só permite digitar se estiver logado via Telegram WebApp
+  if (usuarioEstaNoTelegram() && blocoInteracao) {
+    const tgUser = window.Telegram.WebApp.initDataUnsafe.user;
+    const avatarUrl = tgUser.photo_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(tgUser.first_name)}&background=random`;
+    blocoInteracao.innerHTML = `
+      <div class="comentario-input-box">
+        <img src="${avatarUrl}" class="comentario-avatar" alt="Avatar">
+        <div class="comentario-input-wrapper">
+          <input type="text" id="inputTextoComentario" maxlength="50" placeholder="Envie um comentário (máx 50 char)...">
+        </div>
+        <button type="button" id="btnToggleLikeComentario" class="comentario-btn-coracao" onclick="toggleLikeComentario()" title="Recomendar anunciante">❤️</button>
+        <button type="button" class="comentario-btn-enviar" onclick="enviarComentarioPerfil('${usuarioPerfil}')">➡️</button>
+      </div>
+    `;
+  } else if (blocoInteracao) {
+    blocoInteracao.innerHTML = `
+      <div class="comentario-aviso-login">
+        <a href="https://t.me/DCP2000Bot/anunciar" target="_blank" class="link-login-telegram">
+          <i class="bi bi-telegram"></i> Faça login pelo Telegram para comentar
+        </a>
+      </div>
+    `;
+  }
+  // Busca os comentários aprovados do anunciante no backend
+  try {
+    const res = await fetch(`${SCRIPT_SITE}?funcao=listarComentarios&id_anunciante=${encodeURIComponent(usuarioPerfil)}`);
+    const dados = await res.json();
+    comentariosCarregadosAtuais = Array.isArray(dados) ? dados : [];
+    mostrandoTodosComentarios = false;
+    renderizarListaComentarios();
+  } catch (e) {
+    console.warn("Erro ao buscar comentários:", e);
+    comentariosCarregadosAtuais = [];
+    renderizarListaComentarios();
+  }
+}
+
+function renderizarListaComentarios() {
+  const container = document.getElementById("listaComentariosPerfil");
+  const btnMais = document.getElementById("btnMostrarMaisComentarios");
+  if (!container) return;
+  container.innerHTML = "";
+  if (comentariosCarregadosAtuais.length === 0) {
+    container.innerHTML = `<div style="font-size:12px; color:#8e8e8e; text-align:center; padding: 10px;">Nenhum comentário ainda.</div>`;
+    if (btnMais) btnMais.style.display = "none";
+    return;
+  }
+  // Mostra 3 ou expande todos
+  const limite = mostrandoTodosComentarios ? comentariosCarregadosAtuais.length : 3;
+  const listaParaExibir = comentariosCarregadosAtuais.slice(0, limite);
+  listaParaExibir.forEach(item => {
+    const div = document.createElement("div");
+    div.className = "comentario-card";
+    const fotoAvatar = item.foto || `https://ui-avatars.com/api/?name=${encodeURIComponent(item.nome)}&background=random`;
+    const temLike = item.like === "❤️" || item.like === true;
+    div.innerHTML = `
+      <img src="${fotoAvatar}" class="comentario-avatar" alt="Avatar" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(item.nome)}&background=random';">
+      <div class="comentario-corpo">
+        <div class="comentario-topo">
+          <span class="comentario-nome">${item.nome}</span>
+          <span class="comentario-data">• ${item.data}</span>
+        </div>
+        <div class="comentario-mensagem">${item.mensagem}</div>
+      </div>
+      ${temLike ? `<div class="comentario-like-icon" title="Recomendou este anunciante">❤️</div>` : ''}
+    `;
+    container.appendChild(div);
+  });
+  if (btnMais) {
+    if (comentariosCarregadosAtuais.length > 3 && !mostrandoTodosComentarios) {
+      btnMais.style.display = "block";
+    } else {
+      btnMais.style.display = "none";
     }
+  }
+}
+
+function expandirComentarios() {
+  mostrandoTodosComentarios = true;
+  renderizarListaComentarios();
+}
+
+async function enviarComentarioPerfil() {
+  const input = document.getElementById("inputTextoComentario");
+  const mensagem = input ? input.value.trim() : "";
+  if (!mensagem) {
+    alert("Digite um comentário.");
+    return;
+  }
+  if (!usuarioEstaNoTelegram()) {
+    alert("Você precisa estar no Telegram para comentar.");
+    return;
+  }
+  const tgUser = window.Telegram.WebApp.initDataUnsafe.user;
+  const usuarioPerfil = anunciantePesquisaValido || perfilForcado;
+  if (!usuarioPerfil) return;
+  // Monta a URL de envio via doGet
+  const urlEnvio = `${SCRIPT_SITE}?funcao=salvarComentario`
+    + `&id_anunciante=${encodeURIComponent(usuarioPerfil)}`
+    + `&telegram_id=${encodeURIComponent(tgUser.id)}`
+    + `&mensagem=${encodeURIComponent(mensagem.substring(0, 50))}`
+    + `&hasLike=${comentarioTemLike}`;
+  try {
+    const res = await fetch(urlEnvio);
+    const respostaJson = await res.json();
+    if (respostaJson.status === "success") {
+      alert("Comentário enviado para aprovação!");
+      if (input) input.value = "";
+      comentarioTemLike = false;
+      const btnLike = document.getElementById("btnToggleLikeComentario");
+      if (btnLike) btnLike.classList.remove("ativo");
+      // Atualiza a lista localmente buscando novamente
+      gerenciarSecaoComentariosPerfil(usuarioPerfil);
+    } else {
+      alert("Erro ao enviar comentário.");
+    }
+  } catch (e) {
+    console.warn("Erro ao enviar:", e);
+    alert("Erro de conexão ao enviar comentário.");
   }
 }
 
