@@ -1781,9 +1781,13 @@ async function enviarComentarioPerfil() {
     return;
   }
   const tgUser = window.Telegram.WebApp.initDataUnsafe.user;
+  // Pega exatamente o identificador do perfil atual da tela
   const usuarioPerfil = anunciantePesquisaValido || perfilForcado;
-  if (!usuarioPerfil) return;
-  // Monta a URL de envio via doGet
+  if (!usuarioPerfil) {
+    alert("Erro: Perfil do anunciante não identificado.");
+    return;
+  }
+  // Monta a URL de envio via doGet padronizando o ID do anunciante
   const urlEnvio = `${SCRIPT_SITE}?funcao=salvarComentario`
     + `&id_anunciante=${encodeURIComponent(usuarioPerfil)}`
     + `&telegram_id=${encodeURIComponent(tgUser.id)}`
@@ -1801,7 +1805,7 @@ async function enviarComentarioPerfil() {
       // Atualiza a lista localmente buscando novamente
       gerenciarSecaoComentariosPerfil(usuarioPerfil);
     } else {
-      alert("Erro ao enviar comentário.");
+      alert(respostaJson.mensagem || "Erro ao enviar comentário.");
     }
   } catch (e) {
     console.warn("Erro ao enviar:", e);
