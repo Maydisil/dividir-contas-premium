@@ -1665,12 +1665,11 @@ function usuarioEstaNoTelegram() {
   return !!(window.Telegram?.WebApp?.initDataUnsafe?.user?.id);
 }
 
-// 💬 GERA E INSERI A SEÇÃO DE COMENTÁRIOS ABAIXO DA LISTA DE ANÚNCIOS
+// 💬 GERA E INSERE A SEÇÃO DE COMENTÁRIOS ABAIXO DA LISTA DE ANÚNCIOS
 async function gerenciarSecaoComentariosPerfil(usuarioPerfil) {
   let secao = document.getElementById("secaoComentariosPerfil");
   const containerListaAnuncios = document.getElementById("listaAnuncios");
   if (!usuarioPerfil || !containerListaAnuncios) return;
-  // Se a seção ainda não existir no DOM, cria ela e insere logo após a lista de anúncios
   if (!secao) {
     secao = document.createElement("div");
     secao.id = "secaoComentariosPerfil";
@@ -1680,7 +1679,7 @@ async function gerenciarSecaoComentariosPerfil(usuarioPerfil) {
       <div id="blocoInteracaoComentario"></div>
       <div id="listaComentariosPerfil"></div>
       <button id="btnMostrarMaisComentarios" class="comentario-btn-mais" style="display: none;" onclick="expandirComentarios()">
-        Mostrar mais... ⬇️
+        Mostrar mais...
       </button>
     `;
     containerListaAnuncios.after(secao);
@@ -1697,8 +1696,12 @@ async function gerenciarSecaoComentariosPerfil(usuarioPerfil) {
         <div class="comentario-input-wrapper">
           <input type="text" id="inputTextoComentario" maxlength="50" placeholder="Envie um comentário…">
         </div>
-        <button type="button" id="btnToggleLikeComentario" class="comentario-btn-coracao" onclick="toggleLikeComentario()" title="Recomendar anunciante"><i class="bi bi-heart-fill"></i></button>
-        <button type="button" class="comentario-btn-enviar" onclick="enviarComentarioPerfil('${usuarioPerfil}')"><i class="bi bi-send-fill"></i></button>
+        <button type="button" id="btnToggleLikeComentario" class="comentario-btn-coracao" onclick="toggleLikeComentario()" title="Recomendar anunciante">
+          <i class="bi bi-heart-fill"></i>
+        </button>
+        <button type="button" class="comentario-btn-enviar" onclick="enviarComentarioPerfil('${usuarioPerfil}')">
+          <i class="bi bi-send-fill"></i>
+        </button>
       </div>
     `;
   } else if (blocoInteracao) {
@@ -1710,7 +1713,6 @@ async function gerenciarSecaoComentariosPerfil(usuarioPerfil) {
       </div>
     `;
   }
-  // Busca os comentários aprovados do anunciante no backend
   try {
     const res = await fetch(`${SCRIPT_SITE}?funcao=listarComentarios&id_anunciante=${encodeURIComponent(usuarioPerfil)}`);
     const dados = await res.json();
@@ -1734,14 +1736,14 @@ function renderizarListaComentarios() {
     if (btnMais) btnMais.style.display = "none";
     return;
   }
-  // Mostra 3 ou expande todos
   const limite = mostrandoTodosComentarios ? comentariosCarregadosAtuais.length : 3;
   const listaParaExibir = comentariosCarregadosAtuais.slice(0, limite);
   listaParaExibir.forEach(item => {
     const div = document.createElement("div");
     div.className = "comentario-card";
     const fotoAvatar = item.foto || `https://ui-avatars.com/api/?name=${encodeURIComponent(item.nome)}&background=random`;
-    const temLike = item.like === "❤️" || item.like === true;
+    // Verifica se o comentário possui curtida/recomendação
+    const temLike = item.like === "❤️" || item.like === true || item.like === "true";
     div.innerHTML = `
       <img src="${fotoAvatar}" class="comentario-avatar" alt="Avatar" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(item.nome)}&background=random';">
       <div class="comentario-corpo">
@@ -1751,7 +1753,7 @@ function renderizarListaComentarios() {
         </div>
         <div class="comentario-mensagem">${item.mensagem}</div>
       </div>
-      ${temLike ? `<div class="comentario-like-icon" title="Recomendou este anunciante">❤️</div>` : ''}
+      ${temLike ? `<div class="comentario-like-icon" title="Recomendou este anunciante"><i class="bi bi-heart-fill" style="color: #e0245e;"></i></div>` : ''}
     `;
     container.appendChild(div);
   });
