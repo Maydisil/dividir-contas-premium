@@ -1695,10 +1695,10 @@ async function gerenciarSecaoComentariosPerfil(usuarioPerfil) {
       <div class="comentario-input-box">
         <img src="${avatarUrl}" class="comentario-avatar" alt="Avatar">
         <div class="comentario-input-wrapper">
-          <input type="text" id="inputTextoComentario" maxlength="50" placeholder="Envie um comentário (máx 50 char)...">
+          <input type="text" id="inputTextoComentario" maxlength="50" placeholder="Envie um comentário…">
         </div>
-        <button type="button" id="btnToggleLikeComentario" class="comentario-btn-coracao" onclick="toggleLikeComentario()" title="Recomendar anunciante">❤️</button>
-        <button type="button" class="comentario-btn-enviar" onclick="enviarComentarioPerfil('${usuarioPerfil}')">➡️</button>
+        <button type="button" id="btnToggleLikeComentario" class="comentario-btn-coracao" onclick="toggleLikeComentario()" title="Recomendar anunciante"><i class="bi bi-heart-fill"></i></button>
+        <button type="button" class="comentario-btn-enviar" onclick="enviarComentarioPerfil('${usuarioPerfil}')"><i class="bi bi-send-fill"></i></button>
       </div>
     `;
   } else if (blocoInteracao) {
