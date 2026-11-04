@@ -1984,12 +1984,20 @@ text-overflow: ellipsis;
 .comentarios-container {
   width: 100%;
   max-width: 500px;
-  margin: 1rem 0 0 0;
+  margin: 0 auto 0 auto; 
   padding: var(--padding);
   background: #fff;
   border-radius: 1rem;
   box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.1);
   box-sizing: border-box;
+}
+
+@media (orientation: portrait) {
+  .comentarios-container {
+    max-width: none;
+    width: auto;
+    margin: 2vw 3vw 0 3vw;
+  }
 }
  
 .comentarios-container h3 {
@@ -2071,7 +2079,12 @@ text-overflow: ellipsis;
  
 .comentario-btn-coracao.ativo {
   opacity: 1;
+  color: #e0245e !important;
   transform: scale(1.15);
+}
+
+.comentario-btn-coracao.ativo i {
+  color: #e0245e !important;
 }
  
 .comentario-btn-enviar {
@@ -2162,4 +2175,3 @@ text-overflow: ellipsis;
 .comentario-btn-mais:hover {
   color: #0056b3;
 }
-
