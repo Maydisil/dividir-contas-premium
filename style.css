@@ -1995,8 +1995,7 @@ text-overflow: ellipsis;
 @media (orientation: portrait) {
   .comentarios-container {
     max-width: none;
-    width: auto;
-    margin: 2vw 3vw 0 3vw;
+    width: 90vw;
   }
 }
  
