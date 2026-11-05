@@ -2104,8 +2104,8 @@ text-overflow: ellipsis;
 
 .comentario-btn-enviar i {
   position: relative;
-  top: 0.05rem;
-  left: -0.05rem;
+  top: 0.1rem;
+  left: -0.1rem;
 }
  
 .comentario-btn-enviar:hover {
