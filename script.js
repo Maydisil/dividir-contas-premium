@@ -1708,7 +1708,7 @@ async function gerenciarSecaoComentariosPerfil(usuarioPerfil) {
     blocoInteracao.innerHTML = `
       <div class="comentario-aviso-login">
         <a href="https://t.me/DCP2000Bot/anunciar" target="_blank" class="link-login-telegram">
-          <i class="bi bi-telegram"></i> Faça login pelo Telegram para comentar
+          <i class="bi bi-telegram"></i> Entre pelo Telegram para comentar
         </a>
       </div>
     `;
