@@ -2101,6 +2101,12 @@ text-overflow: ellipsis;
   flex-shrink: 0;
   transition: background-color 0.2s;
 }
+
+.comentario-btn-enviar i {
+  position: relative;
+  top: 0.05rem;
+  left: -0.05rem;
+}
  
 .comentario-btn-enviar:hover {
   background: #0056b3;
