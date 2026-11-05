@@ -2097,7 +2097,7 @@ text-overflow: ellipsis;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.9rem;
+  font-size: 1.2rem;
   flex-shrink: 0;
   transition: background-color 0.2s;
 }
@@ -2152,7 +2152,7 @@ text-overflow: ellipsis;
 }
  
 .comentario-like-icon {
-  font-size: 0.95rem;
+  font-size: 1rem;
   margin-left: 0.4rem;
   align-self: center;
   flex-shrink: 0;
